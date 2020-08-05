@@ -4,4 +4,3 @@
 venv/
 *.sqlite3
 **migrations**
-
