@@ -3,4 +3,3 @@
 .vscode
 venv/
 *.sqlite3
-**migrations**
