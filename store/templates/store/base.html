@@ -4,7 +4,7 @@
 <html lang="en">
 
 <head>
-  <title>Pharma &mdash; Colorlib Template</title>
+  <title>Pharmaline</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -23,6 +23,8 @@
 
   <link rel="stylesheet" href="{% static 'store/css/style.css' %}">
 
+  <link rel="stylesheet" href="{% static 'store/custom/css/style.css' %}">
+
   {% block page_specific_style %}
   {% endblock page_specific_style %}
 
@@ -31,8 +33,6 @@
 <body>
 
   <div class="site-wrap">
-
-
     <div class="site-navbar py-2">
 
       <div class="search-wrap">
@@ -49,14 +49,13 @@
         <div class="d-flex align-items-center justify-content-between">
           <div class="logo">
             <div class="site-logo">
-              <a href="{% url 'store-home' %}" class="js-logo-clone">Pharma</a>
+              <a href="{% url 'store-home' %}" class="js-logo-clone">Pharmaline</a>
             </div>
           </div>
           <div class="main-nav d-none d-lg-block">
             <nav class="site-navigation text-right text-md-center" role="navigation">
               <ul class="site-menu js-clone-nav d-none d-lg-block">
                 <li class="active"><a href="{% url 'store-home' %}">Home</a></li>
-                <li><a href="#">Store</a></li>
                 <li class="has-children">
                   <a href="#">Dropdown</a>
                   <ul class="dropdown">
@@ -77,6 +76,14 @@
                 </li>
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
+              </ul>
+            </nav>
+          </div>
+          <div class="main-nav d-none d-lg-block">
+            <nav class="site-navigation text-right text-md-center" role="navigation">
+              <ul class="site-menu js-clone-nav d-none d-lg-block">
+                  <li><a href="#">Customer</a></li>
+                  <li><a href="#">Pharmacy</a></li>
               </ul>
             </nav>
           </div>
