@@ -1,0 +1,64 @@
+{% extends 'store/base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="site-section">
+        <div class="container">
+            <table>
+                <thead>
+
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ med.name }}</td>
+                </tr>
+                <tr>
+                    <td>Price</td>
+                    <td>{{ med.price }} ETB</td>
+                </tr>
+                <tr>
+                    <td>Stock</td>
+                    <td>{{ med.stock }}</td>
+                </tr>
+                <tr>
+                    <td>Production Date</td>
+                    <td>{{ med.production_date }}</td>
+                </tr>
+                <tr>
+                    <td>Expiry Date</td>
+                    <td>{{ med.expiry_date }}</td>
+                </tr>
+                <tr>
+                    <td>Batch Number</td>
+                    <td>{{ med.batch_number }}</td>
+                </tr>
+                <tr>
+                    <td>Requires Prescription</td>
+                    <td>
+                        {% if med.requires_prescription %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>{{ med.description }}</td>
+                </tr>
+                <tr>
+                    <td>Instructions</td>
+                    <td>{{ med.instructions }}</td>
+                </tr>
+                </tbody>
+
+                <tfoot>
+
+                </tfoot>
+            </table>
+        </div>
+    </div>
+{% endblock content %}
