@@ -3,104 +3,16 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <title>Pharmaline</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="icon" href="{% static 'store/icons/favicon.ico' %}">
-    <link rel="stylesheet" href="{% static 'store/fonts.css' %}">
-    <link rel="stylesheet" href="{% static 'store/fonts/icomoon/style.css' %}">
-
-    <link rel="stylesheet" href="{% static 'store/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'store/css/magnific-popup.css' %}">
-    <link rel="stylesheet" href="{% static 'store/css/jquery-ui.css' %}">
-    <link rel="stylesheet" href="{% static 'store/css/owl.carousel.min.css' %}">
-    <link rel="stylesheet" href="{% static 'store/css/owl.theme.default.min.css' %}">
-
-
-    <link rel="stylesheet" href="{% static 'store/css/aos.css' %}">
-
-    <link rel="stylesheet" href="{% static 'store/css/style.css' %}">
-
-    <link rel="stylesheet" href="{% static 'store/custom/css/style.css' %}">
-
-    {% block page_specific_style %}
-    {% endblock page_specific_style %}
-
-</head>
+{% include 'store/head_tag.html' %}
 
 <body>
 
 <div class="site-wrap">
-    <div class="site-navbar py-2">
+    
+    {% include 'store/navbar.html' %}
 
-        <div class="search-wrap">
-            <div class="container">
-                <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-                <form action="#" method="post">
-                    {% csrf_token %}
-                    <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
-                </form>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="logo">
-                    <div class="site-logo">
-                        <a href="{% url 'store:home' %}" class="js-logo-clone">Pharmaline</a>
-                    </div>
-                </div>
-                <div class="main-nav d-none d-lg-block">
-                    <nav class="site-navigation text-right text-md-center" role="navigation">
-                        <ul class="site-menu js-clone-nav d-none d-lg-block">
-                            <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
-                            <li><a href="{% url 'store:store' %}">Store</a></li>
-                            <li class="has-children">
-                                <a href="#">Dropdown</a>
-                                <ul class="dropdown">
-                                    <li><a href="#">Supplements</a></li>
-                                    <li class="has-children">
-                                        <a href="#">Vitamins</a>
-                                        <ul class="dropdown">
-                                            <li><a href="#">Supplements</a></li>
-                                            <li><a href="#">Vitamins</a></li>
-                                            <li><a href="#">Diet &amp; Nutrition</a></li>
-                                            <li><a href="#">Tea &amp; Coffee</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="#">Diet &amp; Nutrition</a></li>
-                                    <li><a href="#">Tea &amp; Coffee</a></li>
-
-                                </ul>
-                            </li>
-                            <li><a href="{% url 'store:about' %}">About</a></li>
-                            <li><a href="#">Contact</a></li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="main-nav d-none d-lg-block">
-                    <nav class="site-navigation text-right text-md-center" role="navigation">
-                        <ul class="site-menu js-clone-nav d-none d-lg-block">
-                            <li><a href="#">Customer</a></li>
-                            <li><a href="#">Pharmacy</a></li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="icons">
-                    <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
-                    <a href="{% url 'store:cart' %}" class="icons-btn d-inline-block bag">
-                        <span class="icon-shopping-bag"></span>
-                        <span class="number">2</span>
-                    </a>
-                    <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span
-                            class="icon-menu"></span></a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {% block alert_msg %}
+    {% endblock alert_msg %}
 
     {% block content %}
     {% endblock content %}
@@ -161,18 +73,7 @@
     </footer>
 </div>
 
-<script src="{% static 'store/js/jquery-3.3.1.min.js' %}"></script>
-<script src="{% static 'store/js/jquery-ui.js' %}"></script>
-<script src="{% static 'store/js/popper.min.js' %}"></script>
-<script src="{% static 'store/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'store/js/owl.carousel.min.js' %}"></script>
-<script src="{% static 'store/js/jquery.magnific-popup.min.js' %}"></script>
-<script src="{% static 'store/js/aos.js' %}"></script>
-
-<script src="{% static 'store/js/main.js' %}"></script>
-
-{% block page_specific_script %}
-{% endblock page_specific_script %}
+{% include 'store/script_tag.html' %}
 
 </body>
 
