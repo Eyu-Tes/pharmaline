@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 DEFAULT_APPS = [
-    'medication.apps.MedicationConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +39,11 @@ DEFAULT_APPS = [
     'django.contrib.staticfiles',
 ]
 
-LOCAL_APPS = ['store']
+LOCAL_APPS = [
+    'store',
+    'medication',
+    'account',
+]
 
 THIRD_PARTY_APPS = []
 
@@ -129,3 +132,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Alert Messages that align with the bootstrap 'alert' class
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}

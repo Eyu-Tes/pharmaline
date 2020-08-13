@@ -1,0 +1,4 @@
+input, button, select {
+    box-shadow: none !important;
+    outline: none !important;
+}

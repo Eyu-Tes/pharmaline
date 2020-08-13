@@ -1,0 +1,35 @@
+{% extends 'account/base.html' %}
+
+{% block nav_right_links %}
+    {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link" href="#" style="text-transform: none"><b>{{user.username}}</b></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Logout</a>
+        </li>
+    {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'account:customer-login' %}">Customer</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'account:pharmacy-login' %}">Pharmacy</a>
+        </li>
+    {% endif %}
+{% endblock nav_right_links %}
+
+{% block alert_msg %}
+    {% include 'account/alert_msg.html' %}
+{% endblock alert_msg %}
+
+{% block content %}
+    <div class="container mt-5">
+        {% if user.is_authenticated %}
+            {% if user.customer %}
+                <h1>Welcome {{user.customer}} </h1>
+            {% elif user.pharmacy %}
+                <h1>Welcome {{user.pharmacy}} </h1>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock content %}
