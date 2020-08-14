@@ -33,10 +33,10 @@
                 {% if meds %}
                     {% for med in meds %}
                         <div class="col-sm-6 col-lg-4 text-center item mb-4">
-                            <a href="{% url 'med:detail' med.pk %}"> <img
+                            <a href="{% url 'store:detail' med.pk %}"> <img
                                     src="{% static 'store/images/product_01.png' %}"
                                     alt="Image"></a>
-                            <h3 class="text-dark"><a href="{% url 'med:detail' med.pk %}">{{ med.name }}</a></h3>
+                            <h3 class="text-dark"><a href="{% url 'store:detail' med.pk %}">{{ med.name }}</a></h3>
                             <p class="price">
                                 &mdash; {{ med.price }} ETB
                             </p>
