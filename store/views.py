@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from medication.models import Medication
+from django.shortcuts import get_object_or_404
+from .models import Medication
 
 
 def index(request):
@@ -20,6 +21,11 @@ def store(request):
     except Medication.DoesNotExist:
         meds = None
     return render(request, 'store/store.html', context={'meds': meds})
+
+
+def details(request, med_id):
+    med = get_object_or_404(Medication, pk=med_id)
+    return render(request, 'store/details.html', context={'med': med})
 
 
 def checkout(request):

@@ -1,11 +1,11 @@
 from django.urls import path
-from .views import index, cart, about, store, checkout, thankyou
-
+from .views import index, cart, about, store, details, checkout, thankyou
 
 app_name = 'store'
 
 urlpatterns = [
     path('', index, name='home'),
+    path('store/<int:med_id>/details/', details, name='detail'),
     path('store/', store, name='store'),
     path('cart/', cart, name='cart'),
     path('about/', about, name='about'),

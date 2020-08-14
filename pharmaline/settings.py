@@ -41,7 +41,6 @@ DEFAULT_APPS = [
 
 LOCAL_APPS = [
     'store',
-    'medication',
     'account',
 ]
 
@@ -135,6 +134,8 @@ STATIC_URL = '/static/'
 
 # Alert Messages that align with the bootstrap 'alert' class
 from django.contrib.messages import constants as messages
+
+
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
     messages.INFO: 'info',
