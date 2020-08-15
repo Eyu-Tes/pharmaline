@@ -31,61 +31,39 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td class="product-thumbnail">
-                                    <img src="{% static 'store/images/product_02.png' %}" alt="Image" class="img-fluid">
-                                </td>
-                                <td class="product-name">
-                                    <h2 class="h5 text-black">Ibuprofen</h2>
-                                </td>
-                                <td>55.00 ETB</td>
-                                <td>
-                                    <div class="input-group mb-3" style="max-width: 120px;">
-                                        <div class="input-group-prepend">
-                                            <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
-                                            </button>
-                                        </div>
-                                        <input type="text" class="form-control text-center" value="1" placeholder=""
-                                               aria-label="Example text with button addon"
-                                               aria-describedby="button-addon1">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
-                                            </button>
-                                        </div>
-                                    </div>
 
-                                </td>
-                                <td>49.00 ETB</td>
-                                <td><a href="#" class="btn btn-primary height-auto btn-sm">X</a></td>
-                            </tr>
-
-                            <tr>
-                                <td class="product-thumbnail">
-                                    <img src="{% static 'store/images/product_01.png' %}" alt="Image" class="img-fluid">
-                                </td>
-                                <td class="product-name">
-                                    <h2 class="h5 text-black">Bioderma</h2>
-                                </td>
-                                <td>49.00 ETB</td>
-                                <td>
-                                    <div class="input-group mb-3" style="max-width: 120px;">
-                                        <div class="input-group-prepend">
-                                            <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
-                                            </button>
+                            {% for med in meds %}
+                                <tr>
+                                    <td class="product-thumbnail">
+                                        <img src="{% static 'store/images/product_02.png' %}" alt="Image"
+                                             class="img-fluid">
+                                    </td>
+                                    <td class="product-name">
+                                        <h2 class="h5 text-black">{{ med.name }}</h2>
+                                    </td>
+                                    <td>{{ med.price }}</td>
+                                    <td>
+                                        <div class="input-group mb-3" style="max-width: 120px;">
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-outline-primary js-btn-minus" type="button">
+                                                    &minus;
+                                                </button>
+                                            </div>
+                                            <input type="text" class="form-control text-center" value="1" placeholder=""
+                                                   aria-label="Example text with button addon"
+                                                   aria-describedby="button-addon1">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
+                                                </button>
+                                            </div>
                                         </div>
-                                        <input type="text" class="form-control text-center" value="1" placeholder=""
-                                               aria-label="Example text with button addon"
-                                               aria-describedby="button-addon1">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
-                                            </button>
-                                        </div>
-                                    </div>
 
-                                </td>
-                                <td>49.00 ETB</td>
-                                <td><a href="#" class="btn btn-primary height-auto btn-sm">X</a></td>
-                            </tr>
+                                    </td>
+                                    <td>{{ med.price }}</td>
+                                    <td><a href="#" class="btn btn-primary height-auto btn-sm">X</a></td>
+                                </tr>
+                            {% endfor %}
+
                             </tbody>
                         </table>
                     </div>
@@ -117,7 +95,7 @@
                                     <span class="text-black">Subtotal</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">230.00 ETB</strong>
+                                    <strong class="text-black">{{ subtotal }}</strong>
                                 </div>
                             </div>
                             <div class="row mb-5">
@@ -125,7 +103,7 @@
                                     <span class="text-black">Total</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">230.00 ETB</strong>
+                                    <strong class="text-black">{{ total }}</strong>
                                 </div>
                             </div>
 
