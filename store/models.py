@@ -22,10 +22,10 @@ class Medication(models.Model):
 
 class Cart(models.Model):
     date = models.DateTimeField()
-    session_id = models.CharField(max_length=35)
+    user_session = models.CharField(max_length=35)
 
     def __str__(self):
-        return self.session_id
+        return self.user_session
 
 
 class CartItem(models.Model):
