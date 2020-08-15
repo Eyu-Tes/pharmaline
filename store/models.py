@@ -18,3 +18,16 @@ class Medication(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Cart(models.Model):
+    date = models.DateTimeField()
+    session_id = models.CharField(max_length=35)
+
+    def __str__(self):
+        return self.session_id
+
+
+class CartItem(models.Model):
+    drug_id = models.ForeignKey(Medication, on_delete=models.CASCADE)
+    cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE)
