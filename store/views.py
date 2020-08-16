@@ -11,7 +11,7 @@ import shortuuid
 
 def get_cart_count(request):
     cart = get_cart(request)
-    return len(CartItem.objects.filter(cart_id=cart.pk))
+    return len(CartItem.objects.filter(cart=cart))
 
 
 def set_user_session_cookie(request, response):
@@ -38,8 +38,8 @@ def index(request):
 def cart(request):
     cart = get_cart(request)
     # TODO: add or remove the requested medication from the cart
-    cart_items = CartItem.objects.filter(cart_id=cart.pk)
-    meds = [Medication.objects.get(id=cart_item.drug_id.pk) for cart_item in cart_items]
+    cart_items = CartItem.objects.filter(cart=cart)
+    meds = [cart_item.drug for cart_item in cart_items]
 
     if request.method == 'POST':
         new_med = Medication.objects.get(id=request.POST['med_id'])
