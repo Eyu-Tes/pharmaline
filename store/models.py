@@ -8,7 +8,7 @@ class Medication(models.Model):
     description = models.TextField()
     instructions = models.TextField()
     vendor = models.CharField(max_length=30)
-    pharmacy_id = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
+    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
     stock = models.IntegerField(default=0)
     expiry_date = models.DateField()
     production_date = models.DateField()
@@ -29,5 +29,5 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    drug_id = models.ForeignKey(Medication, on_delete=models.CASCADE)
-    cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    drug = models.ForeignKey(Medication, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
