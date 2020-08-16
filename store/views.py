@@ -39,21 +39,25 @@ def cart(request):
     cart = get_cart(request)
     # TODO: add or remove the requested medication from the cart
     cart_items = CartItem.objects.filter(cart=cart)
-    meds = [cart_item.drug for cart_item in cart_items]
 
     if request.method == 'POST':
         new_med = Medication.objects.get(id=request.POST['med_id'])
-        # The medication added to the cart must be inserted to the cart_item table
-        CartItem(drug_id=new_med, cart_id=cart).save()
-        # TODO: If the same medication is added again, check if it already exists in the cart.
-        #   If it does, don't add it to `meds` instead increase its quantity by 1.
-        meds.append(new_med)
+        # If the medication is already in the cart increase its quantity by 1
+        if CartItem.objects.filter(cart=cart, drug=new_med).first():
+            cart_item = cart_items.get(drug=new_med)
+            cart_item.quantity += 1
+            cart_item.total_price += new_med.price  # `new_med` is the same as `cart_item.drug`
+            cart_item.save()
+        else:  # The medication added to the cart must be inserted to the cart_item table
+            new_item = CartItem(drug=new_med, cart=cart, quantity=1)
+            new_item.total_price = new_med.price * new_item.quantity
+            new_item.save()
 
-    cart_count = len(meds)
-    total = sum([med.price for med in meds])
+    cart_count = len(cart_items)
+    total = sum([cart_item.total_price for cart_item in cart_items])
     # TODO: calculate proper subtotals and totals
     response = render(request, 'store/cart.html',
-                      context={'cart_count': cart_count, 'meds': meds, 'subtotal': total, 'total': total})
+                      context={'cart_count': cart_count, 'cart_items': cart_items, 'subtotal': total, 'total': total})
     response = set_user_session_cookie(request, response)
     return response
 

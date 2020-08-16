@@ -32,16 +32,16 @@
                             </thead>
                             <tbody>
 
-                            {% for med in meds %}
+                            {% for cart_item in cart_items %}
                                 <tr>
                                     <td class="product-thumbnail">
                                         <img src="{% static 'store/images/product_02.png' %}" alt="Image"
                                              class="img-fluid">
                                     </td>
                                     <td class="product-name">
-                                        <h2 class="h5 text-black">{{ med.name }}</h2>
+                                        <h2 class="h5 text-black">{{ cart_item.drug.name }}</h2>
                                     </td>
-                                    <td>{{ med.price }}</td>
+                                    <td>{{ cart_item.drug.price }}</td>
                                     <td>
                                         <div class="input-group mb-3" style="max-width: 120px;">
                                             <div class="input-group-prepend">
@@ -49,17 +49,18 @@
                                                     &minus;
                                                 </button>
                                             </div>
-                                            <input type="text" class="form-control text-center" value="1" placeholder=""
+                                            <input type="text" class="form-control text-center" value="{{ cart_item.quantity }}" placeholder=""
                                                    aria-label="Example text with button addon"
                                                    aria-describedby="button-addon1">
                                             <div class="input-group-append">
-                                                <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
+                                                <button class="btn btn-outline-primary js-btn-plus" type="button">
+                                                    &plus;
                                                 </button>
                                             </div>
                                         </div>
 
                                     </td>
-                                    <td>{{ med.price }}</td>
+                                    <td>{{ cart_item.total_price }}</td>
                                     <td><a href="#" class="btn btn-primary height-auto btn-sm">X</a></td>
                                 </tr>
                             {% endfor %}
