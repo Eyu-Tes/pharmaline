@@ -2,6 +2,7 @@
 
 {% load static %}
 
+
 {% block content %}
     <div class="bg-light py-3">
         <div class="container">
@@ -35,23 +36,27 @@
                     <p>
                         <strong class="text-primary h4">{{ med.price }} ETB</strong></p>
 
+                    <form action="{% url 'store:cart' %}" method="POST">
+                        {% csrf_token %}
 
-                    <div class="mb-5">
-                        <div class="input-group mb-3" style="max-width: 220px;">
-                            <div class="input-group-prepend">
-                                <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
-                            </div>
-                            <input type="text" class="form-control text-center" value="1" placeholder=""
-                                   aria-label="Example text with button addon" aria-describedby="button-addon1">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                        <div class="mb-5">
+                            <div class="input-group mb-3" style="max-width: 220px;">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
+                                    </button>
+                                </div>
+                                <input name="quantity" type="text" class="form-control text-center"
+                                       value="1" placeholder=""
+                                       aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                    </div>
-                    <form action="{% url 'store:cart' %}" method="POST">
-                        {% csrf_token %}
-                        <button name="med_id" value="{{ med.id }}" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">
+                        <button name="med_id" value="{{ med.id }}"
+                                class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">
                             Add To Cart
                         </button>
                     </form>
