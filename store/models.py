@@ -32,3 +32,4 @@ class CartItem(models.Model):
     drug = models.ForeignKey(Medication, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    total_price = models.FloatField(default=0.0)
