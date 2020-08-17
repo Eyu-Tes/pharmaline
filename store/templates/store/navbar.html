@@ -37,9 +37,12 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li><a href="#">Orders <span class="badge badge-warning">9</span></a></li>
                         {% endif %}
-                        <li><a href="{% url 'store:about' %}">About</a></li>
-                        <li><a href="#">Contact</a></li>
+                        {% if not user.pharmacy %}
+                            <li><a href="{% url 'store:about' %}">About</a></li>
+                            <li><a href="#">Contact</a></li>
+                        {% endif %}
                     </ul>
                 </nav>
             </div>
@@ -82,8 +85,7 @@
                         <span class="number">2</span>
                     </a>
                 {% endif %}
-                <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span
-                        class="icon-menu"></span></a>
+                <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span class="icon-menu"></span></a>
             </div>
         </div>
     </div>
