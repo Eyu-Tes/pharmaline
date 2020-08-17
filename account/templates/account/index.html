@@ -10,10 +10,10 @@
         </li>
     {% else %}
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'account:customer-login' %}">Customer</a>
+            <a class="nav-link" href="{% url 'account:login' 'customer' %}">Customer</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'account:pharmacy-login' %}">Pharmacy</a>
+            <a class="nav-link" href="{% url 'account:login' 'pharmacy' %}">Pharmacy</a>
         </li>
     {% endif %}
 {% endblock nav_right_links %}
