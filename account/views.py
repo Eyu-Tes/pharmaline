@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import Http404
 from django.shortcuts import render, redirect
 
-from .forms import RegistrationForm, LoginForm, CustomerProfileForm
+from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm
 # from .models import Customer, Pharmacy
 
 
@@ -11,25 +12,46 @@ def index(request):
     return render(request, 'account/index.html')
 
 
-def customer_register_view(request):
-    form = RegistrationForm()
-    profile_form = CustomerProfileForm()
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        profile_form = CustomerProfileForm(request.POST)
-        if form.is_valid() and profile_form.is_valid():
-            user = form.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            profile.save()
-            messages.success(request, f"Account created for {form.cleaned_data.get('username')}!")
-            return redirect('login')
+def register_view(request, user_label):
+    if not request.user.is_authenticated:
+        form = RegistrationForm()
+        if user_label == 'customer':
+            profile_form = CustomerProfileForm()
+        elif user_label == 'pharmacy':
+            profile_form = PharmacyProfileForm()
+        else:
+            profile_form = None
 
-    context = {
-        'form': form, 'profile_form': profile_form, 'form_type': 'register',
-        'form_header': 'Create Customer Account', 'submit_msg': 'Sign Up'
-    }
-    return render(request, 'account/customer_register.html', context=context)
+        if request.method == 'POST':
+            form = RegistrationForm(request.POST)
+            if user_label == 'customer':
+                profile_form = CustomerProfileForm(request.POST)
+            elif user_label == 'pharmacy':
+                profile_form = PharmacyProfileForm(request.POST)
+
+            if form.is_valid() and profile_form.is_valid():
+                user = form.save()
+                profile = profile_form.save(commit=False)
+                profile.user = user
+                profile.save()
+                messages.success(request, f"Account created for {form.cleaned_data.get('username')}!")
+                return redirect('account:login', user_label=user_label)
+
+        if user_label == 'customer':
+            form_header = 'Create Customer Account'
+        elif user_label == 'pharmacy':
+            form_header = 'Create Pharmacy Account'
+        else:
+            raise Http404('Page not found')
+
+        if profile_form:
+            context = {'form': form, 'profile_form': profile_form,
+                       'form_header': form_header, 'submit_msg': 'Sign Up'}
+
+        return render(request, 'account/user_register.html', context=context)
+    else:
+        messages.warning(request, 'You\'re already logged in. Please logout first.')
+        return redirect('store:home')
 
 
 def login_view(request, user_label):
@@ -51,13 +73,15 @@ def login_view(request, user_label):
                     messages.error(request, 'Username or password is incorrect')
 
         context = {
-            'form': form, 'form_type': 'login', 'submit_msg': 'Sign In'
+            'form': form, 'submit_msg': 'Sign In'
         }
 
         if user_label == 'customer':
             context['form_header'] = 'Customer Login'
-        else:
+        elif user_label == 'pharmacy':
             context['form_header'] = 'Pharmacy Login'
+        else:
+            raise Http404("Page not found")
 
         return render(request, 'account/user_login.html', context=context)
     else:

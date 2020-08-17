@@ -29,7 +29,7 @@
 
                     {% ifequal form_header 'Customer Login' %}
                         <small class="text-muted">Don't have an account? <a class="d-inline pl-2"
-                                                                            href="{% url 'account:customer-register' %}">Register</a>
+                                                                            href="{% url 'account:register' 'customer' %}">Register</a>
                         </small>
                     {% endifequal %}
                 </form>
