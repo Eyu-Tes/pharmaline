@@ -56,65 +56,74 @@ def pharmacy_register_view(request):
 
 
 def customer_login_view(request):
-    form = LoginForm()
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+    if not request.user.is_authenticated:
+        form = LoginForm()
+        if request.method == 'POST':
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
 
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                try:
-                    customer = user.customer
-                    # Customer.objects.get(user=user)
-                except ObjectDoesNotExist:
-                    messages.error(request, "customer by this username doesn't exist")
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    try:
+                        customer = user.customer
+                        # Customer.objects.get(user=user)
+                    except ObjectDoesNotExist:
+                        messages.error(request, "customer by this username doesn't exist")
+                    else:
+                        login(request, user)
+                        messages.success(request, f'{user} has logged in!')
+                        return redirect('store:home')
                 else:
-                    login(request, user)
-                    messages.success(request, f'{user} has logged in!')
-                    return redirect('store:home')
-            else:
-                messages.error(request, 'username or password is incorrect')
+                    messages.error(request, 'username or password is incorrect')
 
-    context = {
-        'form': form, 'form_type': 'login',
-        'form_header': 'Customer Login', 'submit_msg': 'Sign In'
-    }
-    return render(request, 'account/customer_login.html', context=context)
+        context = {
+            'form': form, 'form_type': 'login',
+            'form_header': 'Customer Login', 'submit_msg': 'Sign In'
+        }
+        return render(request, 'account/customer_login.html', context=context)
+    else:
+        messages.warning(request, 'you need to logout from your current account first.')
+        return redirect('store:home')
 
 
 def pharmacy_login_view(request):
-    form = LoginForm()
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+    if not request.user.is_authenticated:
+        form = LoginForm()
+        if request.method == 'POST':
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
 
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                try:
-                    pharmacy = user.pharmacy
-                    # Pharmacy.objects.get(user=user)
-                except ObjectDoesNotExist:
-                    messages.error(request, "pharmacy by this username doesn't exist")
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    try:
+                        pharmacy = user.pharmacy
+                        # Pharmacy.objects.get(user=user)
+                    except ObjectDoesNotExist:
+                        messages.error(request, "pharmacy by this username doesn't exist")
+                    else:
+                        login(request, user)
+                        messages.success(request, f'{pharmacy} has logged in!')
+                        return redirect('store:home')
                 else:
-                    login(request, user)
-                    messages.success(request, f'{pharmacy} has logged in!')
-                    return redirect('store:home')
-            else:
-                messages.error(request, 'username or password is incorrect')
+                    messages.error(request, 'username or password is incorrect')
 
-    context = {
-        'form': form, 'form_type': 'login',
-        'form_header': 'Pharmacy Login', 'submit_msg': 'Sign In'
-    }
-    return render(request, 'account/pharmacy_login.html', context=context)
+        context = {
+            'form': form, 'form_type': 'login',
+            'form_header': 'Pharmacy Login', 'submit_msg': 'Sign In'
+        }
+        return render(request, 'account/pharmacy_login.html', context=context)
+    else:
+        messages.warning(request, 'you need to logout from your current account first.')
+        return redirect('store:home')
 
 
 def logout_view(request):
-    if isinstance(request.user, User):
+    # if isinstance(request.user, User):
+    if request.user.is_authenticated:
         logged_out_user = request.user
         messages.success(request, f'{logged_out_user} has logged out.')
         logout(request)
