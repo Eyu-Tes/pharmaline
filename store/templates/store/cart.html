@@ -17,7 +17,7 @@
     <div class="site-section">
         <div class="container">
             <div class="row mb-5">
-                <form class="col-md-12" method="post">
+                <div class="col-md-12">
                     <div class="site-blocks-table">
                         <table class="table table-bordered">
                             <thead>
@@ -49,8 +49,8 @@
                                                     &minus;
                                                 </button>
                                             </div>
-                                            <input type="text" class="form-control text-center" value="{{ cart_item.quantity }}" placeholder=""
-                                                   aria-label="Example text with button addon"
+                                            <input type="text" class="form-control text-center" value="{{ cart_item.quantity }}"
+                                                   placeholder="" aria-label="Example text with button addon"
                                                    aria-describedby="button-addon1">
                                             <div class="input-group-append">
                                                 <button class="btn btn-outline-primary js-btn-plus" type="button">
@@ -61,14 +61,20 @@
 
                                     </td>
                                     <td>{{ cart_item.total_price }}</td>
-                                    <td><a href="#" class="btn btn-primary height-auto btn-sm">X</a></td>
+                                    <td>
+                                        <form action="{% url 'store:cart' %}" method="POST">
+                                            {% csrf_token %}
+                                            <button name="remove_med" value="{{ cart_item.drug.id }}"
+                                                    type="submit" class="btn btn-primary height-auto btn-sm">X</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             {% endfor %}
 
                             </tbody>
                         </table>
                     </div>
-                </form>
+                </div>
             </div>
 
             <div class="row">
