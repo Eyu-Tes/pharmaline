@@ -38,8 +38,7 @@
                                 </ul>
                             </li>
                             <li><a href="#">Orders <span class="badge badge-warning">9</span></a></li>
-                        {% endif %}
-                        {% if not user.pharmacy %}
+                        {% else %}
                             <li><a href="{% url 'store:about' %}">About</a></li>
                             <li><a href="#">Contact</a></li>
                         {% endif %}
