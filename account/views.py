@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 
-from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm
+from .forms import RegistrationForm, LoginForm, CustomerProfileForm
 # from .models import Customer, Pharmacy
 
 
@@ -32,7 +32,7 @@ def customer_register_view(request):
     return render(request, 'account/customer_register.html', context=context)
 
 
-def login_view(request, customer_label):
+def login_view(request, user_label):
     if not request.user.is_authenticated:
         form = LoginForm()
 
@@ -54,7 +54,7 @@ def login_view(request, customer_label):
             'form': form, 'form_type': 'login', 'submit_msg': 'Sign In'
         }
 
-        if customer_label == 'customer':
+        if user_label == 'customer':
             context['form_header'] = 'Customer Login'
         else:
             context['form_header'] = 'Pharmacy Login'
