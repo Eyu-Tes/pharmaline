@@ -5,6 +5,9 @@
 
 {% include 'store/head_tag.html' %}
 
+{% block page_specific_style %}
+{% endblock page_specific_style %}
+
 <body>
 
 <div class="site-wrap">
@@ -74,6 +77,9 @@
 </div>
 
 {% include 'store/script_tags.html' %}
+
+{% block page_specific_script %}
+{% endblock page_specific_script %}
 
 </body>
 

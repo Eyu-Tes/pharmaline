@@ -21,24 +21,12 @@
                 <nav class="site-navigation text-right text-md-center" role="navigation">
                     <ul class="site-menu js-clone-nav d-none d-lg-block">
                         <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
-                        <li><a href="{% url 'store:store' %}">Store</a></li>
                         {% if user.pharmacy %}
-                            <li class="has-children">
-                                <a href="#">Manage Products</a>
-                                <ul class="dropdown">
-                                    <li class="has-children">
-                                        <a href="#">Add Product</a>
-                                        <ul class="dropdown">
-                                            <li><a href="#">Supplements</a></li>
-                                            <li><a href="#">Vitamins</a></li>
-                                            <li><a href="#">Diet &amp; Nutrition</a></li>
-                                            <li><a href="#">Tea &amp; Coffee</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
+                            <li><a href="{% url 'store:products' user.pharmacy.id %}">Products</a></li>
                             <li><a href="#">Orders <span class="badge badge-warning">9</span></a></li>
+                            <li><a href="#">Notifications <span class="badge badge-info">3</span></a></li>
                         {% else %}
+                            <li><a href="{% url 'store:store' %}">Store</a></li>
                             <li><a href="{% url 'store:about' %}">About</a></li>
                             <li><a href="#">Contact</a></li>
                         {% endif %}
@@ -77,8 +65,8 @@
                 </nav>
             </div>
             <div class="icons">
-                <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
                 {% if not user.pharmacy %}
+                    <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
                     <a href="{% url 'store:cart' %}" class="icons-btn d-inline-block bag">
                         <span class="icon-shopping-bag"></span>
                         <span class="number">{{ cart_count }}</span>

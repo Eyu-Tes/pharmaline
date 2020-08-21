@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 
-from .models import Medication, Cart, CartItem
+from .models import Medication, Cart, CartItem, Pharmacy
 from django.utils.timezone import timezone
+
 
 from datetime import datetime
 import re
@@ -125,3 +126,13 @@ def get_cart(request):
         cart.save()
 
     return cart
+
+
+def products(request, pk):
+    pharmacy = Pharmacy.objects.get(id=pk)
+    pharmacy_products = pharmacy.medication_set.all()
+
+    context = {
+        'products': pharmacy_products,
+    }
+    return render(request, 'store/products.html', context=context)

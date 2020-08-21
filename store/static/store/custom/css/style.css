@@ -1,3 +1,24 @@
+@font-face {
+    font-family: 'Sniglet';
+    src: url('../../fonts/Sniglet/Sniglet-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('../../fonts/Nunito/Nunito-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('../../fonts/Lato/Lato-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../../fonts/Montserrat/Montserrat-Regular.ttf');
+}
+
+
 input, button, select {
     box-shadow: none !important;
     outline: none !important;
@@ -5,4 +26,8 @@ input, button, select {
 
 #close-alert {
     cursor: pointer;
+}
+
+.table-responsive {
+    overflow-x: auto;
 }
