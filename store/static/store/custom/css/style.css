@@ -28,6 +28,3 @@ input, button, select {
     cursor: pointer;
 }
 
-.table-responsive {
-    overflow-x: auto;
-}

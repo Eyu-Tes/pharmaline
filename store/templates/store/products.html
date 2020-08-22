@@ -3,38 +3,20 @@
 {% load static %}
 
 {% block page_specific_style %}
-    <link rel="stylesheet" href="{% static 'store/custom/css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'store/custom/css/mdb-table-style.css' %}">
-
-    <style>
-        input[type=search] {
-            height: calc(2.875rem + 2px) !important;
-            border-width: 2px;
-        }
-
-        input[type=search]:focus {
-            border-color: #000 !important;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'store/mdb/css/addons/datatables.min.css' %}">    
+    <link rel="stylesheet" href="{% static 'store/custom/css/product-page-style.css' %}">
 {% endblock page_specific_style %}
 
 
 {% block content %}
     <div class='container'>
-        <h2 class="text-black mt-3 pb-3 border-bottom">Products</h2>
-
-        <div class="row mt-4 mb-2">
-            <div class="col-md-5 col-lg-4 mb-2">
-                <a href="#" class="btn btn-primary btn-lg btn-block">Add Product</a>
-            </div>
-            <div class="col-md-2 col-lg-4"></div>
-            <div class="col-md-5 col-lg-4 mb-2">
-                <input type="search" class="form-control form-control-lg border-primary" placeholder="search product" name="search">
-            </div>
+        <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">Products</h2>
+        <div id="add-product" class="d-none text-center">
+            <a href="#" class="btn btn-primary btn-lg btn-block">Add Product</a>
         </div>
 
-        <div class="table-responsive">
-        <table class="table table-hover table-lg" cellspacing="0" width="100%">
+        <div class="table-container d-none">
+        <table id="dtBasicExample" class="table table-hover table-lg mt-4" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>#</th>
@@ -78,6 +60,19 @@
 {% endblock content %}
 
 {% block page_specific_script %}
-    <script src="{% static 'store/custom/js/search.js' %}"></script>
-    <script src="{% static 'store/custom/js/pagination.js' %}"></script>
+    <script src="{% static 'store/custom/js/product-page-script.js' %}"></script>
+    <script src="{% static 'store/mdb/js/addons/datatables.min.js' %}"></script>
+    
+    <script>
+        /* initialise the table */
+        $(document).ready(function () {
+            $('#dtBasicExample').DataTable({
+                // disable sorting in 'edit' column
+                "columnDefs": [
+                    {"orderable": false, "targets": 8 }
+                ]
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+    </script>
 {% endblock page_specific_script %}

@@ -1,0 +1,40 @@
+input[type=search] {
+    height: calc(2.875rem + 2px) !important;
+    border-width: 2px;
+}
+
+input[type=search]:focus {
+    border-color: #000 !important;
+}
+
+.pagination .page-item .page-link {
+    border: 0;
+    outline: 0;
+    transition: all 0.3s linear;
+}
+
+table {
+font-family: 'Sniglet';
+}
+
+table.table thead th {
+    border-top: none;
+    font-size: 1.15rem !important;
+}
+
+div.dataTables_wrapper .row>div {
+    margin-bottom: .5rem;
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: center !important;
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+    width: 100% !important;
+    margin-left: 0!important;
+}
+
+.responsive-table-container {
+    overflow-x: auto;
+}
