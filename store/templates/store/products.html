@@ -25,7 +25,7 @@
                     <th>Qty.</th>
                     <th>Price</th>
                     {% comment %} <th title="Prescription Drug">Prescription</th> {% endcomment %}
-                    <th title="Date of Purchase">DOP</th>
+                    {% comment %} <th title="Date of Purchase">DOP</th> {% endcomment %}
                     <th title="Date of Manufacture">MFGDT</th>
                     <th title="Date of Expiration">EXP</th>
                     {% comment %} <th>Image</th> {% endcomment %}
@@ -71,9 +71,9 @@
             // add date sorting for "Mon date, Year" & "Mon Year" formats
             $.fn.dataTable.moment( ['ll', 'MMM YYYY'] );
             $('#dtBasicExample').DataTable({
-                // disable sorting for 'edit' column
+                // disable sorting for 'edit' column, i.d., edit col is at index 7
                 "columnDefs": [
-                    {"orderable": false, "targets": 8 }, 
+                    {"orderable": false, "targets": 7 }, 
                 ]
             });
             $('.dataTables_length').addClass('bs-select');
