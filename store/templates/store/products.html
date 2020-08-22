@@ -35,7 +35,7 @@
             <tbody>
                 {% for product in products %}
                     <tr>
-                        <td>{{ product.id }}</td>
+                        <td>{{ forloop.counter }}</td>
                         <td id="name">{{ product.name }}</td>
                         <td>{{ product.vendor }}</td>
                         <td>{{ product.stock }}</td>
@@ -45,8 +45,9 @@
                                 <img src="{% static 'store/icons/icon-yes.svg' %}">
                             {% endif %}
                         </td> {% endcomment %}
-                        {% comment %} <td>{{ product.date_of_purchase }}</td> {% endcomment %}
+                        {% comment %} <td>{{product.date_of_purchase|date:"M d, Y"}}</td> {% endcomment %}
                         <td>Aug 21, 2020</td>
+                        {% comment %} <td>Aug 21, 2020</td> {% endcomment %}
                         <td>{{ product.production_date|date:"M Y" }}</td>
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         {% comment %} <td>{{ product.image }}</td> {% endcomment %}
@@ -61,15 +62,19 @@
 
 {% block page_specific_script %}
     <script src="{% static 'store/custom/js/product-page-script.js' %}"></script>
+    <script src="{% static 'store/mdb/js/plugins/moment.min.js' %}"></script>
     <script src="{% static 'store/mdb/js/addons/datatables.min.js' %}"></script>
+    <script src="{% static 'store/mdb/js/plugins/datetime-moment.js' %}"></script>
     
     <script>
         /* initialise the table */
         $(document).ready(function () {
+            // add date sorting for "Mon date, Year" & "Mon Year" formats
+            $.fn.dataTable.moment( ['ll', 'MMM YYYY'] );
             $('#dtBasicExample').DataTable({
-                // disable sorting in 'edit' column
+                // disable sorting for 'edit' column
                 "columnDefs": [
-                    {"orderable": false, "targets": 8 }
+                    {"orderable": false, "targets": 8 }, 
                 ]
             });
             $('.dataTables_length').addClass('bs-select');
