@@ -33,3 +33,24 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     total_price = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return self.drug.name
+
+
+class Order(models.Model):
+    order_name = models.CharField(unique=True, max_length=20)
+    first_name = models.CharField(max_length=35)
+    last_name = models.CharField(max_length=35)
+    address = models.CharField(max_length=100)
+    address_opt = models.CharField(max_length=100)
+    region = models.CharField(max_length=25)
+    woreda = models.IntegerField()
+    email = models.EmailField()
+    phone = models.CharField(max_length=13)
+    note = models.TextField()
+    cart = models.OneToOneField(Cart, on_delete=models.DO_NOTHING)
+    date_time = models.DateTimeField(verbose_name='Placement Time')
+
+    def __str(self):
+        return self.order_name

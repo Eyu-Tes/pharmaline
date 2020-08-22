@@ -64,7 +64,7 @@
                                     <td>
                                         <form action="{% url 'store:cart' %}" method="POST">
                                             {% csrf_token %}
-                                            <button name="remove_med" value="{{ cart_item.drug.id }}"
+                                            <button name="med_id" value="{{ cart_item.drug.id }}"
                                                     type="submit" class="btn btn-primary height-auto btn-sm">X</button>
                                         </form>
                                     </td>

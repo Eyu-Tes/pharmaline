@@ -33,10 +33,15 @@
                         {{ med.instructions }}
                     </p>
 
-                    <p>
-                        <strong class="text-primary h4">{{ med.price }} ETB</strong></p>
+                    <p><strong class="text-primary h4">{{ med.price }} ETB</strong></p>
 
-                    <form action="{% url 'store:cart' %}" method="POST">
+                    {% if form.errors %}
+                        <p class="invalid-feedback d-block">
+                            There are only {{ med.stock }} at the pharmacy
+                        </p>
+                    {% endif %}
+
+                    <form action="{% url 'store:detail' med.id %}" method="POST">
                         {% csrf_token %}
 
                         <div class="mb-5">
@@ -45,9 +50,7 @@
                                     <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
                                     </button>
                                 </div>
-                                <input name="quantity" type="text" class="form-control text-center"
-                                       value="1" placeholder=""
-                                       aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                {{ form.quantity }}
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
                                     </button>
@@ -66,12 +69,12 @@
                             <li class="nav-item">
                                 <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"
                                    role="tab"
-                                   aria-controls="pills-home" aria-selected="true">Ordering Information</a>
+                                   aria-controls="pills-home" aria-selected="true">Details</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
                                    role="tab"
-                                   aria-controls="pills-profile" aria-selected="false">Specifications</a>
+                                   aria-controls="pills-profile" aria-selected="false">Other Locations</a>
                             </li>
 
                         </ul>
@@ -79,36 +82,41 @@
                             <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                                  aria-labelledby="pills-home-tab">
                                 <table class="table custom-table">
-                                    <thead>
-                                    <tr>
-                                        <th>Material</th>
-                                        <th>Description</th>
-                                        <th>Packaging</th>
-                                    </tr>
-                                    </thead>
                                     <tbody>
                                     <tr>
-                                        <th scope="row">OTC022401</th>
-                                        <td>Pain Management: Acetaminophen PM Extra-Strength Caplets, 500 mg,
-                                            100/Bottle
-                                        </td>
-                                        <td>1 BT</td>
+                                        <td>Production Date</td>
+                                        <td> {{ med.production_date }} </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">OTC022401</th>
-                                        <td>Pain Management: Acetaminophen PM Extra-Strength Caplets, 500 mg,
-                                            100/Bottle
-                                        </td>
-                                        <td>144/CS</td>
+                                        <td>Expiry Date</td>
+                                        <td> {{ med.expiry_date }} </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row">OTC022401</th>
-                                        <td>Pain Management: Acetaminophen PM Extra-Strength Caplets, 500 mg,
-                                            100/Bottle
-                                        </td>
-                                        <td>1 EA</td>
+                                        <td>Vendor</td>
+                                        <td> {{ med.vendor }} </td>
                                     </tr>
-
+                                    <tr>
+                                        <td>Pharmacy</td>
+                                        <td> {{ med.pharmacy.pharmacy_name }} </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>{{ med.pharmacy.location }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Requires Prescription</td>
+                                        <td>
+                                            {% if med.requires_prescription %}
+                                                Yes
+                                            {% else %}
+                                                No
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Stock</td>
+                                        <td>{{ med.stock }}</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -116,24 +124,23 @@
                                  aria-labelledby="pills-profile-tab">
 
                                 <table class="table custom-table">
-
+                                    <thead>
+                                    <tr>
+                                        <th>Pharmacy</th>
+                                        <th>Location</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
                                     <tbody>
-                                    <tr>
-                                        <td>HPIS CODE</td>
-                                        <td class="bg-light">999_200_40_0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>HEALTHCARE PROVIDERS ONLY</td>
-                                        <td class="bg-light">No</td>
-                                    </tr>
-                                    <tr>
-                                        <td>LATEX FREE</td>
-                                        <td class="bg-light">Yes, No</td>
-                                    </tr>
-                                    <tr>
-                                        <td>MEDICATION ROUTE</td>
-                                        <td class="bg-light">Topical</td>
-                                    </tr>
+                                    {% for med in similar_med %}
+                                        <tr>
+                                            <td>{{ med.pharmacy.pharmacy_name }}</td>
+                                            <td>{{ med.pharmacy.location }}</td>
+                                            <td class="bg-light">
+                                                <a href="{% url 'store:detail' med.id %}">Details</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
 
