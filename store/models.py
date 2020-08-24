@@ -57,6 +57,6 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     cart_item = models.OneToOneField(CartItem, on_delete=models.CASCADE)
-    pharmacy = models.OneToOneField(Pharmacy, on_delete=models.CASCADE)
+    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
