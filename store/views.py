@@ -159,7 +159,7 @@ def save_order_redirect_to_thankyou(clean_data, shopping_cart: Cart):
     order = set_order_details(order, clean_data)
     order.save()
 
-    for cart_item in shopping_cart.cartitem_set():
+    for cart_item in shopping_cart.cartitem_set.all():
         order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy)
 
     response = redirect('store:thankyou')
