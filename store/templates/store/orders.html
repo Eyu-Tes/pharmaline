@@ -1,0 +1,34 @@
+{% extends 'store/base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="site-section">
+        <div class="container">
+            <table class="table text-black border">
+                <thead class="card-header">
+                <tr>
+                    <th>Order Name</th>
+                    <th>Item</th>
+                    <th>Placement Date</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.order.order_name }}</td>
+                        <td>{{ order.cart_item.drug.name }} ({{ order.cart_item.quantity }})</td>
+                        <td>{{ order.order.date_time }}</td>
+                        <td>
+                            <button class="btn-black">Details</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}
