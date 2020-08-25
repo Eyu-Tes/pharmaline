@@ -1,0 +1,71 @@
+{% extends 'store/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <style>
+
+    </style>
+
+    <div class="site-section">
+        <div class="container">
+            <div class="align-content-center">
+                <article class="text-black">
+                    <div>
+                        Order Name:
+                        <h3 class="h3">{{ order_item.order.order_name }}</h3>
+                    </div>
+                    <div class="offset-sm-10"></div>
+                    <table class="table">
+                        <thead class="card-header">
+                        <tr>
+                            <th colspan="2">Order Details</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Customer Full Name</td>
+                            <td>{{ order_item.order.first_name|title }} {{ order_item.order.last_name|title }}</td>
+                        </tr>
+                        <tr>
+                            <td>Region</td>
+                            <td>{{ order_item.order.region }}</td>
+                        </tr>
+                        <tr>
+                            <td>Woreda</td>
+                            <td>{{ order_item.order.woreda }}</td>
+                        </tr>
+                        <tr>
+                            <td>Delivery Address</td>
+                            <td>{{ order_item.order.address }}</td>
+                        </tr>
+                        <tr>
+                            <td>Address Description</td>
+                            <td>{{ order_item.order.address_opt }}</td>
+                        </tr>
+                        <tr>
+                            <td>Phone Number</td>
+                            <td>{{ order_item.order.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>{{ order_item.order.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Order Note</td>
+                            <td>{{ order_item.order.note }}</td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+
+                        </tfoot>
+                    </table>
+                </article>
+            </div>
+            <div class="align-right">
+                <a class="btn btn-black" href="{% url 'store:orders' order_item.pharmacy.pk %}">Orders</a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

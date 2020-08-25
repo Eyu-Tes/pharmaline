@@ -11,18 +11,21 @@
                     <th>Order Name</th>
                     <th>Item</th>
                     <th>Placement Date</th>
-                    <th>Details</th>
+                    <th>Status</th>
                 </tr>
                 </thead>
 
                 <tbody>
                 {% for order in orders %}
                     <tr>
-                        <td>{{ order.order.order_name }}</td>
-                        <td>{{ order.cart_item.drug.name }} ({{ order.cart_item.quantity }})</td>
-                        <td>{{ order.order.date_time }}</td>
+                        <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
+                            {{ order.order.order_name }}</a></td>
+                        <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
+                            {{ order.cart_item.drug.name }} ({{ order.cart_item.quantity }})</a></td>
+                        <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
+                            {{ order.order.date_time }}</a></td>
                         <td>
-                            <button class="btn-black">Details</button>
+                            <p>[ Pending ]</p>
                         </td>
                     </tr>
                 {% endfor %}

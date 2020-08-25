@@ -38,7 +38,12 @@ def get_cart_totals(shopping_cart: Cart):
 
 def index(request):
     cart_count = get_cart_count(get_cart(request))
-    response = render(request, 'store/index.html', context={'cart_count': cart_count})
+    order_count = None
+    if request.user.is_authenticated and request.user.pharmacy:
+        order_count = len(OrderItem.objects.filter(pharmacy_id=request.user.pharmacy.id))
+    response = render(request, 'store/index.html',
+                      context={'cart_count': cart_count,
+                               'order_count': order_count})
     return set_user_session_cookie(request, response)
 
 
@@ -123,7 +128,7 @@ def details(request, med_id):
             else:
                 form.add_error('quantity', '')
 
-    response = render(request, 'store/details.html',
+    response = render(request, 'store/med_details.html',
                       context={'form': form,
                                'med': med,
                                'similar_med': similar_med,
@@ -210,9 +215,13 @@ def get_cart(request):
 def products(request, pk):
     pharmacy = Pharmacy.objects.get(id=pk)
     pharmacy_products = pharmacy.medication_set.all()
+    order_count = None
+    if request.user.is_authenticated and request.user.pharmacy:
+        order_count = len(OrderItem.objects.filter(pharmacy_id=request.user.pharmacy.id))
 
     context = {
         'products': pharmacy_products,
+        'order_count': order_count
     }
     return render(request, 'store/products.html', context=context)
 
@@ -223,3 +232,11 @@ def orders(request, pk):
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
                            'order_count': len(order_items)})
+
+
+def order_details(request, pk):
+    order_count = len(OrderItem.objects.filter(pharmacy_id=request.user.pharmacy.id))
+    order_item = OrderItem.objects.get(id=pk)
+    return render(request, 'store/order_details.html',
+                  context={'order_count': order_count,
+                           'order_item': order_item})
