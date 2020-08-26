@@ -23,7 +23,8 @@
                         <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
                         {% if user.pharmacy %}
                             <li><a href="{% url 'store:products' user.pharmacy.id %}">Products</a></li>
-                            <li><a href="#">Orders <span class="badge badge-warning">9</span></a></li>
+                            <li><a href="{% url 'store:orders' user.pharmacy.id %}">Orders <span class="badge badge-warning">
+                                {{ order_count }}</span></a></li>
                             <li><a href="#">Notifications <span class="badge badge-info">3</span></a></li>
                         {% else %}
                             <li><a href="{% url 'store:store' %}">Store</a></li>

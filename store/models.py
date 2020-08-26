@@ -54,3 +54,9 @@ class Order(models.Model):
 
     def __str(self):
         return self.order_name
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    cart_item = models.OneToOneField(CartItem, on_delete=models.CASCADE)
+    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
