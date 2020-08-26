@@ -38,12 +38,9 @@ def get_cart_totals(shopping_cart: Cart):
 
 def index(request):
     cart_count = get_cart_count(get_cart(request))
-    order_count = None
-    if request.user.is_authenticated and request.user.pharmacy:
-        order_count = len(OrderItem.objects.filter(pharmacy_id=request.user.pharmacy.id))
     response = render(request, 'store/index.html',
                       context={'cart_count': cart_count,
-                               'order_count': order_count})
+                               'order_count': get_order_count(request)})
     return set_user_session_cookie(request, response)
 
 
@@ -215,13 +212,10 @@ def get_cart(request):
 def products(request, pk):
     pharmacy = Pharmacy.objects.get(id=pk)
     pharmacy_products = pharmacy.medication_set.all()
-    order_count = None
-    if request.user.is_authenticated and request.user.pharmacy:
-        order_count = len(OrderItem.objects.filter(pharmacy_id=request.user.pharmacy.id))
 
     context = {
         'products': pharmacy_products,
-        'order_count': order_count
+        'order_count': get_order_count(request)
     }
     return render(request, 'store/products.html', context=context)
 
@@ -231,12 +225,22 @@ def orders(request, pk):
 
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
-                           'order_count': len(order_items)})
+                           'order_count': get_order_count(request)})
 
 
 def order_details(request, pk):
-    order_count = len(OrderItem.objects.filter(pharmacy_id=request.user.pharmacy.id))
     order_item = OrderItem.objects.get(id=pk)
     return render(request, 'store/order_details.html',
-                  context={'order_count': order_count,
+                  context={'order_count': get_order_count(request),
                            'order_item': order_item})
+
+
+def get_order_count(request):
+    if request.user.is_authenticated:
+        try:
+            pharmacy = request.user.pharmacy
+        except:
+            pass
+        else:
+            return len(OrderItem.objects.filter(pharmacy_id=pharmacy.id))
+    return None
