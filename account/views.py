@@ -1,10 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm
-# from .models import Customer, Pharmacy
+from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm
+
+
+from .models import Customer, Pharmacy
 
 
 # Create your views here.
@@ -98,3 +101,49 @@ def logout_view(request):
     else:
         messages.warning(request, 'No logged in user found.')
     return redirect('store:home')
+
+
+def proflie_view(request, user_label, pk):
+    if request.user.is_authenticated:
+        user_obj = get_object_or_404(User, id=pk)
+        form = UpdateUserForm(instance=user_obj)
+        if user_label == 'customer':
+            customer_obj = Customer.objects.get(user=user_obj)
+            profile_form = CustomerProfileForm(instance=customer_obj)
+        elif user_label == 'pharmacy':
+            pharmacy_obj = Pharmacy.objects.get(user=user_obj)
+            profile_form = PharmacyProfileForm(instance=pharmacy_obj)
+        else:
+            profile_form = None
+
+        if request.method == 'POST':
+            form = UpdateUserForm(request.POST, instance=user_obj)
+            if user_label == 'customer':
+                profile_form = CustomerProfileForm(request.POST, instance=customer_obj)
+            elif user_label == 'pharmacy':
+                profile_form = PharmacyProfileForm(request.POST, pharmacy_obj)
+
+            if form.is_valid() and profile_form.is_valid():
+                if form.has_changed() or profile_form.has_changed():
+                    user = form.save()
+                    profile = profile_form.save(commit=False)
+                    profile.user = user
+                    profile.save()
+                    messages.success(request, f"Account updated for {form.cleaned_data.get('username')}!")
+                return redirect('store:home')
+
+        if user_label == 'customer':
+            form_header = 'Customer Profile'
+        elif user_label == 'pharmacy':
+            form_header = 'Pharmacy Profile'
+        else:
+            raise Http404('Page not found')
+
+        if profile_form:
+            context = {'form': form, 'profile_form': profile_form,
+                       'form_header': form_header, 'submit_msg': 'Update'}
+
+        return render(request, 'account/user_profile.html', context=context)
+    else:
+        messages.warning(request, 'No logged in user found.')
+        return redirect('store:home')

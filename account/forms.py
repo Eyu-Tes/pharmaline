@@ -54,3 +54,13 @@ class PharmacyProfileForm(ModelForm):
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'location': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
+
+
+class UpdateUserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+        }
