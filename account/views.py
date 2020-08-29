@@ -8,6 +8,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm
 from .models import Customer, Pharmacy
 
+from store.views import get_order_count
+
 
 # Create your views here.
 def index(request):
@@ -152,7 +154,8 @@ def proflie_view(request, user_label, fk):
 
         if profile_form:
             context = {'form': form, 'profile_form': profile_form,
-                       'form_header': form_header, 'submit_msg': 'Update'}
+                       'form_header': form_header, 'submit_msg': 'Update',
+                       'order_count': get_order_count(request)}
 
         return render(request, 'account/user_profile.html', context=context)
     else:
