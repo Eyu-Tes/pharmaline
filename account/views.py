@@ -1,12 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm
-
-
 from .models import Customer, Pharmacy
 
 
@@ -69,9 +68,17 @@ def login_view(request, user_label):
 
                 user = authenticate(request, username=username, password=password)
                 if user:
-                    login(request, user)
-                    messages.success(request, 'Login successful!')
-                    return redirect('store:home')
+                    try:
+                        if user_label == 'customer' and Customer.objects.get(user=user):
+                            pass
+                        elif user_label == 'pharmacy' and Pharmacy.objects.get(user=user):
+                            pass
+                    except ObjectDoesNotExist:
+                        messages.error(request, 'Username or password is incorrect.')
+                    else:
+                        login(request, user)
+                        messages.success(request, 'Login successful!')
+                        return redirect('store:home')
                 else:
                     messages.error(request, 'Username or password is incorrect')
 
@@ -110,9 +117,9 @@ def update_form(form, profile_form):
     profile.save()
 
 
-def proflie_view(request, user_label, pk):
+def proflie_view(request, user_label, fk):
     if request.user.is_authenticated:
-        user_obj = get_object_or_404(User, id=pk)
+        user_obj = get_object_or_404(User, id=fk)
         form = UpdateUserForm(instance=user_obj)
         if user_label == 'customer':
             customer_obj = Customer.objects.get(user=user_obj)
@@ -148,6 +155,19 @@ def proflie_view(request, user_label, pk):
                        'form_header': form_header, 'submit_msg': 'Update'}
 
         return render(request, 'account/user_profile.html', context=context)
+    else:
+        messages.warning(request, 'No logged in user found.')
+        return redirect('store:home')
+
+
+def delete_view(request, pk):
+    if request.user.is_authenticated:
+        user_obj = get_object_or_404(User, id=pk)
+        if request.method == "POST":
+            user_obj.delete()
+            messages.success(request, 'Account Deleted')
+            return redirect('store:home')
+        return render(request, 'account/user_profile.html')
     else:
         messages.warning(request, 'No logged in user found.')
         return redirect('store:home')
