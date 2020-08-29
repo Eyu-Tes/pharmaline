@@ -103,6 +103,13 @@ def logout_view(request):
     return redirect('store:home')
 
 
+def update_form(form, profile_form):
+    user = form.save()
+    profile = profile_form.save(commit=False)
+    profile.user = user
+    profile.save()
+
+
 def proflie_view(request, user_label, pk):
     if request.user.is_authenticated:
         user_obj = get_object_or_404(User, id=pk)
@@ -121,14 +128,11 @@ def proflie_view(request, user_label, pk):
             if user_label == 'customer':
                 profile_form = CustomerProfileForm(request.POST, instance=customer_obj)
             elif user_label == 'pharmacy':
-                profile_form = PharmacyProfileForm(request.POST, pharmacy_obj)
+                profile_form = PharmacyProfileForm(request.POST, instance=pharmacy_obj)
 
             if form.is_valid() and profile_form.is_valid():
                 if form.has_changed() or profile_form.has_changed():
-                    user = form.save()
-                    profile = profile_form.save(commit=False)
-                    profile.user = user
-                    profile.save()
+                    update_form(form, profile_form)
                     messages.success(request, f"Account updated for {form.cleaned_data.get('username')}!")
                 return redirect('store:home')
 
