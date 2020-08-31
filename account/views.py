@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm
 from .models import Customer, Pharmacy
 
-from store.views import get_order_count
+from store.views import get_order_count, get_cart, get_cart_count
 
 
 # Create your views here.
@@ -155,7 +155,8 @@ def proflie_view(request, user_label, fk):
         if profile_form:
             context = {'form': form, 'profile_form': profile_form,
                        'form_header': form_header, 'submit_msg': 'Update',
-                       'order_count': get_order_count(request)}
+                       'order_count': get_order_count(request),
+                       'cart_count': get_cart_count(get_cart(request))}
 
         return render(request, 'account/user_profile.html', context=context)
     else:
