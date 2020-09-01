@@ -42,7 +42,13 @@
                                 <a class="nav-link" style="text-transform: none"><b>{{user.username}}</b></a>
                                 <ul class="dropdown">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">Profile</a>
+                                        <a class="nav-link" 
+                                            {% if user.customer %}
+                                                href="{% url 'account:profile' 'customer' user.id %}">
+                                            {% elif  user.pharmacy %}
+                                                href="{% url 'account:profile' 'pharmacy' user.id%}">
+                                        {% endif %}
+                                       Profile</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'account:logout' %}">Logout</a>

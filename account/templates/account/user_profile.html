@@ -1,0 +1,74 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+	<div class="container my-5 px-2">
+		<div class="row mx-0">
+			<div class="col-md-8 col-lg-5 py-3 mx-auto border rounded">
+				<h3 class="mb-4 pb-4 border-bottom text-center">{{ form_header }}</h3>
+				
+				<div class="mb-2">
+					{% include 'account/alert_msg.html' %}
+				</div>
+
+				<form action='' method="post" novalidate>
+					{% csrf_token %}
+					{# render the username form-group #}
+					<div class="form-group">
+						<label for="{{form.username.id_for_label}}">{{form.username.label|title}}</label>
+						{{ form.username }}
+						{% for err in form.username.errors %}
+							<small class="invalid-feedback d-block">{{ err|linebreaks }}</small>
+						{% endfor %}
+					</div>
+
+					{# render the profile form #}
+					{% for field in profile_form %}
+						<div class="form-group">
+							<label for="{{field.id_for_label}}">{{field.label|title}}</label>
+							{{ field }}
+							{% for err in field.errors %}
+								<small class="invalid-feedback d-block">{{ err|linebreaks }}</small>
+							{% endfor %}
+						</div>
+					{% endfor %}
+
+					<div class="py-3">
+						<input type="submit" value="{{ submit_msg }}" class="btn btn-dark btn-sm">
+                        <a href="{% url 'account:delete' user.id %}" data-toggle="modal" data-target="#exampleModal" class="btn btn-danger btn-sm float-right" style="padding: 0.25rem 0.5rem !important;">Delete</a>
+					</div>
+					
+					{% comment %} <small class="text-muted">
+						<a class="d-inline pl-2" href="#">Forgot Password?</a>
+					</small> {% endcomment %}
+				</form>
+			</div>
+		</div>
+	</div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-danger" id="exampleModalLabel">
+				<i class="fas fa-exclamation-triangle fa-2x mr-2"></i>
+				Delete Account
+			</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p> Sure you want to delete account - {{user}}? </p>
+			<p> It cannot be undone.</p>
+          </div>
+		  <form action="{% url 'account:delete' user.id %}" method="post">
+          	<div class="modal-footer justify-content-between">
+                {% csrf_token %}
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
+                <input type="submit" value="Confirm" class="btn btn-sm btn-danger">
+			</div>
+		</form>
+        </div>
+      </div>
+    </div>
+{% endblock content %}
