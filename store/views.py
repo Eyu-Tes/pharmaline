@@ -1,4 +1,6 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem
 from .forms import OrderForm, QuantityForm
@@ -210,13 +212,17 @@ def get_cart(request):
 
 
 def products(request, pk):
-    pharmacy = Pharmacy.objects.get(id=pk)
-    pharmacy_products = pharmacy.medication_set.all()
+    pharmacy = get_object_or_404(Pharmacy, id=pk)
+    if request.user == pharmacy.user:
+        pharmacy_products = pharmacy.medication_set.all()
+        context = {
+            'pharmacy_name': pharmacy,
+            'products': pharmacy_products,
+            'order_count': get_order_count(request)
+        }
+    else:
+        raise Http404('Page not found')
 
-    context = {
-        'products': pharmacy_products,
-        'order_count': get_order_count(request)
-    }
     return render(request, 'store/products.html', context=context)
 
 
