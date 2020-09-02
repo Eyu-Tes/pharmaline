@@ -9,10 +9,11 @@ from .models import Customer, Pharmacy
 class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
+        fields = ['email', 'username', 'password1', 'password2']
 
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -33,12 +34,11 @@ class LoginForm(forms.Form):
 class CustomerProfileForm(ModelForm):
     class Meta:
         model = Customer
-        fields = ['first_name', 'last_name', 'email', 'phone']
+        fields = ['first_name', 'last_name', 'phone']
 
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'email': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
@@ -46,11 +46,10 @@ class CustomerProfileForm(ModelForm):
 class PharmacyProfileForm(ModelForm):
     class Meta:
         model = Pharmacy
-        fields = ['pharmacy_name', 'email', 'phone', 'location']
+        fields = ['pharmacy_name', 'phone', 'location']
 
         widgets = {
             'pharmacy_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'email': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'location': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
@@ -59,8 +58,9 @@ class PharmacyProfileForm(ModelForm):
 class UpdateUserForm(ModelForm):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'email']
 
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'})
         }
