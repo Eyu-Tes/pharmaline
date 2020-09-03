@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
 from .models import Customer, Pharmacy
@@ -23,6 +24,14 @@ class RegistrationForm(UserCreationForm):
         self.fields['password2'] = forms.CharField(widget=forms.PasswordInput(attrs={
             'class': 'form-control form-control-sm'}), label='Confirm password')
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise ValidationError("This field is required.")
+        if User.objects.filter(email=email):
+            raise ValidationError("A user with that email already exists.")
+        return self.cleaned_data
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={
@@ -37,7 +46,7 @@ class CustomerProfileForm(ModelForm):
         fields = ['first_name', 'last_name', 'phone']
 
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': 'autofocus'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
@@ -49,7 +58,7 @@ class PharmacyProfileForm(ModelForm):
         fields = ['pharmacy_name', 'phone', 'location']
 
         widgets = {
-            'pharmacy_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'pharmacy_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': 'autofocus'}),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'location': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
