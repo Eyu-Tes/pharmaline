@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 
@@ -64,3 +64,33 @@ class UpdateUserForm(ModelForm):
             'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'})
         }
+
+
+class ResetUserPasswordForm(PasswordResetForm):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control form-control-sm'}))
+
+    # def clean_email(self):
+    #     email = self.cleaned_data['email']
+    #     if not User.objects.filter(email__iexact=email, is_active=True).exists():
+    #         msg = "There is no user with this email."
+    #         self.add_error('email', msg)
+    #     return email
+
+
+class ConfirmResetUserPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(label="New password",
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}))
+    new_password2 = forms.CharField(label="New password confirmation",
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}))
+    # new_password1 = forms.CharField(
+    #     label="New password",
+    #     widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+    #     strip=False,
+    #     # help_text=password_validation.password_validators_help_text_html(),
+    # )
+    #
+    # new_password2 = forms.CharField(
+    #     label="New password confirmation",
+    #     strip=False,
+    #     widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+    # )

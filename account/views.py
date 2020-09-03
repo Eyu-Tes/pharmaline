@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 
-from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm
+from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm, \
+    ConfirmResetUserPasswordForm
 from .models import Customer, Pharmacy
 
 from store.views import get_order_count, get_cart, get_cart_count
@@ -175,3 +178,32 @@ def delete_view(request, pk):
     else:
         messages.warning(request, 'No logged in user found.')
         return redirect('store:home')
+
+
+class UserPasswordResetConfirmView(PasswordResetConfirmView):
+    form_class = ConfirmResetUserPasswordForm
+    template_name = 'account/password/password_reset_confirm.html'
+
+    def get_success_url(self):
+        try:
+            if self.user.customer:
+                user_label = 'customer'
+        except ObjectDoesNotExist:
+            pass
+        try:
+            if self.user.pharmacy:
+                user_label = 'pharmacy'
+        except ObjectDoesNotExist:
+            pass
+        # return reverse_lazy('account:password_reset_complete', kwargs={'user_label': user_label})
+        return reverse_lazy('account:password_reset_complete', kwargs={'user_label': user_label})
+
+
+class UserPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'account/password/password_reset_complete.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        context['user_label'] = self.kwargs.get('user_label')
+        return context
