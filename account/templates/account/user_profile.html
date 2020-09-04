@@ -40,9 +40,9 @@
                         <a href="{% url 'account:delete' user.id %}" data-toggle="modal" data-target="#exampleModal" class="btn btn-danger btn-sm float-right" style="padding: 0.25rem 0.5rem !important;">Delete</a>
 					</div>
 					
-					{% comment %} <small class="text-muted">
-						<a class="d-inline pl-2" href="#">Forgot Password?</a>
-					</small> {% endcomment %}
+					<small class="text-muted">
+						<a class="d-inline" href="{% url 'account:password_change' %}" style="padding: 0.25rem 0 !important;">Change Password</a>
+					</small>
 				</form>
 			</div>
 		</div>

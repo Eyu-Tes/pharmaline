@@ -2,7 +2,8 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
 from .views import (index, login_view, register_view, logout_view, proflie_view, delete_view,
-                    RequestUserPasswordResetView, ConfirmUserPasswordResetView, CompleteUserPasswordResetView,)
+                    RequestUserPasswordResetView, ConfirmUserPasswordResetView,
+                    CompleteUserPasswordResetView, UserPasswordChangeView)
 
 app_name = 'account'
 
@@ -29,5 +30,9 @@ urlpatterns = [
     ############################################
     # don't put the '/' at the end of the path: 'reset/done/<str:user_label>/'
     ############################################
-    path('reset/done/<str:user_label>', CompleteUserPasswordResetView.as_view(), name='password_reset_complete')
+    path('reset/done/<str:user_label>', CompleteUserPasswordResetView.as_view(), name='password_reset_complete'),
+
+    # change password
+    path('password_change/', UserPasswordChangeView.as_view(), name='password_change'),
+    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done')
 ]

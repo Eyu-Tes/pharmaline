@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
@@ -86,6 +86,15 @@ class RequestUserPasswordResetForm(PasswordResetForm):
 
 
 class ConfirmUserPasswordResetForm(SetPasswordForm):
+    new_password1 = forms.CharField(label="New password",
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}))
+    new_password2 = forms.CharField(label="New password confirmation",
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}))
+
+
+class UserPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(label="Old password",
+                                   widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}))
     new_password1 = forms.CharField(label="New password",
                                     widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}))
     new_password2 = forms.CharField(label="New password confirmation",

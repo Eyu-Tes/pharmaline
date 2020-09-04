@@ -1,3 +1,5 @@
+from requests import RequestException
+from smtplib import SMTPException
 import socket
 
 from django.conf import settings
@@ -5,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView, PasswordChangeView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
@@ -20,8 +22,8 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views.generic import FormView
 
-from .forms import (RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm,
-                    UpdateUserForm, ConfirmUserPasswordResetForm, RequestUserPasswordResetForm)
+from .forms import (RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm,
+                    ConfirmUserPasswordResetForm, RequestUserPasswordResetForm, UserPasswordChangeForm)
 from .models import Customer, Pharmacy
 
 from store.views import get_order_count, get_cart, get_cart_count
@@ -220,6 +222,8 @@ class RequestUserPasswordResetView(FormView):
                 messages.warning(self.request, 'Invalid e-mail address. Please check again.')
             except socket.gaierror:
                 messages.warning(self.request, 'Email failed. Please check your connection.')
+            except SMTPException:
+                messages.warning(self.request, 'Invalid e-mail address. Please check again.')
             else:
                 return super().form_valid(form)
 
@@ -252,3 +256,24 @@ class CompleteUserPasswordResetView(PasswordResetCompleteView):
         context = super().get_context_data(**kwargs)
         context['user_label'] = self.kwargs.get('user_label')
         return context
+
+
+class UserPasswordChangeView(PasswordChangeView):
+    form_class = UserPasswordChangeForm
+    success_url = reverse_lazy('account:password_change_done')
+    template_name = 'account/password/password_change.html'
+
+    def get_success_url(self):
+        try:
+            if self.request.user.customer:
+                user_label = 'customer'
+        except ObjectDoesNotExist:
+            pass
+        try:
+            if self.request.user.pharmacy:
+                user_label = 'pharmacy'
+        except ObjectDoesNotExist:
+            pass
+        messages.success(self.request, 'Your password was changed.')
+        return reverse_lazy('account:profile',
+                            kwargs={'user_label': user_label, 'fk': self.request.user.id})
