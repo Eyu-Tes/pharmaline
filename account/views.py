@@ -1,14 +1,25 @@
+import socket
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
+from django.db.models.query_utils import Q
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template import loader
 from django.urls import reverse_lazy
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.views.generic import FormView
 
-from .forms import RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm, UpdateUserForm, \
-    ConfirmResetUserPasswordForm
+from .forms import (RegistrationForm, LoginForm, CustomerProfileForm, PharmacyProfileForm,
+                    UpdateUserForm, ConfirmUserPasswordResetForm, RequestUserPasswordResetForm)
 from .models import Customer, Pharmacy
 
 from store.views import get_order_count, get_cart, get_cart_count
@@ -180,8 +191,39 @@ def delete_view(request, pk):
         return redirect('store:home')
 
 
-class UserPasswordResetConfirmView(PasswordResetConfirmView):
-    form_class = ConfirmResetUserPasswordForm
+class RequestUserPasswordResetView(FormView):
+    template_name = 'account/password/password_reset.html'
+    success_url = reverse_lazy('account:password_reset_done')
+    form_class = RequestUserPasswordResetForm
+
+    def form_valid(self, form):
+        form_email = form.cleaned_data["email"]
+        user = User.objects.filter(Q(email=form_email)).first()
+        if user:
+            c = {
+                'email': user.email,
+                'domain': self.request.META['HTTP_HOST'],
+                'site_name': get_current_site(self.request),
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'user': user,
+                'token': default_token_generator.make_token(user),
+                'protocol': self.request.scheme,
+            }
+            email_template_name = 'account/password/password_reset_email.html'
+            subject = f"Password reset on {c['site_name']}"
+            email = loader.render_to_string(email_template_name, c)
+            try:
+                send_mail(subject, email, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+            except socket.gaierror:
+                messages.warning(self.request, 'Email failed. Please check your connection.')
+            else:
+                return super().form_valid(form)
+
+        return super().form_invalid(form)
+
+
+class ConfirmUserPasswordResetView(PasswordResetConfirmView):
+    form_class = ConfirmUserPasswordResetForm
     template_name = 'account/password/password_reset_confirm.html'
 
     def get_success_url(self):
@@ -195,11 +237,10 @@ class UserPasswordResetConfirmView(PasswordResetConfirmView):
                 user_label = 'pharmacy'
         except ObjectDoesNotExist:
             pass
-        # return reverse_lazy('account:password_reset_complete', kwargs={'user_label': user_label})
         return reverse_lazy('account:password_reset_complete', kwargs={'user_label': user_label})
 
 
-class UserPasswordResetCompleteView(PasswordResetCompleteView):
+class CompleteUserPasswordResetView(PasswordResetCompleteView):
     template_name = 'account/password/password_reset_complete.html'
 
     def get_context_data(self, **kwargs):
