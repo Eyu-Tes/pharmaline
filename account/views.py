@@ -1,4 +1,6 @@
 import socket
+from requests import RequestException
+from smtplib import SMTPException
 
 from django.conf import settings
 from django.contrib import messages
@@ -216,6 +218,8 @@ class RequestUserPasswordResetView(FormView):
                 send_mail(subject, email, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
             except socket.gaierror:
                 messages.warning(self.request, 'Email failed. Please check your connection.')
+            except SMTPException:
+                messages.warning(self.request, 'Invalid e-mail address. Please check again.')
             else:
                 return super().form_valid(form)
 
