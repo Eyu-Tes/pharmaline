@@ -7,7 +7,6 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=35)
     last_name = models.CharField(max_length=35)
-    email = models.EmailField(verbose_name='email address')
     phone = models.CharField(max_length=20, verbose_name='phone number')
     disabled = models.BooleanField(default=False)
     date_created = models.DateField(auto_now_add=True)
@@ -26,7 +25,6 @@ class Customer(models.Model):
 class Pharmacy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     pharmacy_name = models.CharField(max_length=35)
-    email = models.EmailField(verbose_name='email address')
     phone = models.CharField(max_length=20, verbose_name='phone number')
     location = models.CharField(max_length=100)
     disabled = models.BooleanField(default=False)

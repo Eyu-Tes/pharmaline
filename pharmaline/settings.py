@@ -132,9 +132,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 # Alert Messages that align with the bootstrap 'alert' class
 from django.contrib.messages import constants as messages
-
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
@@ -143,3 +143,13 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+
+# SMTP configuration
+# Django logs on behalf of this email to send emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('PRIMARY_EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('PRIMARY_EMAIL_APP_PASSWORD')

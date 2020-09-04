@@ -12,14 +12,17 @@
 
 				<form action='' method="post" novalidate>
 					{% csrf_token %}
-					{# render the username form-group #}
-					<div class="form-group">
-						<label for="{{form.username.id_for_label}}">{{form.username.label|title}}</label>
-						{{ form.username }}
-						{% for err in form.username.errors %}
-							<small class="invalid-feedback d-block">{{ err|linebreaks }}</small>
-						{% endfor %}
-					</div>
+
+					{# render the user form #}
+					{% for field in form %}
+						<div class="form-group">
+							<label for="{{field.id_for_label}}">{{field.label|title}}</label>
+							{{ field }}
+							{% for err in field.errors %}
+								<small class="invalid-feedback d-block">{{ err|linebreaks }}</small>
+							{% endfor %}
+						</div>
+					{% endfor %}
 
 					{# render the profile form #}
 					{% for field in profile_form %}
