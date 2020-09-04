@@ -9,6 +9,8 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCom
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+from smtplib import SMTPException
+from requests import RequestException
 from django.db.models.query_utils import Q
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -214,6 +216,8 @@ class RequestUserPasswordResetView(FormView):
             email = loader.render_to_string(email_template_name, c)
             try:
                 send_mail(subject, email, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+            except SMTPException:
+                messages.warning(self.request, 'Invalid e-mail address. Please check again.')
             except socket.gaierror:
                 messages.warning(self.request, 'Email failed. Please check your connection.')
             else:
