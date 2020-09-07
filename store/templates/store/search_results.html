@@ -1,0 +1,61 @@
+{% extends 'store/base.html' %}
+
+{% load static %}
+
+
+{% block page_specific_style %}
+    <style>
+        #no-med-message {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+        }
+    </style>
+{% endblock page_specific_style %}
+
+
+{% block content %}
+    <div class="site-section">
+        <div class="container">
+            {% if search_result|length > 0 %}
+                <hr/>
+                <span class="display-4 offset-2">Search results</span>
+                <div class="tab-pane" id="pills-profile" role="tabpanel"
+                     aria-labelledby="pills-profile-tab">
+
+                    <table class="table custom-table text-black">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>Medication</th>
+                            <th>Pharmacy</th>
+                            <th>Location</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for med in search_result %}
+                            <tr>
+                                <td>{{ med.name }}</td>
+                                <td>{{ med.pharmacy.pharmacy_name }}</td>
+                                <td>{{ med.pharmacy.location }}</td>
+                                <td class="bg-light">
+                                    <a href="{% url 'store:detail' med.id %}">Details</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <span id="no-med-message" class="text-danger font-weight-bold">Sorry. No medication or pharmacy matches your search.</span>
+            {% endif %}
+            <hr/>
+            <a class="btn btn-black" href="{% url 'store:store' %}">Store</a>
+        </div>
+    </div>
+{% endblock content %}

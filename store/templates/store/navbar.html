@@ -3,9 +3,9 @@
     <div class="search-wrap">
         <div class="container">
             <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-            <form action="#" method="post">
+            <form action="{% url 'store:search' %}" method="POST">
                 {% csrf_token %}
-                <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
+                <input type="text" class="form-control" name="query" placeholder="Search keyword and hit enter...">
             </form>
         </div>
     </div>
@@ -42,7 +42,7 @@
                                 <a class="nav-link" style="text-transform: none"><b>{{user.username}}</b></a>
                                 <ul class="dropdown">
                                     <li class="nav-item">
-                                        <a class="nav-link" 
+                                        <a class="nav-link"
                                             {% if user.customer %}
                                                 href="{% url 'account:profile' 'customer' user.id %}">
                                             {% elif  user.pharmacy %}
@@ -54,7 +54,7 @@
                                         <a class="nav-link" href="{% url 'account:logout' %}">Logout</a>
                                     </li>
                                 </ul>
-                            </li>  
+                            </li>
                         {% else %}
                             <li class="has-children">
                                 <a>Login</a>
@@ -66,7 +66,7 @@
                                         <a class="nav-link" href="{% url 'account:login' 'pharmacy' %}">Pharmacy</a>
                                     </li>
                                 </ul>
-                            </li>      
+                            </li>
                         {% endif %}
                     </ul>
                 </nav>
