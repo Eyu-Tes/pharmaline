@@ -27,7 +27,7 @@
                                 {{ order_count }}</span></a></li>
                             <li><a href="#">Notifications <span class="badge badge-info">3</span></a></li>
                         {% else %}
-                            <li><a href="{% url 'store:store' %}">Store</a></li>
+                            <li><a href="{% url 'store:store' '1' %}">Store</a></li>
                             <li><a href="{% url 'store:about' %}">About</a></li>
                             <li><a href="#">Contact</a></li>
                         {% endif %}

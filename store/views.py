@@ -1,11 +1,11 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem
 from .forms import OrderForm, QuantityForm
-
-from django.utils import timezone
-from django.db.models import Q
 
 from datetime import datetime
 
@@ -84,14 +84,12 @@ def about(request):
     return set_user_session_cookie(request, response)
 
 
-def store(request):
+def store(request, page_num):
     cart_count = get_cart_count(get_cart(request))
-    try:
-        # todo: pagination
-        meds = Medication.objects.all()[:12]
-    except Medication.DoesNotExist:
-        meds = None
-    response = render(request, 'store/store.html', {'meds': meds, 'cart_count': cart_count})
+    all_medication = Medication.objects.all()
+    pages = Paginator(all_medication, 12)
+    page = pages.get_page(page_num)
+    response = render(request, 'store/store.html', {'meds': page, 'cart_count': cart_count})
     return set_user_session_cookie(request, response)
 
 

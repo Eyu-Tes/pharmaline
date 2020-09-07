@@ -20,7 +20,7 @@
                     <nav class="site-navigation text-right text-md-center" role="navigation">
                         <ul class="site-menu js-clone-nav d-none d-lg-block">
                             <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
-                            <li><a href="{% url 'store:store' %}">Store</a></li>
+                            <li><a href="{% url 'store:store' '1' %}">Store</a></li>
                             <li><a href="{% url 'store:about' %}">About</a></li>
                             <li><a href="#">Contact</a></li>
                         </ul>
@@ -29,10 +29,10 @@
                 <div class="main-nav d-none d-lg-block">
                     <nav class="site-navigation text-right text-md-center" role="navigation">
                         <ul class="site-menu js-clone-nav d-none d-lg-block">
-                            
+
                             {% block nav_right_links %}
                             {% endblock nav_right_links %}
-                            
+
                         </ul>
                     </nav>
                 </div>
@@ -47,8 +47,8 @@
     {% block alert_msg %}
     {% endblock alert_msg %}
 
-    {% block content %}  
-    {% endblock content %}  
+    {% block content %}
+    {% endblock content %}
 
     {% include 'store/script_tags.html' %}
 </body>

@@ -55,7 +55,7 @@
                 <span id="no-med-message" class="text-danger font-weight-bold">Sorry. No medication or pharmacy matches your search.</span>
             {% endif %}
             <hr/>
-            <a class="btn btn-black" href="{% url 'store:store' %}">Store</a>
+            <a class="btn btn-black" href="{% url 'store:store' '1' %}">Store</a>
         </div>
     </div>
 {% endblock content %}
