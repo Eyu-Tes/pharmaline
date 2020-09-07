@@ -9,6 +9,8 @@
         }
 
         .img-thumbnail:hover {
+            position: relative;
+            z-index: 1000;
             -webkit-transform: scale(1.5); /* or some other value */
             transform: scale(1.5);
         }
@@ -16,10 +18,6 @@
 {% endblock page_specific_style %}
 
 {% block content %}
-
-    <style>
-
-    </style>
 
     <div class="site-section">
         <div class="container">
