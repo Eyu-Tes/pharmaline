@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, cart, about, store, details, checkout, thankyou, products, orders, order_details
+from .views import index, cart, about, store, search, details, checkout, thankyou, products, orders, order_details
 
 app_name = 'store'
 
@@ -7,6 +7,7 @@ urlpatterns = [
     path('', index, name='home'),
     path('store/<int:med_id>/details/', details, name='detail'),
     path('store/', store, name='store'),
+    path('store/search/', search, name='search'),
     path('cart/', cart, name='cart'),
     path('about/', about, name='about'),
     path('checkout/', checkout, name='checkout'),

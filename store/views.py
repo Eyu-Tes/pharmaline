@@ -5,6 +5,7 @@ from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem
 from .forms import OrderForm, QuantityForm
 
 from django.utils import timezone
+from django.db.models import Q
 
 from datetime import datetime
 
@@ -91,6 +92,18 @@ def store(request):
     except Medication.DoesNotExist:
         meds = None
     response = render(request, 'store/store.html', {'meds': meds, 'cart_count': cart_count})
+    return set_user_session_cookie(request, response)
+
+
+def search(request):
+    query = request.POST['query']
+    search_result = Medication.objects.filter(
+        Q(name__icontains=query) | Q(description__icontains=query) |
+        Q(instructions__icontains=query) | Q(vendor__icontains=query) |
+        Q(pharmacy__pharmacy_name__icontains=query))
+    response = render(request, 'store/search_results.html',
+                      context={'search_result': search_result,
+                               'cart_count': get_cart_count(get_cart(request))})
     return set_user_session_cookie(request, response)
 
 
