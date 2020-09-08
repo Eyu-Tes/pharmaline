@@ -133,7 +133,7 @@ def details(request, med_id):
                 add_med_to_cart(shopping_cart, med, quantity)
                 # Adding a new medication doesn't necessarily mean you want to checkout.
                 # Therefore, the response will take the user to the 'store' page
-                return redirect('store:store')
+                return redirect('store:store', page_num=1)
             else:
                 form.add_error('quantity', '')
 
