@@ -1,4 +1,3 @@
-from requests import RequestException
 from smtplib import SMTPException
 import socket
 
@@ -11,8 +10,6 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCom
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from smtplib import SMTPException
-from requests import RequestException
 from django.db.models.query_utils import Q
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -222,8 +219,6 @@ class RequestUserPasswordResetView(FormView):
                 messages.warning(self.request, 'Invalid e-mail address. Please check again.')
             except socket.gaierror:
                 messages.warning(self.request, 'Email failed. Please check your connection.')
-            except SMTPException:
-                messages.warning(self.request, 'Invalid e-mail address. Please check again.')
             else:
                 return super().form_valid(form)
 
@@ -277,3 +272,7 @@ class UserPasswordChangeView(PasswordChangeView):
         messages.success(self.request, 'Your password was changed.')
         return reverse_lazy('account:profile',
                             kwargs={'user_label': user_label, 'fk': self.request.user.id})
+
+
+def admin_homepage_view(request):
+    return render(request, 'account/admin/index.html')
