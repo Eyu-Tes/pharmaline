@@ -1,15 +1,14 @@
-from django.http import Http404
-from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
-from django.db.models import Q
-from django.core.paginator import Paginator
-
-from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem
-from .forms import OrderForm, QuantityForm
-
 from datetime import datetime
 
 import shortuuid
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+
+from .forms import OrderForm, QuantityForm
+from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem
 
 
 def get_cart_count(shopping_cart):
@@ -94,7 +93,7 @@ def store(request, page_num):
 
 
 def search(request):
-    query = request.POST['query']
+    query = request.GET.get('query', '')
     search_result = Medication.objects.filter(
         Q(name__icontains=query) | Q(description__icontains=query) |
         Q(instructions__icontains=query) | Q(vendor__icontains=query) |

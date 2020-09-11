@@ -3,7 +3,7 @@
     <div class="search-wrap">
         <div class="container">
             <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-            <form action="{% url 'store:search' %}" method="POST">
+            <form action="{% url 'store:search' %}" method="GET">
                 {% csrf_token %}
                 <input type="text" class="form-control" name="query" placeholder="Search keyword and hit enter...">
             </form>

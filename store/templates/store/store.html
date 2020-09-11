@@ -29,6 +29,8 @@
                 </div>
             </div>
 
+            <hr/>
+
             <div class="row">
                 {% if meds %}
                     {% for med in meds %}
@@ -49,7 +51,7 @@
 
             <hr/>
 
-            <div class="pagination">
+            <div class="pagination col-md-8 offset-md-1">
                 <span class="step-links">
                     {% if meds.has_previous %}
                         <a class="btn-sm btn-dark" href="{% url 'store:store' '1' %}">&laquo; first</a>
