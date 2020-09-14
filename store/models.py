@@ -1,4 +1,7 @@
+from enum import Enum
+
 from django.db import models
+
 from account.models import Pharmacy
 
 
@@ -56,7 +59,15 @@ class Order(models.Model):
         return self.order_name
 
 
+class OrderStatus(Enum):
+    PENDING = 'pending'
+    DISPATCHED = 'dispatched'
+    COMPLETE = 'complete'
+    REJECTED = 'rejected'
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     cart_item = models.OneToOneField(CartItem, on_delete=models.CASCADE)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, default=OrderStatus.PENDING.value)
