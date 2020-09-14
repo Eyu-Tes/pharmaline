@@ -11,7 +11,7 @@
                     <th>Order Name</th>
                     <th>Item</th>
                     <th>Placement Date</th>
-                    <th>Status</th>
+                    <th>Note</th>
                 </tr>
                 </thead>
 
@@ -25,7 +25,7 @@
                         <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
                             {{ order.order.date_time }}</a></td>
                         <td>
-                            <p>[ Pending ]</p>
+                            <p>{{ order.order.note }}</p>
                         </td>
                     </tr>
                 {% endfor %}

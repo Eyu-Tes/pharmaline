@@ -3,12 +3,12 @@ from datetime import datetime
 import shortuuid
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
 from .forms import OrderForm, QuantityForm
-from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem
+from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem, OrderStatus
 
 
 def get_cart_count(shopping_cart):
@@ -173,7 +173,8 @@ def save_order_redirect_to_thankyou(clean_data, shopping_cart: Cart):
     order.save()
 
     for cart_item in shopping_cart.cartitem_set.all():
-        order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy)
+        order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy,
+                                   status=OrderStatus.PENDING.value)
 
     response = redirect('store:thankyou')
     response.delete_cookie('user_session')
@@ -237,7 +238,6 @@ def products(request, pk):
 
 def orders(request, pk):
     order_items = OrderItem.objects.filter(pharmacy_id=pk)
-
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
                            'order_count': get_order_count(request)})
@@ -245,9 +245,24 @@ def orders(request, pk):
 
 def order_details(request, pk):
     order_item = OrderItem.objects.get(id=pk)
+
+    if request.method == 'POST':
+        new_status = request.POST['new_status']  # all `OrderStatus` "values" are in small case
+        if new_status in [status.value for status in list(OrderStatus)]:
+            order_item.status = new_status
+            order_item.save()
+            return HttpResponse()
+        else:
+            # In case someone tampered with the values ('value' attribute) of
+            # the buttons an error will be returned
+            return HttpResponseServerError()
+
+    order_states = [status.value for status in list(OrderStatus)]
+    order_states.remove(order_item.status)
     return render(request, 'store/order_details.html',
                   context={'order_count': get_order_count(request),
-                           'order_item': order_item})
+                           'order_item': order_item,
+                           'order_states': order_states})
 
 
 def get_order_count(request):
@@ -257,5 +272,8 @@ def get_order_count(request):
         except:
             pass
         else:
-            return len(OrderItem.objects.filter(pharmacy_id=pharmacy.id))
+            # only orders that are neither 'REJECTED' nor 'COMPLETE' must be counted
+            return len(OrderItem.objects.filter(
+                Q(pharmacy_id=pharmacy.id),
+                Q(status__icontains='pending') | Q(status__icontains='dispatched')))
     return None

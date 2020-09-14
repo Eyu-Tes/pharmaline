@@ -56,6 +56,21 @@
                             <td>Order Note</td>
                             <td>{{ order_item.order.note }}</td>
                         </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>
+                                <button value="{{ order_item.status }}" class="order-status active-status btn"
+                                        onclick="orderStatusButtonClicked($(this))">
+                                    {{ order_item.status }}
+                                </button>
+
+                                {% for status in order_states %}
+                                    <button value="{{ status.lower }}" class="order-status btn" onclick="orderStatusButtonClicked($(this))">
+                                        {{ status }}
+                                    </button>
+                                {% endfor %}
+                            </td>
+                        </tr>
                         </tbody>
                         <tfoot>
 
@@ -69,3 +84,65 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block page_specific_script %}
+    <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
+    <script>
+        let csrfToken = Cookies.get('csrftoken');
+
+        function orderStatusButtonClicked(clickedStatusButton) {
+            postOrderStatus(clickedStatusButton);
+        }
+
+        function postOrderStatus(clickedStatusButton) {
+            let newStatus = clickedStatusButton.val();
+
+            $.ajax({
+                url: '',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: {
+                    'new_status': newStatus
+                },
+                success: () => {
+                    changeButtonColor(clickedStatusButton);
+                    // remove the 'active-status' class from the previously active order
+                    // status button and add it to the newly active status button
+                    $('.active-status').removeClass().addClass('btn');
+                    clickedStatusButton.addClass('active-status');
+                },
+                error: () => {
+                    alert('Could not change order status. Please try again later.');
+                }
+            });
+        }
+
+        function changeButtonColor(clickedStatusButton) {
+            let appropriateClass;
+
+            switch (clickedStatusButton.val().toUpperCase()) {
+                case 'PENDING':
+                    appropriateClass = 'btn-warning';
+                    break;
+                case 'REJECTED':
+                    appropriateClass = 'btn-danger';
+                    break;
+                case 'DISPATCHED':
+                    appropriateClass = 'btn-dark';
+                    break;
+                case 'COMPLETE':
+                    appropriateClass = 'btn-success';
+                    break;
+                default:
+                    appropriateClass = 'btn';
+                    break;
+            }
+
+            clickedStatusButton.addClass(appropriateClass);
+        }
+
+        $(document).ready(changeButtonColor($('.active-status')));
+    </script>
+{% endblock page_specific_script %}
