@@ -2,7 +2,7 @@ from enum import Enum
 
 from django.db import models
 
-from account.models import Pharmacy
+from account.models import Customer, Pharmacy
 
 
 class Medication(models.Model):
@@ -42,6 +42,7 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_name = models.CharField(unique=True, max_length=20)
     first_name = models.CharField(max_length=35)
     last_name = models.CharField(max_length=35)
@@ -64,6 +65,7 @@ class OrderStatus(Enum):
     DISPATCHED = 'dispatched'
     COMPLETE = 'complete'
     REJECTED = 'rejected'
+    CANCELED = 'canceled'
 
 
 class OrderItem(models.Model):
