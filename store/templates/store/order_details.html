@@ -59,16 +59,23 @@
                         <tr>
                             <td>Status</td>
                             <td>
-                                <button value="{{ order_item.status }}" class="order-status active-status btn"
-                                        onclick="orderStatusButtonClicked($(this))">
-                                    {{ order_item.status }}
-                                </button>
-
-                                {% for status in order_states %}
-                                    <button value="{{ status.lower }}" class="order-status btn" onclick="orderStatusButtonClicked($(this))">
-                                        {{ status }}
-                                    </button>
-                                {% endfor %}
+                                {% if order_states %}
+                                    {% for status in order_states %}
+                                        {% if order_item.status == status %}
+                                            <button value="{{ status }}" class="active-status order-status btn"
+                                                    onclick="orderStatusButtonClicked($(this))">
+                                                {{ status }}
+                                            </button>
+                                        {% else %}
+                                            <button value="{{ status }}" class="order-status btn"
+                                                    onclick="orderStatusButtonClicked($(this))">
+                                                {{ status }}
+                                            </button>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="font-weight-bold text-danger">This order has been cancelled by the user.</span>
+                                {% endif %}
                             </td>
                         </tr>
                         </tbody>
@@ -79,7 +86,7 @@
                 </article>
             </div>
             <div class="align-right">
-                <a class="btn btn-black" href="{% url 'store:orders' order_item.pharmacy.pk %}">Orders</a>
+                <a class="btn btn-black" href="{% url 'store:orders' %}">Orders</a>
             </div>
         </div>
     </div>
@@ -114,7 +121,7 @@
                     clickedStatusButton.addClass('active-status');
                 },
                 error: () => {
-                    alert('Could not change order status. Please try again later.');
+                    alert('Could not change order status');
                 }
             });
         }
@@ -143,6 +150,6 @@
             clickedStatusButton.addClass(appropriateClass);
         }
 
-        $(document).ready(changeButtonColor($('.active-status')));
+        $(document).ready(changeButtonColor($(".active-status")));
     </script>
 {% endblock page_specific_script %}

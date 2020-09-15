@@ -5,33 +5,102 @@
 {% block content %}
     <div class="site-section">
         <div class="container">
-            <table class="table text-black border">
-                <thead class="card-header">
-                <tr>
-                    <th>Order Name</th>
-                    <th>Item</th>
-                    <th>Placement Date</th>
-                    <th>Note</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {% for order in orders %}
+            {% if orders %}
+                <table class="table text-black border">
+                    <thead class="card-header">
                     <tr>
-                        <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
-                            {{ order.order.order_name }}</a></td>
-                        <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
-                            {{ order.cart_item.drug.name }} ({{ order.cart_item.quantity }})</a></td>
-                        <td><a class="text-black" href="{% url 'store:order_details' order.id %}">
-                            {{ order.order.date_time }}</a></td>
-                        <td>
-                            <p>{{ order.order.note }}</p>
-                        </td>
+                        <th>Order Name</th>
+                        <th>Item</th>
+                        <th>Placement Date</th>
+                        <th>Note</th>
+                        <th>Status</th>
                     </tr>
-                {% endfor %}
+                    </thead>
 
-                </tbody>
-            </table>
+                    <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                {% if request.user.pharmacy %}
+                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
+                                        {{ order.order.order_name }}
+                                    </a>
+                                {% else %}
+                                    <p class="text-black">
+                                        {{ order.order.order_name }}
+                                    </p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.user.pharmacy %}
+                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
+                                        {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
+                                {% else %}
+                                    <p class="text-black">
+                                        {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})
+                                    </p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.user.pharmacy %}
+                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
+                                        {{ order.order.date_time }}</a>
+                                {% else %}
+                                    <p class="text-black">
+                                        {{ order.order.date_time }}
+                                    </p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <p>{{ order.order.note }}</p>
+                            </td>
+                            <td>
+                                <button class="text-black status-btn btn disabled" disabled>
+                                    {{ order.status|upper }}
+                                </button>
+                                {% if request.user.customer %}
+                                    <button class="btn btn-danger" value="{{ order.pk }}"
+                                            onclick="cancelOrder($(this));">
+                                        CANCEL
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <span id="no-med-message" class="text offset-5 font-weight-bold">You have no pending orders.</span>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}
+
+{% block page_specific_script %}
+    <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
+    <script>
+        let csrfToken = Cookies.get('csrftoken');
+
+        function cancelOrder(cancelButton) {
+            $.ajax({
+                url: `details/${cancelButton.val()}/`,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                data: {
+                    'new_status': 'canceled'
+                },
+                success: () => {
+                    cancelButton.removeClass();
+                    cancelButton.addClass('btn btn-dark');
+                    $('.status-btn').html('CANCELED');
+                    cancelButton.prop('disabled', true);
+                },
+                error: (data) => {
+                    alert(data.responseText);
+                }
+            });
+        }
+    </script>
+{% endblock page_specific_script %}

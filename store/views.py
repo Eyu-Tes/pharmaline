@@ -58,6 +58,7 @@ def cart(request):
     totals = get_cart_totals(shopping_cart)
     response = render(request, 'store/cart.html',
                       context={'cart_count': get_cart_count(shopping_cart), 'cart_items': cart_items,
+                               'order_count': get_order_count(request),
                                'subtotal': totals['subtotal'], 'total': totals['total']})
     return set_user_session_cookie(request, response)
 
@@ -79,7 +80,10 @@ def add_med_to_cart(shopping_cart: Cart, med: Medication, quantity):
 
 def about(request):
     cart_count = get_cart_count(get_cart(request))
-    response = render(request, 'store/about.html', context={'cart_count': cart_count})
+    response = render(request, 'store/about.html', context={
+        'cart_count': cart_count,
+        'order_count': get_order_count(request)
+    })
     return set_user_session_cookie(request, response)
 
 
@@ -88,7 +92,11 @@ def store(request, page_num):
     all_medication = Medication.objects.all()
     pages = Paginator(all_medication, 12)
     page = pages.get_page(page_num)
-    response = render(request, 'store/store.html', {'meds': page, 'cart_count': cart_count})
+    response = render(request, 'store/store.html', {
+        'meds': page,
+        'cart_count': cart_count,
+        'order_count': get_order_count(request)
+    })
     return set_user_session_cookie(request, response)
 
 
@@ -100,7 +108,8 @@ def search(request):
         Q(pharmacy__pharmacy_name__icontains=query))
     response = render(request, 'store/search_results.html',
                       context={'search_result': search_result,
-                               'cart_count': get_cart_count(get_cart(request))})
+                               'cart_count': get_cart_count(get_cart(request)),
+                               'order_count': get_order_count(request)})
     return set_user_session_cookie(request, response)
 
 
@@ -116,7 +125,7 @@ def get_similar_medication(med: Medication):
     return similar_meds
 
 
-def details(request, med_id):
+def detail(request, med_id):
     form = QuantityForm()
     shopping_cart = get_cart(request)
     med = Medication.objects.get(id=med_id)
@@ -140,7 +149,8 @@ def details(request, med_id):
                       context={'form': form,
                                'med': med,
                                'similar_med': similar_med,
-                               'cart_count': get_cart_count(shopping_cart)})
+                               'cart_count': get_cart_count(shopping_cart),
+                               'order_count': get_order_count(request)})
     return set_user_session_cookie(request, response)
 
 
@@ -155,30 +165,27 @@ def checkout(request):
                 # Check if any existing order name matches the submitted order name
                 ord_nam = Order.objects.filter(order_name=order_form.cleaned_data['order_name'])
                 if len(ord_nam) == 0:  # The order is unique
-                    return save_order_redirect_to_thankyou(order_form.cleaned_data, shopping_cart)
+                    save_order(order_form.cleaned_data, shopping_cart, request.user.customer)
+                    response = redirect('store:thankyou')
+                    response.delete_cookie('user_session')
+                    return response
 
     totals = get_cart_totals(shopping_cart)
     return render(request, 'store/checkout.html', {
-        'form': order_form,
-        'cart_count': get_cart_count(shopping_cart),
-        'cart_items': CartItem.objects.filter(cart=shopping_cart),
-        'subtotal': totals['subtotal'],
-        'total': totals['total']
+        'form': order_form, 'cart_count': get_cart_count(shopping_cart),
+        'order_count': get_order_count(request), 'cart_items': CartItem.objects.filter(cart=shopping_cart),
+        'subtotal': totals['subtotal'], 'total': totals['total']
     })
 
 
-def save_order_redirect_to_thankyou(clean_data, shopping_cart: Cart):
-    order = Order(cart=shopping_cart, date_time=datetime.now(tz=timezone.utc))
+def save_order(clean_data, shopping_cart, customer):
+    order = Order(customer=customer, cart=shopping_cart, date_time=datetime.now(tz=timezone.utc))
     order = set_order_details(order, clean_data)
     order.save()
 
     for cart_item in shopping_cart.cartitem_set.all():
         order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy,
                                    status=OrderStatus.PENDING.value)
-
-    response = redirect('store:thankyou')
-    response.delete_cookie('user_session')
-    return response
 
 
 def set_order_details(order: Order, clean_data):
@@ -236,29 +243,48 @@ def products(request, pk):
     return render(request, 'store/products.html', context=context)
 
 
-def orders(request, pk):
-    order_items = OrderItem.objects.filter(pharmacy_id=pk)
+def orders(request):
+    try:  # try getting a pharmacy user
+        pharmacy = request.user.pharmacy
+        order_items = OrderItem.objects.filter(pharmacy=pharmacy)
+    # TODO: find a better way to identify user kind (also see: `get_order_count(...)`)
+    except Exception:  # if this block is hit the user is a customer
+        customer = request.user.customer
+        order_items = OrderItem.objects.filter(order__customer=customer)
+    # 'DISPATCHED' orders can't be cancelled. Hence, the missing filter for dispatched orders
+    order_items = order_items.filter(Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value))
+        # Q(status__exact=OrderStatus.PENDING.value) |
+        # Q(status__exact=OrderStatus.DISPATCHED.value) |
+        # Q(status__exact=OrderStatus.REJECTED.value))
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
-                           'order_count': get_order_count(request)})
+                           'order_count': get_order_count(request),
+                           'cart_count': get_cart_count(get_cart(request))})
 
 
 def order_details(request, pk):
     order_item = OrderItem.objects.get(id=pk)
 
     if request.method == 'POST':
-        new_status = request.POST['new_status']  # all `OrderStatus` "values" are in small case
+        new_status = request.POST['new_status']
         if new_status in [status.value for status in list(OrderStatus)]:
-            order_item.status = new_status
-            order_item.save()
-            return HttpResponse()
+            # A customer may try to cancel an order that is already dispatched. That should not be allowed.
+            if not (new_status == OrderStatus.CANCELED.value and order_item.status == OrderStatus.DISPATCHED.value):
+                order_item.status = new_status
+                order_item.save()
+                return HttpResponse('Order cancelled successfully.')
+            else:
+                return HttpResponseServerError('This order is already dispatched.')
         else:
             # In case someone tampered with the values ('value' attribute) of
             # the buttons an error will be returned
-            return HttpResponseServerError()
+            return HttpResponseServerError('The requested status change is non-existent.')
 
-    order_states = [status.value for status in list(OrderStatus)]
-    order_states.remove(order_item.status)
+    if order_item.status == OrderStatus.CANCELED.value:
+        order_states = None
+    else:
+        order_states = [status.value for status in list(OrderStatus)]
+        order_states.remove(OrderStatus.CANCELED.value)
     return render(request, 'store/order_details.html',
                   context={'order_count': get_order_count(request),
                            'order_item': order_item,
@@ -266,14 +292,17 @@ def order_details(request, pk):
 
 
 def get_order_count(request):
-    if request.user.is_authenticated:
+    try:  # try getting a pharmacy user
+        pharmacy = request.user.pharmacy
+        return len(OrderItem.objects.filter(
+            Q(pharmacy=pharmacy),
+            Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value)))
+    # TODO: find a better way to identify user kind
+    except Exception:  # if this block is hit the user is either a customer or anonymous
         try:
-            pharmacy = request.user.pharmacy
-        except:
-            pass
-        else:
-            # only orders that are neither 'REJECTED' nor 'COMPLETE' must be counted
+            customer = request.user.customer
             return len(OrderItem.objects.filter(
-                Q(pharmacy_id=pharmacy.id),
-                Q(status__icontains='pending') | Q(status__icontains='dispatched')))
-    return None
+                Q(order__customer=customer),
+                Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value)))
+        except Exception:
+            return None
