@@ -2,44 +2,47 @@
 
 {% load static %}
 
+{% block page_specific_style %}
+    <style>
+        .text-danger {
+            font-size: 14px;
+        }
+    </style>
+{% endblock page_specific_style %}
+
 
 {% block content %}
     <div class="site-section">
         <div class="container">
-            <div class="row mb-5">
-                <div class="col-md-12">
-                    <div class="bg-light rounded p-3">
-                        <p class="mb-0">You must be logged in to place an order.
-                            <a href="{% url 'account:login' 'customer' %}"
-                               class="d-inline-block">Click here</a> to login.
-                        </p>
-                    </div>
-                </div>
-            </div>
+
             <form action="{% url 'store:checkout' %}" method="POST" novalidate enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6 mb-5 mb-md-0">
-                        <h2 class="h3 mb-3 text-black">Billing Details</h2>
+                        <h2 class="h3 mb-3 text-black">Order Details</h2>
                         <div class="p-3 p-lg-5 border">
                             <div class="form-group row">
                                 <div class="col-md-6">
                                     <label for="c_fname" class="text-black">{{ form.first_name.label|title }} <span
                                             class="text-danger">*</span></label>
                                     {{ form.first_name }}
+                                    <span class="text-danger">{{ form.first_name.errors.as_text }}</span>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="c_lname" class="text-black">{{ form.last_name.label|title }} <span
                                             class="text-danger">*</span></label>
                                     {{ form.last_name }}
+                                    <span class="text-danger">{{ form.last_name.errors.as_text }}</span>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <div class="col-md-12">
                                     <label for="c_ordername"
-                                           class="text-black">{{ form.order_name.label|title }} </label>
+                                           class="text-black">{{ form.order_name.label|title }} <span
+                                            class="text-danger">*</span></label>
                                     {{ form.order_name }}
+                                    <span class="text-danger">{{ form.order_name.errors.as_text }}</span>
                                 </div>
                             </div>
 
@@ -49,6 +52,7 @@
                                            class="text-black">{{ form.location_description_1.label|title }}
                                         <span class="text-danger">*</span></label>
                                     {{ form.location_description_1 }}
+                                    <span class="text-danger">{{ form.location_description_1.errors.as_text }}</span>
                                 </div>
                             </div>
 
@@ -61,15 +65,17 @@
                                     <label for="c_region" class="text-black">{{ form.region.label|title }} <span
                                             class="text-danger">*</span></label>
                                     {{ form.region }}
+                                    <span class="text-danger">{{ form.region.errors.as_text }}</span>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="c_woreda" class="text-black">{{ form.woreda.label|title }} <span
                                             class="text-danger">*</span></label>
                                     {{ form.woreda }}
+                                    <span class="text-danger">{{ form.woreda.errors.as_text }}</span>
                                 </div>
                             </div>
 
-                            <div class="form-group row mb-5">
+                            <div class="form-group row">
                                 <div class="col-md-6">
                                     <label for="c_email_address" class="text-black">{{ form.email.label|title }}</label>
                                     {{ form.email }}
@@ -78,28 +84,32 @@
                                     <label for="c_phone" class="text-black">{{ form.phone.label|title }} <span
                                             class="text-danger">*</span></label>
                                     {{ form.phone }}
+                                    <span class="text-danger">{{ form.phone.errors.as_text }}</span>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="c_order_notes" class="text-black">{{ form.order_note.label|title }}</label>
-                                {{ form.order_note }}
                             </div>
 
                             {% if prescription_required %}
                                 <div class="form-group">
                                     <label for="c_prescription"
-                                           class="text-black">{{ form.prescriptions.label|title }}</label>
+                                           class="text-black">{{ form.prescriptions.label|title }} <span
+                                            class="text-danger">*</span></label>
                                     {{ form.prescriptions }}
+                                    <span class="text-danger">{{ form.prescriptions.errors.as_text }}</span>
                                 </div>
                             {% endif %}
 
+                            <div class="form-group">
+                                <label for="c_order_notes" class="text-black">{{ form.order_note.label|title }}</label>
+                                {{ form.order_note }}
+                                <span class="text-danger">{{ form.order_note.errors.as_text }}</span>
+                            </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="row mb-5">
                             <div class="col-md-12">
-                                <h2 class="h3 mb-3 text-black">Your Order</h2>
+                                <h2 class="h3 mb-3 text-black">Products</h2>
                                 <div class="p-3 p-lg-5 border">
                                     <table class="table site-block-order-table mb-5">
                                         <thead>

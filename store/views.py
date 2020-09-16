@@ -179,10 +179,13 @@ def checkout(request):
         return redirect('store:cart')
 
     shopping_cart = get_cart(request)
+    cart_items = shopping_cart.cartitem_set.all()
+    prescription_required = cart_items.filter(drug__requires_prescription=True).exists()
     order_form = OrderForm()
 
     if request.method == 'POST':
         order_form = OrderForm(request.POST, request.FILES)
+        order_form.order_requires_prescription = prescription_required
         if order_form.is_valid():
             # Check if any existing order name matches the submitted order name
             order = Order.objects.filter(order_name=order_form.cleaned_data['order_name'])
@@ -194,11 +197,10 @@ def checkout(request):
                 return response
 
     totals = get_cart_totals(shopping_cart)
-    cart_items = shopping_cart.cartitem_set.all()
     return render(request, 'store/checkout.html', {
         'form': order_form, 'cart_count': get_cart_count(shopping_cart),
         'order_count': get_order_count(request), 'cart_items': cart_items,
-        'prescription_required': cart_items.filter(drug__requires_prescription=True).exists(),
+        'prescription_required': prescription_required,
         'subtotal': totals['subtotal'], 'total': totals['total']})
 
 

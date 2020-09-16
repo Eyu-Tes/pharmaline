@@ -16,6 +16,20 @@
 
     <div class="site-section">
         <div class="container">
+
+            {% if not request.user.is_authenticated %}
+                <div class="row mb-5">
+                    <div class="col-md-12">
+                        <div class="bg-light rounded p-3">
+                            <p class="mb-0">You must be logged in to place an order.
+                                <a href="{% url 'account:login' 'customer' %}"
+                                   class="d-inline-block">Click here</a> to login.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
             <div class="row mb-5">
                 <div class="col-md-12">
                     <div class="site-blocks-table">
@@ -39,11 +53,13 @@
                                              class="img-fluid">
                                     </td>
                                     <td class="product-name">
-                                        <h2 class="h5 text-black">{{ cart_item.drug.name }}</h2>
+                                        <h2 class="h5 text-black"><a
+                                                href="{% url 'store:detail' cart_item.drug.id %}">{{ cart_item.drug.name }}</a>
+                                        </h2>
                                     </td>
                                     <td>{{ cart_item.drug.price }}</td>
                                     <td>
-                                        <div class="input-group mb-3 align-content-center" style="max-width: 120px; margin-left: auto; margin-right:auto;">
+                                        <div class="input-group mb-3" style="max-width: 120px;">
                                             <div class="input-group-prepend">
                                                 <button value="{{ cart_item.drug.pk }}"
                                                         class="btn btn-outline-primary btn-minus"
