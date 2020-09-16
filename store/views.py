@@ -2,8 +2,9 @@ from datetime import datetime
 
 import shortuuid
 from django.core.paginator import Paginator
+from django.core import serializers
 from django.db.models import Q
-from django.http import Http404, HttpResponse, HttpResponseServerError
+from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
@@ -47,11 +48,28 @@ def index(request):
 
 def cart(request):
     shopping_cart = get_cart(request)
-    cart_items = CartItem.objects.filter(cart=shopping_cart)
+    cart_items = shopping_cart.cartitem_set.all()
 
     if request.method == 'POST':
         med = Medication.objects.get(id=request.POST['med_id'])
-        cart_items.filter(drug=med).delete()
+        try:
+            operation = request.POST['operation']
+            cart_item = cart_items.get(drug=med)
+            if operation == '+':
+                cart_item.quantity += 1
+            elif operation == '-':
+                cart_item.quantity -= 1
+            else:
+                return HttpResponseServerError('Invalid operation requested.')
+            cart_item.save()
+            if cart_item.quantity == 0:
+                cart_item.delete()
+            return JsonResponse({
+                'cart_count': get_cart_count(shopping_cart), 'total': get_cart_totals(shopping_cart),
+                'cart_item': serializers.serialize('json', [cart_item])
+            })
+        except KeyError:  # Then the POST request came from the form on the cart page
+            cart_items.filter(drug=med).delete()
         return redirect('store:cart')
 
     # TODO: calculate proper subtotals and totals (delivery fee, vat, etc...)
@@ -252,10 +270,11 @@ def orders(request):
         customer = request.user.customer
         order_items = OrderItem.objects.filter(order__customer=customer)
     # 'DISPATCHED' orders can't be cancelled. Hence, the missing filter for dispatched orders
-    order_items = order_items.filter(Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value))
-        # Q(status__exact=OrderStatus.PENDING.value) |
-        # Q(status__exact=OrderStatus.DISPATCHED.value) |
-        # Q(status__exact=OrderStatus.REJECTED.value))
+    order_items = order_items.filter(
+        Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value))
+    # Q(status__exact=OrderStatus.PENDING.value) |
+    # Q(status__exact=OrderStatus.DISPATCHED.value) |
+    # Q(status__exact=OrderStatus.REJECTED.value))
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
                            'order_count': get_order_count(request),

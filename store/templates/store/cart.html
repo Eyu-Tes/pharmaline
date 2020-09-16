@@ -43,29 +43,36 @@
                                     </td>
                                     <td>{{ cart_item.drug.price }}</td>
                                     <td>
-                                        <div class="input-group mb-3" style="max-width: 120px;">
+                                        <div class="input-group mb-3 align-content-center" style="max-width: 120px; margin-left: auto; margin-right:auto;">
                                             <div class="input-group-prepend">
-                                                <button class="btn btn-outline-primary js-btn-minus" type="button">
+                                                <button value="{{ cart_item.drug.pk }}"
+                                                        class="btn btn-outline-primary btn-minus"
+                                                        type="button" onclick="increaseDecreaseQuantity($(this))">
                                                     &minus;
                                                 </button>
                                             </div>
-                                            <input type="text" class="form-control text-center" value="{{ cart_item.quantity }}"
-                                                   placeholder="" aria-label="Example text with button addon"
-                                                   aria-describedby="button-addon1">
+                                            <input id="itemQuantity-{{ cart_item.pk }}" type="text"
+                                                   class="form-control text-center"
+                                                   value="{{ cart_item.quantity }}"
+                                                   aria-label="Example text with button addon"
+                                                   aria-describedby="button-addon1"/>
                                             <div class="input-group-append">
-                                                <button class="btn btn-outline-primary js-btn-plus" type="button">
+                                                <button value="{{ cart_item.drug.pk }}"
+                                                        class="btn btn-outline-primary btn-plus"
+                                                        type="button" onclick="increaseDecreaseQuantity($(this))">
                                                     &plus;
                                                 </button>
                                             </div>
                                         </div>
 
                                     </td>
-                                    <td>{{ cart_item.total_price }}</td>
+                                    <td id="itemTotal-{{ cart_item.pk }}">{{ cart_item.total_price }}</td>
                                     <td>
                                         <form action="{% url 'store:cart' %}" method="POST">
                                             {% csrf_token %}
-                                            <button name="med_id" value="{{ cart_item.drug.id }}"
-                                                    type="submit" class="btn btn-primary height-auto btn-sm">X</button>
+                                            <button name="med_id" value="{{ cart_item.drug.pk }}"
+                                                    type="submit" class="btn btn-primary height-auto btn-sm">X
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -80,11 +87,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="row mb-5">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <button class="btn btn-primary btn-md btn-block">Update Cart</button>
-                        </div>
                         <div class="col-md-6">
-                            <a href="{% url 'store:store' '1' %}" class="btn btn-outline-primary btn-md btn-block">
+                            <a href="{% url 'store:store' 1 %}" class="btn btn-outline-primary btn-md btn-block">
                                 Continue Shopping</a>
                         </div>
                     </div>
@@ -102,7 +106,7 @@
                                     <span class="text-black">Subtotal</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">{{ subtotal }}</strong>
+                                    <strong class="total text-black">{{ subtotal }}</strong>
                                 </div>
                             </div>
                             <div class="row mb-5">
@@ -110,15 +114,15 @@
                                     <span class="text-black">Total</span>
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <strong class="text-black">{{ total }}</strong>
+                                    <strong class="total text-black">{{ total }}</strong>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
                                     <button class="btn btn-primary btn-lg btn-block"
-                                            onclick="window.location='{% url 'store:checkout' %}'">Proceed To
-                                        Checkout
+                                            onclick="window.location='{% url 'store:checkout' %}'">
+                                        Proceed To Checkout
                                     </button>
                                 </div>
                             </div>
@@ -127,10 +131,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div>
-
     </div>
 
     <div class="site-section bg-secondary bg-image"
@@ -163,3 +163,56 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block page_specific_script %}
+<script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
+<script type="text/javascript">
+    let csrfToken = Cookies.get('csrftoken');
+
+    function increaseDecreaseQuantity(button) {
+        let operation, classes = button.attr("class").split(/\s+/);
+
+        if (classes.indexOf('btn-plus') >= 0) {
+            operation = '+';
+        } else if (classes.indexOf('btn-minus') >= 0) {
+            operation = '-';
+        } else {
+            operation = null;
+        }
+
+        $.ajax({
+            url: '',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            data: {
+                'med_id': button.val(),
+                'operation': operation
+            },
+            success: (response) => {
+                updateTotalsAndCartCount(response);
+            },
+            error: () => {
+                alert('Could not change quantity. Please try again later.');
+            }
+        });
+    }
+
+    function updateTotalsAndCartCount(jsonData) {
+        $('#cartCount').text(jsonData.cart_count);
+        let cartItem = JSON.parse(jsonData.cart_item)[0];
+        let cartItemQuantity = cartItem.fields.quantity;
+
+        if (cartItemQuantity === 0) {
+            // Reload the page from the server to get a new list of cart items instead of
+            // manually removing the table row containing the item
+            window.location.reload(forcedReload=true);
+        } else {
+            $(`#itemQuantity-${cartItem.pk}`).val(cartItemQuantity);
+            $(`#itemTotal-${cartItem.pk}`).text(cartItem.fields.total_price);
+            $('.total').text(jsonData.total.total);
+        }
+    }
+</script>
+{% endblock page_specific_script %}

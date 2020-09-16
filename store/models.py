@@ -37,6 +37,10 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1)
     total_price = models.FloatField(default=0.0)
 
+    def save(self, *args, **kwargs):
+        self.total_price = self.quantity * self.drug.price
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.drug.name
 
