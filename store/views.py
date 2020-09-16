@@ -173,6 +173,9 @@ def detail(request, med_id):
 
 
 def checkout(request):
+    if not request.user.is_authenticated:
+        return redirect('store:cart')
+
     shopping_cart = get_cart(request)
     order_form = OrderForm()
 
@@ -192,8 +195,7 @@ def checkout(request):
     return render(request, 'store/checkout.html', {
         'form': order_form, 'cart_count': get_cart_count(shopping_cart),
         'order_count': get_order_count(request), 'cart_items': CartItem.objects.filter(cart=shopping_cart),
-        'subtotal': totals['subtotal'], 'total': totals['total']
-    })
+        'subtotal': totals['subtotal'], 'total': totals['total']})
 
 
 def save_order(clean_data, shopping_cart, customer):
