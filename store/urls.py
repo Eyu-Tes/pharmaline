@@ -2,6 +2,9 @@ from django.urls import path
 
 from .views import index, cart, about, store, search, detail, checkout, thankyou, products, orders, order_details
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 app_name = 'store'
 
 urlpatterns = [
@@ -17,3 +20,6 @@ urlpatterns = [
     path('orders/details/<int:pk>/', order_details, name='order_details'),
     path('orders/', orders, name='orders')
 ]
+
+if settings.DEBUG is True:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

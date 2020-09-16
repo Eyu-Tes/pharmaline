@@ -2,6 +2,19 @@
 
 {% load static %}
 
+{% block page_specific_style %}
+    <style>
+        .img-thumbnail {
+            transition: transform 0.25s ease;
+        }
+
+        .img-thumbnail:hover {
+            -webkit-transform: scale(1.5); /* or some other value */
+            transform: scale(1.5);
+        }
+    </style>
+{% endblock page_specific_style %}
+
 {% block content %}
 
     <style>
@@ -85,7 +98,26 @@
                     </table>
                 </article>
             </div>
-            <div class="align-right">
+
+            {% if image_paths %}
+                <hr/>
+                <div>
+                    <article>
+                        <h5 class="text text-black font-weight-bold">Attached prescriptions</h5>
+                        <p class="p-1 text text-black">Please check all attached prescriptions</p>
+                    </article>
+                    <div class="row">
+                        {% for image_path in image_paths %}
+                            <div class="col-md-6">
+                                <img class="img-fluid img-thumbnail" src="{{ image_path }}" height="200"
+                                     alt="Prescription image">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <hr/>
+            <div>
                 <a class="btn btn-black" href="{% url 'store:orders' %}">Orders</a>
             </div>
         </div>
@@ -150,6 +182,9 @@
             clickedStatusButton.addClass(appropriateClass);
         }
 
-        $(document).ready(changeButtonColor($(".active-status")));
+        $(document).ready(() => {
+            changeButtonColor($(".active-status"));
+            $(".img-thumbnail").hide(0).fadeIn(500);
+        });
     </script>
 {% endblock page_specific_script %}

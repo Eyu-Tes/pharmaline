@@ -76,6 +76,9 @@ class Order(models.Model):
             for chunk in image.chunks():
                 destination.write(chunk)
 
+    def get_prescription_images(self):
+        pass
+
 
 class OrderStatus(Enum):
     PENDING = 'pending'

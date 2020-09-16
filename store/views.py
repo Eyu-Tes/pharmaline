@@ -1,4 +1,6 @@
 from datetime import datetime
+from os import listdir
+from os.path import join
 
 import shortuuid
 from django.core import serializers
@@ -8,6 +10,7 @@ from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResp
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
+from pharmaline.settings import MEDIA_ROOT, MEDIA_URL
 from .forms import OrderForm, QuantityForm
 from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem, OrderStatus
 
@@ -87,8 +90,7 @@ def add_med_to_cart(shopping_cart: Cart, med: Medication, quantity):
     if shopping_cart.cartitem_set.filter(drug=med).first():
         cart_item = shopping_cart.cartitem_set.get(drug=med)
         cart_item.quantity += quantity
-        cart_item.total_price += (
-                med.price * cart_item.quantity)
+        cart_item.total_price += (med.price * cart_item.quantity)
         cart_item.save()
     else:  # The medication added to the cart must be inserted to the cart_item table
         new_item = CartItem(cart=shopping_cart, drug=med, quantity=quantity)
@@ -322,12 +324,22 @@ def order_details(request, pk):
     else:
         order_states = [status.value for status in list(OrderStatus)]
         order_states.remove(OrderStatus.CANCELED.value)
+    # Collect the prescription images for the order
+    try:
+        order_prescriptions = listdir(join(MEDIA_ROOT, order_item.order.order_name))
+        image_paths = []
+        for image in order_prescriptions:
+            image_paths.append(join(MEDIA_URL, order_item.order.order_name, image))
+    except IOError:
+        image_paths = None
     return render(request, 'store/order_details.html',
                   context={'order_count': get_order_count(request),
+                           'order_states': order_states,
                            'order_item': order_item,
-                           'order_states': order_states})
+                           'image_paths': image_paths})
 
 
+# TODO: provide a better solution for the bad (generic) except block below
 def get_order_count(request):
     try:  # try getting a pharmacy user
         pharmacy = request.user.pharmacy

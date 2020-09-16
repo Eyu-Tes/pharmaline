@@ -135,6 +135,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+MEDIA_URL = '/images/'
 
 # Alert Messages that align with the bootstrap 'alert' class
 MESSAGE_TAGS = {
