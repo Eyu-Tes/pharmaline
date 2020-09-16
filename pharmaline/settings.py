@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+from django.contrib.messages import constants as messages
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# noinspection SpellCheckingInspection
 SECRET_KEY = 'nzfn4zen!@4@8s6zm=-y7-igr58x&4(70yy43!3260pa^jh^r='
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -134,8 +137,6 @@ STATIC_URL = '/static/'
 
 
 # Alert Messages that align with the bootstrap 'alert' class
-from django.contrib.messages import constants as messages
-
 MESSAGE_TAGS = {
     messages.DEBUG: 'debug',
     messages.INFO: 'info',

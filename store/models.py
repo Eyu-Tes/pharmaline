@@ -1,5 +1,9 @@
 from enum import Enum
 
+import os.path
+
+import shortuuid
+from django.conf import settings
 from django.db import models
 
 from account.models import Customer, Pharmacy
@@ -53,7 +57,7 @@ class Order(models.Model):
     address = models.CharField(max_length=100)
     address_opt = models.CharField(max_length=100)
     region = models.CharField(max_length=25)
-    woreda = models.IntegerField()
+    woreda = models.IntegerField(default=0)
     email = models.EmailField()
     phone = models.CharField(max_length=13)
     note = models.TextField()
@@ -62,6 +66,15 @@ class Order(models.Model):
 
     def __str(self):
         return self.order_name
+
+    def save_prescription_image(self, image):
+        save_path = os.path.join(settings.MEDIA_ROOT, self.order_name)
+        os.makedirs(save_path, exist_ok=True)
+        image_extension = image.name[image.name.rindex('.'):]
+        file_path = os.path.join(save_path, shortuuid.random(length=10) + image_extension)
+        with open(file_path, 'wb+') as destination:
+            for chunk in image.chunks():
+                destination.write(chunk)
 
 
 class OrderStatus(Enum):

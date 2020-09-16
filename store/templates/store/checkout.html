@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </div>
-            <form action="{% url 'store:checkout' %}" method="POST" novalidate>
+            <form action="{% url 'store:checkout' %}" method="POST" novalidate enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6 mb-5 mb-md-0">
@@ -37,14 +37,16 @@
 
                             <div class="form-group row">
                                 <div class="col-md-12">
-                                    <label for="c_ordername" class="text-black">{{ form.order_name.label|title }} </label>
+                                    <label for="c_ordername"
+                                           class="text-black">{{ form.order_name.label|title }} </label>
                                     {{ form.order_name }}
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <div class="col-md-12">
-                                    <label for="c_address" class="text-black">{{ form.location_description_1.label|title }}
+                                    <label for="c_address"
+                                           class="text-black">{{ form.location_description_1.label|title }}
                                         <span class="text-danger">*</span></label>
                                     {{ form.location_description_1 }}
                                 </div>
@@ -83,6 +85,14 @@
                                 <label for="c_order_notes" class="text-black">{{ form.order_note.label|title }}</label>
                                 {{ form.order_note }}
                             </div>
+
+                            {% if prescription_required %}
+                                <div class="form-group">
+                                    <label for="c_prescription"
+                                           class="text-black">{{ form.prescriptions.label|title }}</label>
+                                    {{ form.prescriptions }}
+                                </div>
+                            {% endif %}
 
                         </div>
                     </div>

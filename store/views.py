@@ -180,25 +180,27 @@ def checkout(request):
     order_form = OrderForm()
 
     if request.method == 'POST':
-        order_form = OrderForm(request.POST)
-        if request.user.is_authenticated:
-            if order_form.is_valid():
-                # Check if any existing order name matches the submitted order name
-                ord_nam = Order.objects.filter(order_name=order_form.cleaned_data['order_name'])
-                if len(ord_nam) == 0:  # The order is unique
-                    save_order(order_form.cleaned_data, shopping_cart, request.user.customer)
-                    response = redirect('store:thankyou')
-                    response.delete_cookie('user_session')
-                    return response
+        order_form = OrderForm(request.POST, request.FILES)
+        if order_form.is_valid():
+            # Check if any existing order name matches the submitted order name
+            order = Order.objects.filter(order_name=order_form.cleaned_data['order_name'])
+            if len(order) == 0:  # The order is unique
+                save_order(order_form.cleaned_data, request.FILES.getlist('prescriptions'),
+                           shopping_cart, request.user.customer)
+                response = redirect('store:thankyou')
+                response.delete_cookie('user_session')
+                return response
 
     totals = get_cart_totals(shopping_cart)
+    cart_items = shopping_cart.cartitem_set.all()
     return render(request, 'store/checkout.html', {
         'form': order_form, 'cart_count': get_cart_count(shopping_cart),
-        'order_count': get_order_count(request), 'cart_items': CartItem.objects.filter(cart=shopping_cart),
+        'order_count': get_order_count(request), 'cart_items': cart_items,
+        'prescription_required': cart_items.filter(drug__requires_prescription=True).exists(),
         'subtotal': totals['subtotal'], 'total': totals['total']})
 
 
-def save_order(clean_data, shopping_cart, customer):
+def save_order(clean_data, files, shopping_cart, customer):
     order = Order(customer=customer, cart=shopping_cart, date_time=datetime.now(tz=timezone.utc))
     order = set_order_details(order, clean_data)
     order.save()
@@ -206,6 +208,9 @@ def save_order(clean_data, shopping_cart, customer):
     for cart_item in shopping_cart.cartitem_set.all():
         order_item = order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy)
         set_order_status(order_item, OrderStatus.PENDING.value)
+
+    for image in files:
+        order.save_prescription_image(image)
 
 
 def set_order_details(order: Order, clean_data):
