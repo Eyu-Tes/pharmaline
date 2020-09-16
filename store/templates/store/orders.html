@@ -36,9 +36,8 @@
                                     <a class="text-black" href="{% url 'store:order_details' order.id %}">
                                         {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
                                 {% else %}
-                                    <p class="text-black">
-                                        {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})
-                                    </p>
+                                    <a class="text-black" href="{% url 'store:detail' order.cart_item.drug.pk %}">
+                                        {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
                                 {% endif %}
                             </td>
                             <td>
@@ -58,7 +57,7 @@
                                 <button class="text-black status-btn btn disabled" disabled>
                                     {{ order.status|upper }}
                                 </button>
-                                {% if request.user.customer %}
+                                {% if request.user.customer and order.status != 'dispatched' %}
                                     <button class="btn btn-danger" value="{{ order.pk }}"
                                             onclick="cancelOrder($(this));">
                                         CANCEL

@@ -1,8 +1,8 @@
 from datetime import datetime
 
 import shortuuid
-from django.core.paginator import Paginator
 from django.core import serializers
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -107,7 +107,7 @@ def about(request):
 
 def store(request, page_num):
     cart_count = get_cart_count(get_cart(request))
-    all_medication = Medication.objects.all()
+    all_medication = Medication.objects.filter(stock__gte=1)
     pages = Paginator(all_medication, 12)
     page = pages.get_page(page_num)
     response = render(request, 'store/store.html', {
@@ -202,8 +202,8 @@ def save_order(clean_data, shopping_cart, customer):
     order.save()
 
     for cart_item in shopping_cart.cartitem_set.all():
-        order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy,
-                                   status=OrderStatus.PENDING.value)
+        order_item = order.orderitem_set.create(cart_item=cart_item, pharmacy=cart_item.drug.pharmacy)
+        set_order_status(order_item, OrderStatus.PENDING.value)
 
 
 def set_order_details(order: Order, clean_data):
@@ -221,7 +221,7 @@ def set_order_details(order: Order, clean_data):
 
 
 def thankyou(request):
-    return render(request, 'store/thankyou.html')
+    return render(request, 'store/thankyou.html', context={'order_count': get_order_count(request)})
 
 
 def get_cart(request):
@@ -272,13 +272,24 @@ def orders(request):
     # 'DISPATCHED' orders can't be cancelled. Hence, the missing filter for dispatched orders
     order_items = order_items.filter(
         Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value))
-    # Q(status__exact=OrderStatus.PENDING.value) |
-    # Q(status__exact=OrderStatus.DISPATCHED.value) |
-    # Q(status__exact=OrderStatus.REJECTED.value))
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
                            'order_count': get_order_count(request),
                            'cart_count': get_cart_count(get_cart(request))})
+
+
+def set_order_status(order_item, new_status):
+    order_item.status = new_status
+    order_item.save()
+    cart_item = order_item.cart_item
+    if new_status == OrderStatus.PENDING.value:
+        cart_item.drug.stock -= cart_item.quantity
+    # If an order is put in the CANCELLED or REJECTED state the stock amount must be restored
+    elif (new_status == OrderStatus.REJECTED.value) or (new_status == OrderStatus.CANCELED.value):
+        cart_item.drug.stock += cart_item.quantity
+    else:  # The other states such as COMPLETED and DISPATCHED don't affect the stock amount
+        pass
+    cart_item.drug.save()
 
 
 def order_details(request, pk):
@@ -289,7 +300,7 @@ def order_details(request, pk):
         if new_status in [status.value for status in list(OrderStatus)]:
             # A customer may try to cancel an order that is already dispatched. That should not be allowed.
             if not (new_status == OrderStatus.CANCELED.value and order_item.status == OrderStatus.DISPATCHED.value):
-                order_item.status = new_status
+                set_order_status(order_item, new_status)
                 order_item.save()
                 return HttpResponse('Order cancelled successfully.')
             else:
