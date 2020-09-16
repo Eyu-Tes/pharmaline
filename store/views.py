@@ -109,7 +109,7 @@ def about(request):
 
 def store(request, page_num):
     cart_count = get_cart_count(get_cart(request))
-    all_medication = Medication.objects.filter(stock__gte=1)
+    all_medication = Medication.objects.filter(pharmacy__disabled=False)
     pages = Paginator(all_medication, 12)
     page = pages.get_page(page_num)
     response = render(request, 'store/store.html', {
@@ -139,7 +139,7 @@ def get_similar_medication(med: Medication):
     # once, the medication will cause the pharmacy to appear as a separate location on the
     # 'Other Locations' table. To avoid that, those drugs that have the same pharmacy as their
     # origin will be removed from the `similar_med` list.
-    for similar_med in Medication.objects.filter(name__icontains=med.name):
+    for similar_med in Medication.objects.filter(name__icontains=med.name, pharmacy__disabled=False):
         if similar_med.pharmacy.id != med.pharmacy.id:
             similar_meds.append(similar_med)
     return similar_meds
@@ -199,8 +199,7 @@ def checkout(request):
     totals = get_cart_totals(shopping_cart)
     return render(request, 'store/checkout.html', {
         'form': order_form, 'cart_count': get_cart_count(shopping_cart),
-        'order_count': get_order_count(request), 'cart_items': cart_items,
-        'prescription_required': prescription_required,
+        'order_count': get_order_count(request), 'cart_items': cart_items, 'prescription_required': prescription_required,
         'subtotal': totals['subtotal'], 'total': totals['total']})
 
 
