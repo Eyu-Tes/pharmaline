@@ -31,10 +31,10 @@ function buildTable(dataTableWrapper) {
     unwrap(inputElm.parentElement);
 
     // insert add section
-    let addProductContainer = dataTableWrapper.querySelector('.row:first-child div:first-child');
-    let addProductSection = document.querySelector('#add-section');
-    addProductContainer.appendChild(addProductSection);
-    addProductSection.classList.remove('d-none');
+    let addSectionContainer = dataTableWrapper.querySelector('.row:first-child div:first-child');
+    let addSection = document.querySelector('#add-section');
+    addSectionContainer.appendChild(addSection);
+    addSection.classList.remove('d-none');
 
     // make table responsive
     makeTableResponsive(dataTableWrapper);
