@@ -27,7 +27,7 @@
                 <nav class="site-navigation text-right text-md-center" role="navigation">
                     <ul class="site-menu js-clone-nav d-none d-lg-block">
                         {% if user.pharmaadmin %}
-                            <li class="active"><a href="{% url 'store:pharma_admin_home' %}">Admin Homepage</a></li>
+                            <li class="active"><a href="{% url 'store:pharma_admin_home' %}">Dashboard</a></li>
                         {% else %}
                             <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
                             {% if user.pharmacy %}
