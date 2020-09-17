@@ -56,7 +56,7 @@ def register_view(request, user_label):
             profile.save()
             messages.success(request, f"Account created for {form.cleaned_data.get('username')}!")
             if user_label == 'pharmacy':
-                return redirect('store:pharma_admin_home')
+                return redirect('store:user_list', user_label='pharmacy')
             return redirect('account:login', user_label=user_label)
 
     if user_label == 'customer':
