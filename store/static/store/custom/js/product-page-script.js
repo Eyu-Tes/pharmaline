@@ -30,9 +30,9 @@ function buildTable(dataTableWrapper) {
     // remove label element wrapping the input element
     unwrap(inputElm.parentElement);
 
-    // insert add product section
+    // insert add section
     let addProductContainer = dataTableWrapper.querySelector('.row:first-child div:first-child');
-    let addProductSection = document.querySelector('#add-product');
+    let addProductSection = document.querySelector('#add-section');
     addProductContainer.appendChild(addProductSection);
     addProductSection.classList.remove('d-none');
 

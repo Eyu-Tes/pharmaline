@@ -11,8 +11,10 @@
 {% block content %}
     <div class='container'>
         <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">{{pharmacy_name}} Products</h2>
-        <div id="add-product" class="d-none text-center">
-            <a href="#" class="btn btn-primary btn-lg btn-block">Add Product</a>
+        <div id="add-section" class="d-none text-center">
+            {% if user.pharmacy %}
+                <a href="#" class="btn btn-primary btn-lg btn-block">Add Product</a>
+            {% endif %}
         </div>
 
         <div class="table-container d-none">
@@ -21,6 +23,9 @@
                 <tr>
                     <th>#</th>
                     <th>Name</th>
+                    {% if user.pharmaadmin %}
+                        <th>Pharmacy</th>
+                    {% endif %}
                     <th>Vendor</th>
                     <th>Qty.</th>
                     <th>Price</th>
@@ -29,7 +34,9 @@
                     <th title="Date of Manufacture">MFGDT</th>
                     <th title="Date of Expiration">EXP</th>
                     {% comment %} <th>Image</th> {% endcomment %}
-                    <th></th>
+                    {% if user.pharmacy %}
+                        <th></th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +44,9 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td id="name">{{ product.name }}</td>
+                        {% if user.pharmaadmin %}
+                            <td>{{ product.pharmacy }}</td>
+                        {% endif %}
                         <td>{{ product.vendor }}</td>
                         <td>{{ product.stock }}</td>
                         <td>{{ product.price }}</td>
@@ -50,7 +60,9 @@
                         <td>{{ product.production_date|date:"M Y" }}</td>
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         {% comment %} <td>{{ product.image }}</td> {% endcomment %}
-                        <td><a href="#">edit</a></td>
+                        {% if user.pharmacy %}
+                            <td><a href="#">edit</a></td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
@@ -71,10 +83,7 @@
             // add date sorting for "Mon date, Year" & "Mon Year" formats
             $.fn.dataTable.moment( ['ll', 'MMM YYYY'] );
             $('#dtBasicExample').DataTable({
-                // disable sorting for 'edit' column, i.d., edit col is at index 7
-                "columnDefs": [
-                    {"orderable": false, "targets": 7 }, 
-                ]
+                "columnDefs": []
             });
             $('.dataTables_length').addClass('bs-select');
         });

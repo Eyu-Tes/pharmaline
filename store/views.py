@@ -4,6 +4,7 @@ from os.path import join
 import shortuuid
 
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
@@ -15,7 +16,7 @@ from pharmaline.settings import MEDIA_ROOT, MEDIA_URL
 from .forms import OrderForm, QuantityForm
 from .models import Medication, Cart, CartItem, Order, OrderItem, OrderStatus
 
-from account.models import Customer, Pharmacy, PharmaAdmin
+from account.models import Customer, Pharmacy, PharmaAdmin, User
 
 
 def get_cart_count(shopping_cart):
@@ -259,18 +260,33 @@ def get_cart(request):
     return shopping_cart
 
 
-# make sure that only owner pharmacies can view their products
-def products(request, pk):
-    pharmacy = get_object_or_404(Pharmacy, id=pk)
-    if request.user == pharmacy.user:
-        pharmacy_products = pharmacy.medication_set.all()
-        context = {
-            'pharmacy_name': pharmacy,
-            'products': pharmacy_products,
-            'order_count': get_order_count(request)
-        }
+def products(request):
+    context = {}
+    if not request.GET:
+        # make sure that only admins can view all products
+        try:
+            if request.user.pharmaadmin:
+                products = Medication.objects.all()
+                context['products'] = products
+        except (AttributeError, ObjectDoesNotExist):
+            # AttributeError - is thrown for anonymous users
+            # ObjectDoesNotExist - is thrown for non pharmaadmin users
+            raise Http404
+    elif request.GET.get('user') == 'pharmacy':
+        # make sure that only owner pharmacies can view their products
+        pharmacy_id = request.GET.get('id')
+        pharmacy = get_object_or_404(Pharmacy, id=pharmacy_id)
+        if request.user == pharmacy.user:
+            pharmacy_products = pharmacy.medication_set.all()
+            context.update({
+                'pharmacy_name': pharmacy,
+                'products': pharmacy_products,
+            })
+        else:
+            raise Http404('Page not found')
     else:
         raise Http404('Page not found')
+    context['order_count'] = get_order_count(request)
 
     return render(request, 'store/products.html', context=context)
 
