@@ -13,6 +13,7 @@ class Customer(models.Model):
 
     class Meta:
         db_table = 'account_customer'
+        ordering = ['id']
 
     def __str__(self):
         return self.full_name
@@ -32,6 +33,7 @@ class Pharmacy(models.Model):
 
     class Meta:
         db_table = 'account_pharmacy'
+        ordering = ['id']
 
     def __str__(self):
         return f'{self.pharmacy_name}'
