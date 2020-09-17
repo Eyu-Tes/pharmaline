@@ -40,6 +40,10 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'form-control form-control-sm'}))
 
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs.update({'autofocus': 'autofocus'})
+
 
 class CustomerProfileForm(ModelForm):
     class Meta:
