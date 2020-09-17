@@ -19,36 +19,13 @@
                 <div class="sidebar-menu">
                     <ul>
                         <li>
-                            <a href="#pharmacySubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Manage Pharmacy</a>
-                            <div class="sidebar-submenu">
-                                <ul class="collapse show" id="pharmacySubmenu">
-                                    <li>
-                                        <a href="{% url 'account:register' 'pharmacy' %}">Create Pharmacy Account</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'account:admin_manage' 'delete' 'pharmacy' %}">Remove Pharmacy Account</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'account:admin_manage' 'disable' 'pharmacy' %}">Disable Pharmacy Account</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'account:admin_manage' 'enable' 'pharmacy' %}">Enable Pharmacy Account</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <a href="#">Pharmacies</a>
                         </li>
                         <li>
-                            <a href="#customerSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Manage Customer</a>
-                            <div class="sidebar-submenu">
-                                <ul class="collapse show" id="customerSubmenu">
-                                    <li>
-                                        <a href="{% url 'account:admin_manage' 'disable' 'customer' %}">Disable Custmoer Account</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'account:admin_manage' 'enable' 'customer' %}">Enable Custmoer Account</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <a href="#">Customers</a>
+                        </li>
+                        <li>
+                            <a href="#">Products</a>
                         </li>
                     </ul>
                 </div>
