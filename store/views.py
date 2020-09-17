@@ -401,6 +401,8 @@ def user_list(request, user_label):
         if request.user.pharmaadmin:
             if user_label == 'pharmacy':
                 user_list = Pharmacy.objects.all()
+            elif user_label == 'customer':
+                user_list = Customer.objects.all()
             else:
                 raise Http404
     except AttributeError:

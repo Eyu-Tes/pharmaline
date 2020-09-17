@@ -13,6 +13,8 @@
         <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">
             {% if user_label == 'pharmacy' %}
                 Pharmacies
+            {% elif user_label == 'customer' %}
+                Customers
             {% endif %}
         </h2>
         <div id="add-section" class="d-none text-center">
@@ -29,12 +31,14 @@
                     <th>User Name</th>
                     {% if user_label == 'pharmacy' %}
                         <th>Pharmacy Name</th>
+                        <th>Location</th>
+                    {% elif user_label == 'customer' %}
+                        <th>Customer Name</th>
                     {% endif %}
-                    <th>Location</th>
                     <th>Phone</th>
                     <th>Email</th>
                     <th>Date Joined</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,8 +48,10 @@
                         <td id="name">{{ user.user }}</td>
                         {% if user_label == 'pharmacy' %}
                             <td>{{ user.pharmacy_name }}</td>
+                            <td>{{ user.location }}</td>
+                        {% elif user_label == 'customer' %}
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
                         {% endif %}
-                        <td>{{ user.location }}</td>
                         <td>{{ user.phone }}</td>
                         <td>{{ user.user.email }}</td>
                         <td>{{ user.date_created|date:"M Y" }}</td>
@@ -54,6 +60,8 @@
                                 <a class="text-warning" href="#">disable</a>
                                 <span class="mx-1">|</span> 
                                 <a class="text-danger" href="#">delete</a>
+                            {% elif user_label == 'customer' %}
+                                <a class="text-warning" href="#">disable</a>
                             {% endif %}
                         </td>
                     </tr>
