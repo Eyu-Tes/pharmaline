@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 
-from .views import (index, cart, about, store, search, details, checkout, thankyou, products, orders, order_details,
+from .views import (index, cart, about, store, search, detail, checkout, thankyou, products, orders, order_details,
                     pharma_admin_home)
 
 app_name = 'store'

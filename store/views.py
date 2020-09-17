@@ -148,7 +148,7 @@ def get_similar_medication(med: Medication):
     return similar_meds
 
 
-def details(request, med_id):
+def detail(request, med_id):
     form = QuantityForm()
     shopping_cart = get_cart(request)
     med = Medication.objects.get(id=med_id)
