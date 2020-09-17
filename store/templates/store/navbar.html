@@ -14,22 +14,32 @@
         <div class="d-flex align-items-center justify-content-between">
             <div class="logo">
                 <div class="site-logo">
-                    <a href="{% url 'store:home' %}" class="js-logo-clone">Pharmaline</a>
+                    <a 
+                        {% if user.pharmaadmin %}
+                            href="{% url 'store:pharma_admin_home' %}"
+                        {% else %}
+                            href="{% url 'store:home' %}"
+                        {% endif %}
+                        class="js-logo-clone">Pharmaline</a>
                 </div>
             </div>
             <div class="main-nav d-none d-lg-block">
                 <nav class="site-navigation text-right text-md-center" role="navigation">
                     <ul class="site-menu js-clone-nav d-none d-lg-block">
-                        <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
-                        {% if user.pharmacy %}
-                            <li><a href="{% url 'store:products' user.pharmacy.id %}">Products</a></li>
-                            <li><a href="{% url 'store:orders' %}">Orders <span class="badge badge-warning">
-                                {{ order_count }}</span></a></li>
-                            <li><a href="#">Notifications <span class="badge badge-info">3</span></a></li>
+                        {% if user.pharmaadmin %}
+                            <li class="active"><a href="{% url 'store:pharma_admin_home' %}">Admin Homepage</a></li>
                         {% else %}
-                            <li><a href="{% url 'store:store' '1' %}">Store</a></li>
-                            <li><a href="{% url 'store:about' %}">About</a></li>
-                            <li><a href="#">Contact</a></li>
+                            <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
+                            {% if user.pharmacy %}
+                                <li><a href="{% url 'store:products' user.pharmacy.id %}">Products</a></li>
+                                <li><a href="{% url 'store:orders' %}">Orders <span class="badge badge-warning">
+                                    {{ order_count }}</span></a></li>
+                                <li><a href="#">Notifications <span class="badge badge-info">3</span></a></li>
+                            {% else %}
+                                <li><a href="{% url 'store:store' '1' %}">Store</a></li>
+                                <li><a href="{% url 'store:about' %}">About</a></li>
+                                <li><a href="#">Contact</a></li>
+                            {% endif %}
                         {% endif %}
                     </ul>
                 </nav>
@@ -47,6 +57,8 @@
                                                 href="{% url 'account:profile' 'customer' user.id %}">
                                             {% elif  user.pharmacy %}
                                                 href="{% url 'account:profile' 'pharmacy' user.id%}">
+                                            {% elif  user.pharmaadmin %}
+                                                href="{% url 'account:profile' 'pharma_admin' user.id%}">
                                         {% endif %}
                                        Profile</a>
                                     </li>
@@ -72,7 +84,7 @@
                 </nav>
             </div>
             <div class="icons">
-                {% if not user.pharmacy %}
+                {% if not user.pharmacy and not user.pharmaadmin %}
                     <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
                     <a href="{% url 'store:cart' %}" class="icons-btn d-inline-block bag">
                         <span class="icon-shopping-bag"></span>

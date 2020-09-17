@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
-from .models import Customer, Pharmacy
+from .models import Customer, Pharmacy, PharmaAdmin
 
 
 class RegistrationForm(UserCreationForm):
@@ -23,6 +23,7 @@ class RegistrationForm(UserCreationForm):
             'class': 'form-control form-control-sm'}), label='Password')
         self.fields['password2'] = forms.CharField(widget=forms.PasswordInput(attrs={
             'class': 'form-control form-control-sm'}), label='Confirm password')
+        self.fields['username'].widget.attrs.pop("autofocus", None)
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -30,7 +31,7 @@ class RegistrationForm(UserCreationForm):
             raise ValidationError("This field is required.")
         if User.objects.filter(email=email):
             raise ValidationError("A user with that email already exists.")
-        return self.cleaned_data
+        return email
 
 
 class LoginForm(forms.Form):
@@ -46,7 +47,7 @@ class CustomerProfileForm(ModelForm):
         fields = ['first_name', 'last_name', 'phone']
 
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': 'autofocus'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', }),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
@@ -58,21 +59,47 @@ class PharmacyProfileForm(ModelForm):
         fields = ['pharmacy_name', 'phone', 'location']
 
         widgets = {
-            'pharmacy_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': 'autofocus'}),
+            'pharmacy_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', }),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'location': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
 
+class PharmaAdminProfileForm(ModelForm):
+    class Meta:
+        model = PharmaAdmin
+        fields = ['first_name', 'last_name', 'phone']
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm', }),
+            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+        }
+
+
 class UpdateUserForm(ModelForm):
+    id = forms.IntegerField(required=False, widget=forms.HiddenInput)
+
     class Meta:
         model = User
         fields = ['username', 'email']
 
         widgets = {
+            # 'id': forms.HiddenInput(),
             'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'})
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
         }
+
+    def clean_email(self):
+        user_id = self.data.get('id')
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise ValidationError("This field is required.")
+        # Check that updated email is unique, by comparing with existing emails
+        # But don't include the existing email of the current user in the update from
+        if User.objects.filter(email=email).exclude(id=user_id):
+            raise ValidationError("A user with that email already exists.")
+        return email
 
 
 class RequestUserPasswordResetForm(PasswordResetForm):

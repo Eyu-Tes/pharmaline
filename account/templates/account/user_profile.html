@@ -12,7 +12,7 @@
 
 				<form action='' method="post" novalidate>
 					{% csrf_token %}
-
+			
 					{# render the user form #}
 					{% for field in form %}
 						<div class="form-group">
@@ -37,12 +37,14 @@
 
 					<div class="py-3">
 						<input type="submit" value="{{ submit_msg }}" class="btn btn-dark btn-sm">
-                        <a href="{% url 'account:delete' user.id %}" data-toggle="modal" data-target="#exampleModal" class="btn btn-danger btn-sm float-right" style="padding: 0.25rem 0.5rem !important;">Delete</a>
+						<a href="{% url 'account:delete' user.id %}" data-toggle="modal" data-target="#exampleModal" class="btn btn-danger btn-sm float-right" style="padding: 0.25rem 0.5rem !important;">Delete</a>
 					</div>
 					
-					<small class="text-muted">
-						<a class="d-inline" href="{% url 'account:password_change' %}" style="padding: 0.25rem 0 !important;">Change Password</a>
-					</small>
+					{% ifnotequal form_header 'Administrator Profile' %}
+						<small class="text-muted">
+							<a class="d-inline" href="{% url 'account:password_change' %}" style="padding: 0.25rem 0 !important;">Change Password</a>
+						</small>
+					{% endifnotequal %}
 				</form>
 			</div>
 		</div>
@@ -75,3 +77,11 @@
       </div>
     </div>
 {% endblock content %}
+
+{% block page_specific_script %}
+	<script>
+		/* hide ID field formgroup */
+		let idField = document.querySelector('input[name=id]');
+		idField.parentElement.style.display = 'none';
+	</script>
+{% endblock page_specific_script %}

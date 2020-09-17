@@ -1,0 +1,121 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include 'store/head_tag.html' %}
+    <!-- Page Specific Style -->
+    <link rel="stylesheet" href="{% static 'store/custom/css/admin-page-style.css' %}">
+  </head>
+  <body>
+    <div class="page-wrapper toggled">
+        <!-- Sidebar  -->
+        <nav id="sidebar" class="sidebar-wrapper">
+            <div class="sidebar-content">
+                <div class="sidebar-header">
+                    <h4><i class="fas fa-user-plus"></i> Admin Menu</h4>
+                </div>
+
+                <div class="sidebar-menu">
+                    <ul>
+                        <li>
+                            <a href="#pharmacySubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Manage Pharmacy</a>
+                            <div class="sidebar-submenu">
+                                <ul class="collapse show" id="pharmacySubmenu">
+                                    <li>
+                                        <a href="{% url 'account:register' 'pharmacy' %}">Create Pharmacy Account</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'account:admin_manage' 'delete' 'pharmacy' %}">Remove Pharmacy Account</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'account:admin_manage' 'disable' 'pharmacy' %}">Disable Pharmacy Account</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'account:admin_manage' 'enable' 'pharmacy' %}">Enable Pharmacy Account</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#customerSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Manage Customer</a>
+                            <div class="sidebar-submenu">
+                                <ul class="collapse show" id="customerSubmenu">
+                                    <li>
+                                        <a href="{% url 'account:admin_manage' 'disable' 'customer' %}">Disable Custmoer Account</a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'account:admin_manage' 'enable' 'customer' %}">Enable Custmoer Account</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Content  -->
+        <div class="page-content">
+            
+            {% include 'store/admin/navbar.html' %}
+
+            {% include 'account/alert_msg.html' %}
+
+            <div class="main-content container p-5">
+                <div class="row">
+                    <div class="col-md-6 mb-3 text-center">
+                        <div class="bg-info p-3">
+                            <div>
+                                <h3>{{pharmacies}}</h3>
+                                <p>Member Pharmacies</p>
+                            </div>
+                            <div>
+                                <i class="fas fa-clinic-medical fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3 text-center">
+                        <div class="bg-danger p-3">
+                            <div>
+                                <h3>{{customers}}</h3>
+                                <p>Member Customers</p>
+                            </div>
+                            <div>
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3 text-center">
+                        <div class="bg-warning p-3">
+                            <div>
+                                <h3>{{products}}</h3>
+                                <p>Products Offered</p>
+                            </div>
+                            <div>
+                                <i class="fas fa-capsules fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3 text-center">
+                        <div class="bg-secondary p-3">
+                            <div>
+                                <h3>This doesn't work yet.</h3>
+                                <p>Products Sold</p>
+                            </div>
+                            <div>
+                                <i class="fas fa-shopping-cart fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                 </div>    
+                 <h3 class="text-center mt-5">More Styling in the near future...</h3>
+            </div>
+        </div>
+    </div>
+
+    {% include 'store/script_tags.html' %}
+    <!-- Page Specific Script -->
+    <script src="{% static 'store/custom/js/admin-page-script.js' %}"></script>
+  </body>
+</html>

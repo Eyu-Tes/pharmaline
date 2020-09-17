@@ -1,8 +1,8 @@
 from datetime import datetime
 from os import listdir
 from os.path import join
-
 import shortuuid
+
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -11,8 +11,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
 from pharmaline.settings import MEDIA_ROOT, MEDIA_URL
+
 from .forms import OrderForm, QuantityForm
-from .models import Medication, Cart, CartItem, Pharmacy, Order, OrderItem, OrderStatus
+from .models import Medication, Cart, CartItem, Order, OrderItem, OrderStatus
+
+from account.models import Customer, Pharmacy, PharmaAdmin
 
 
 def get_cart_count(shopping_cart):
@@ -145,7 +148,7 @@ def get_similar_medication(med: Medication):
     return similar_meds
 
 
-def detail(request, med_id):
+def details(request, med_id):
     form = QuantityForm()
     shopping_cart = get_cart(request)
     med = Medication.objects.get(id=med_id)
@@ -256,6 +259,7 @@ def get_cart(request):
     return shopping_cart
 
 
+# make sure that only owner pharmacies can view their products
 def products(request, pk):
     pharmacy = get_object_or_404(Pharmacy, id=pk)
     if request.user == pharmacy.user:
@@ -356,3 +360,19 @@ def get_order_count(request):
                 Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value)))
         except Exception:
             return None
+
+
+# make sure only admin can access this page
+def pharma_admin_home(request):
+    get_object_or_404(PharmaAdmin, user_id=request.user.id)
+    pharmacy_count = Pharmacy.objects.count()
+    customer_count = Customer.objects.count()
+    product_count = Medication.objects.count()
+
+    context = {
+        'pharmacies': pharmacy_count,
+        'customers': customer_count,
+        'products': product_count
+    }
+
+    return render(request, 'store/admin/index.html', context=context)

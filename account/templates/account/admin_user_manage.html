@@ -1,0 +1,28 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+    <div class="container my-5 px-2">
+        <div class="row mx-0">
+            <div class="col-md-8 col-lg-5 py-3 mx-auto border rounded">
+                <h3 class="mb-4 pb-4 border-bottom text-center">{{msg|title}} {{user_label|title}} Account</h3>
+                <div class="mb-2">
+                    {% include 'account/alert_msg.html' %}
+                </div>
+                <form action='' method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Enter {{user_label}} username</label>
+                        <input type="text" name="username" id="username" class="form-control form-control-sm">
+                    </div>
+                    <div class="d-flex justify-content-between py-3">
+                        <a href="{% url 'store:pharma_admin_home' %}" class="btn btn-secondary" style="padding: 0.25rem 0.5rem !important;">Cancel</a>
+                        <button class="btn btn-danger" type="submit">{{msg}}</button>
+                    </div>
+                    {% if msg == 'delete' %}
+                        <small class="invalid-feedback d-block">Remember, This cannot be undone!</small>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

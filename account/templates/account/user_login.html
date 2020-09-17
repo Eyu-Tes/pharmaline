@@ -1,4 +1,4 @@
-{% extends 'account/base.html' %}
+{% extends 'store/base.html' %}
 
 {% block content %}
     <div class="container my-5 px-2">
@@ -23,11 +23,14 @@
                         </div>
                     {% endfor %}
 
+                    
                     <div class="d-flex py-3">
                         <input type="submit" value="{{ submit_msg }}" class="btn btn-dark btn-sm">
-                        <small class="text-muted ml-2" >
-                            <a href="{% url 'account:password_reset' %}" style="padding: 0.25rem 0.5rem !important;">Forgot Password?</a>
-                        </small>
+                        {% ifnotequal form_header 'Administrator Login' %}
+                            <small class="text-muted ml-2" >
+                                <a href="{% url 'account:password_reset' %}" style="padding: 0.25rem 0.5rem !important;">Forgot Password?</a>
+                            </small>
+                        {% endifnotequal %}
                     </div>
 
                     {% ifequal form_header 'Customer Login' %}
