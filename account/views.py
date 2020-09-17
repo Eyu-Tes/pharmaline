@@ -28,10 +28,6 @@ from store.views import get_order_count, get_cart, get_cart_count
 
 
 # Create your views here.
-def index(request):
-    return render(request, 'account/index.html')
-
-
 def register_view(request, user_label):
     form = RegistrationForm()
     if user_label == 'customer':
@@ -299,7 +295,7 @@ class UserPasswordChangeView(PasswordChangeView):
                             kwargs={'user_label': user_label, 'fk': self.request.user.id})
 
 
-def admin_manage_users_view(request, manage, user_label):
+def admin_manage_users_view(request, manage, user_label, pk):
     # make sure that only admin can access this functionality
     try:
         get_object_or_404(PharmaAdmin, user=request.user)
@@ -313,41 +309,33 @@ def admin_manage_users_view(request, manage, user_label):
     else:
         raise Http404('Page not found')
 
-    if request.method == 'POST':
-        username = request.POST.get('username', None)
-        if not username:
-            messages.error(request, 'Field cannot be empty.')
+    success_msg = ''
+    try:
+        target_user = None
+        if user_label == 'pharmacy':
+            target_user = Pharmacy.objects.filter(id=pk).first()
+        elif user_label == 'customer':
+            target_user = Customer.objects.filter(id=pk).first()
+
+        user_obj = target_user.user
+
+        if target_user:
+            if manage == 'delete':
+                user_obj.delete()
+                success_msg = f'{user_obj} account deleted'
+            elif manage == 'disable':
+                target_user.disabled = True
+                target_user.save()
+                success_msg = f'{user_obj} account disabled'
+            elif manage == 'enable':
+                target_user.disabled = False
+                target_user.save()
+                success_msg = f'{user_obj} account enabled'
         else:
-            try:
-                user_obj = User.objects.get(username=username)
-                target_user = None
-                if user_label == 'pharmacy':
-                    target_user = Pharmacy.objects.filter(user=user_obj).first()
-                elif user_label == 'customer':
-                    target_user = Customer.objects.filter(user=user_obj).first()
+            raise ObjectDoesNotExist
+    except ObjectDoesNotExist:
+        messages.error(request, 'Account not found.')
+    else:
+        messages.success(request, success_msg)
 
-                if target_user:
-                    if manage == 'delete':
-                        user_obj.delete()
-                        success_msg = f'{user_obj} account deleted'
-                    elif manage == 'disable':
-                        target_user.disabled = True
-                        target_user.save()
-                        success_msg = f'{user_obj} account disabled'
-                    elif manage == 'enable':
-                        target_user.disabled = False
-                        target_user.save()
-                        success_msg = f'{user_obj} account enabled'
-                else:
-                    raise ObjectDoesNotExist
-            except ObjectDoesNotExist:
-                messages.error(request, 'Account not found.')
-            else:
-                messages.success(request, success_msg)
-                return redirect('store:pharma_admin_home')
-
-    context = {
-        'msg': manage,
-        'user_label': user_label
-    }
-    return render(request, 'account/admin_user_manage.html', context=context)
+    return redirect('store:user_list', user_label=user_label)

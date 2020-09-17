@@ -1,7 +1,9 @@
-let closeAlertBtn = document.querySelector('#close-alert');
+let closeAlertBtns = document.querySelectorAll('#close-alert');
 
-if (closeAlertBtn) {
-    closeAlertBtn.addEventListener('click', closeAlert);
+if (closeAlertBtns) {
+    closeAlertBtns.forEach((closeAlertBtn)=>{
+        closeAlertBtn.addEventListener('click', closeAlert);
+    });
 }
 
 function closeAlert(){

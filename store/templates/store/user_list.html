@@ -9,6 +9,7 @@
 
 
 {% block content %}
+    {% include 'account/alert_msg.html' %}
     <div class='container'>
         <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">
             {% if user_label == 'pharmacy' %}
@@ -57,11 +58,19 @@
                         <td>{{ user.date_created|date:"M Y" }}</td>
                         <td>
                             {% if user_label == 'pharmacy' %}
-                                <a class="text-warning" href="#">disable</a>
+                                {% if user.disabled %}
+                                    <a class="text-warning" href="{% url 'account:admin_manage' 'enable' 'pharmacy' user.id %}">enable</a>
+                                {% elif not user.disabled %}
+                                    <a class="text-warning" href="{% url 'account:admin_manage' 'disable' 'pharmacy' user.id %}">disable</a>
+                                {% endif %}
                                 <span class="mx-1">|</span> 
-                                <a class="text-danger" href="#">delete</a>
+                                <a class="text-danger" href="{% url 'account:admin_manage' 'delete' 'pharmacy' user.id %}">delete</a>
                             {% elif user_label == 'customer' %}
-                                <a class="text-warning" href="#">disable</a>
+                                {% if user.disabled %}
+                                    <a class="text-warning" href="{% url 'account:admin_manage' 'enable' 'customer' user.id %}">enable</a>
+                                {% elif not user.disabled %}
+                                    <a class="text-warning" href="{% url 'account:admin_manage' 'disable' 'customer' user.id %}">disable</a>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>
