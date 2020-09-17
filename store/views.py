@@ -392,3 +392,23 @@ def pharma_admin_home(request):
     }
 
     return render(request, 'store/admin/index.html', context=context)
+
+
+# make sure only admin can view all pharmacies
+def user_list(request, user_label):
+    user_list = None
+    try:
+        if request.user.pharmaadmin:
+            if user_label == 'pharmacy':
+                user_list = Pharmacy.objects.all()
+            else:
+                raise Http404
+    except AttributeError:
+        raise Http404
+
+    context = {
+        'user_list': user_list,
+        'user_label': user_label
+    }
+
+    return render(request, 'store/user_list.html', context=context)

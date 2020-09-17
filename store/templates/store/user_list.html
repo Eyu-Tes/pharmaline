@@ -1,0 +1,84 @@
+{% extends 'store/base.html' %}
+
+{% load static %}
+
+{% block page_specific_style %}
+    <link rel="stylesheet" href="{% static 'store/mdb/css/addons/datatables.min.css' %}">    
+    <link rel="stylesheet" href="{% static 'store/custom/css/product-page-style.css' %}">
+{% endblock page_specific_style %}
+
+
+{% block content %}
+    <div class='container'>
+        <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">
+            {% if user_label == 'pharmacy' %}
+                Pharmacies
+            {% endif %}
+        </h2>
+        <div id="add-section" class="d-none text-center">
+            {% if user_label == 'pharmacy' %}
+                <a href="{% url 'account:register' 'pharmacy' %}" class="btn btn-primary btn-lg btn-block">Add Pharmacy</a>
+            {% endif %}
+        </div>
+
+        <div class="table-container d-none">
+        <table id="dtBasicExample" class="table table-hover table-lg mt-4" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User Name</th>
+                    {% if user_label == 'pharmacy' %}
+                        <th>Pharmacy Name</th>
+                    {% endif %}
+                    <th>Location</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in user_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td id="name">{{ user.user }}</td>
+                        {% if user_label == 'pharmacy' %}
+                            <td>{{ user.pharmacy_name }}</td>
+                        {% endif %}
+                        <td>{{ user.location }}</td>
+                        <td>{{ user.phone }}</td>
+                        <td>{{ user.user.email }}</td>
+                        <td>{{ user.date_created|date:"M Y" }}</td>
+                        <td>
+                            {% if user_label == 'pharmacy' %}
+                                <a class="text-warning" href="#">disable</a>
+                                <span class="mx-1">|</span> 
+                                <a class="text-danger" href="#">delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>    
+    </div>
+{% endblock content %}
+
+{% block page_specific_script %}
+    <script src="{% static 'store/custom/js/product-page-script.js' %}"></script>
+    <script src="{% static 'store/mdb/js/plugins/moment.min.js' %}"></script>
+    <script src="{% static 'store/mdb/js/addons/datatables.min.js' %}"></script>
+    <script src="{% static 'store/mdb/js/plugins/datetime-moment.js' %}"></script>
+    
+    <script>
+        /* initialise the table */
+        $(document).ready(function () {
+            // add date sorting for "Mon date, Year" & "Mon Year" formats
+            $.fn.dataTable.moment( ['ll', 'MMM YYYY'] );
+            $('#dtBasicExample').DataTable({
+                "columnDefs": []
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+    </script>
+{% endblock page_specific_script %}
