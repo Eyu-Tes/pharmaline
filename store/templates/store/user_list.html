@@ -1,4 +1,4 @@
-{% extends 'store/base.html' %}
+{% extends 'store/admin/base.html' %}
 
 {% load static %}
 
@@ -8,8 +8,7 @@
 {% endblock page_specific_style %}
 
 
-{% block content %}
-    {% include 'account/alert_msg.html' %}
+{% block page_content %}
     <div class='container'>
         <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">
             {% if user_label == 'pharmacy' %}
@@ -79,7 +78,7 @@
         </table>
         </div>    
     </div>
-{% endblock content %}
+{% endblock page_content %}
 
 {% block page_specific_script %}
     <script src="{% static 'store/custom/js/list-page-script.js' %}"></script>

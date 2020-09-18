@@ -268,6 +268,7 @@ def products(request):
             if request.user.pharmaadmin:
                 products = Medication.objects.all()
                 context['products'] = products
+                return render(request, 'store/products.html', context=context)
         except (AttributeError, ObjectDoesNotExist):
             # AttributeError - is thrown for anonymous users
             # ObjectDoesNotExist - is thrown for non pharmaadmin users
@@ -288,7 +289,7 @@ def products(request):
         raise Http404('Page not found')
     context['order_count'] = get_order_count(request)
 
-    return render(request, 'store/products.html', context=context)
+    return render(request, 'store/pharmacy_products.html', context=context)
 
 
 def orders(request):

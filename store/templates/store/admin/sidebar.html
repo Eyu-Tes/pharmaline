@@ -1,0 +1,21 @@
+<nav id="sidebar" class="sidebar-wrapper">
+    <div class="sidebar-content">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-user-plus"></i> Admin Menu</h4>
+        </div>
+
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="{% url 'store:user_list' 'pharmacy' %}">Pharmacies</a>
+                </li>
+                <li>
+                    <a href="{% url 'store:user_list' 'customer' %}">Customers</a>
+                </li>
+                <li>
+                    <a href="{% url 'store:products' %}">Products</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

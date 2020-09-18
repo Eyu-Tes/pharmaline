@@ -1,0 +1,31 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include 'store/head_tag.html' %}
+    <!-- Page Specific Style -->
+    <link rel="stylesheet" href="{% static 'store/custom/css/admin-page-style.css' %}">
+    {% block page_specific_style %}
+    {% endblock page_specific_style %}
+  </head>
+  <body>
+    <div class="page-wrapper toggled">
+        <!-- Sidebar  -->
+        {% include 'store/admin/sidebar.html' %}
+
+        <!-- Page Content  -->
+        <div class="page-content">
+            {% include 'store/admin/navbar.html' %}
+            {% include 'account/alert_msg.html' %}
+            {% block page_content %}{% endblock page_content %}
+        </div>
+    </div>
+
+    {% include 'store/script_tags.html' %}
+    <!-- Page Specific Script -->
+    <script src="{% static 'store/custom/js/admin-page-script.js' %}"></script>
+    {% block page_specific_script %}
+    {% endblock page_specific_script %}
+  </body>
+</html>

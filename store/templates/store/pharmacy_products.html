@@ -1,4 +1,4 @@
-{% extends 'store/admin/base.html' %}
+{% extends 'store/base.html' %}
 
 {% load static %}
 
@@ -7,10 +7,12 @@
     <link rel="stylesheet" href="{% static 'store/custom/css/list-page-style.css' %}">
 {% endblock page_specific_style %}
 
-{% block page_content %}
+
+{% block content %}
     <div class='container'>
-        <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">Products</h2>
+        <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">{{pharmacy_name}} Products</h2>
         <div id="add-section" class="d-none text-center">
+            <a href="#" class="btn btn-primary btn-lg btn-block">Add Product</a>
         </div>
 
         <div class="table-container d-none">
@@ -19,7 +21,6 @@
                 <tr>
                     <th>#</th>
                     <th>Name</th>
-                    <th>Pharmacy</th>
                     <th>Vendor</th>
                     <th>Qty.</th>
                     <th>Price</th>
@@ -28,6 +29,7 @@
                     <th title="Date of Manufacture">MFGDT</th>
                     <th title="Date of Expiration">EXP</th>
                     {% comment %} <th>Image</th> {% endcomment %}
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -35,9 +37,6 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td id="name">{{ product.name }}</td>
-                        {% if user.pharmaadmin %}
-                            <td>{{ product.pharmacy }}</td>
-                        {% endif %}
                         <td>{{ product.vendor }}</td>
                         <td>{{ product.stock }}</td>
                         <td>{{ product.price }}</td>
@@ -51,13 +50,14 @@
                         <td>{{ product.production_date|date:"M Y" }}</td>
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         {% comment %} <td>{{ product.image }}</td> {% endcomment %}
+                        <td><a href="#">edit</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         </div>    
     </div>
-{% endblock page_content %}
+{% endblock content %}
 
 {% block page_specific_script %}
     <script src="{% static 'store/custom/js/list-page-script.js' %}"></script>
