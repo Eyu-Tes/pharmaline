@@ -1,7 +1,9 @@
+import re
+
 from django import forms
 from django.core.exceptions import ValidationError
 
-import re
+from .models import Medication
 
 
 class OrderForm(forms.Form):
@@ -46,3 +48,28 @@ class OrderForm(forms.Form):
 class QuantityForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, label='', widget=forms.TextInput(
         attrs={'class': 'form-control text-center', 'value': '1'}))
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Medication
+        fields = ('batch_number', 'name', 'vendor', 'description', 'instructions', 'price', 'stock',
+                  'production_date', 'expiry_date', 'requires_prescription', 'image')
+
+        widgets = {
+            'batch_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'vendor': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'instructions': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'price': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'production_date': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'expiry_date': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            # 'requires_prescription': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        self.fields['batch_number'].widget.attrs.update({'autofocus': 'autofocus'})
