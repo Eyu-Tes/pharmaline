@@ -449,11 +449,9 @@ def create_product(request, pk):
 def update_product(request, pk, prod_id):
     pharmacy = get_object_or_404(Pharmacy, id=pk)
     try:
-        # make sure that only owner pharmacy can access this view
         if request.user.pharmacy == pharmacy:
             product = get_object_or_404(Medication, id=prod_id)
             if request.method == 'POST':
-                # file data placed in request.FILES
                 form = ProductForm(request.POST, request.FILES, instance=product)
                 if form.is_valid():
                     if form.has_changed():
@@ -471,5 +469,17 @@ def update_product(request, pk, prod_id):
                 'order_count': get_order_count(request)
             }
             return render(request, 'store/manage_product.html', context=context)
+    except ObjectDoesNotExist:
+        raise Http404
+
+
+def delete_product(request, pk, prod_id):
+    pharmacy = get_object_or_404(Pharmacy, id=pk)
+    try:
+        if request.user.pharmacy == pharmacy:
+            product = get_object_or_404(Medication, id=prod_id)
+            product.delete()
+            messages.success(request, 'Product deleted.')
+            return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
     except ObjectDoesNotExist:
         raise Http404

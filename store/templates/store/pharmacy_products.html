@@ -56,7 +56,7 @@
                         <td>
                             <a href="{% url 'store:product_update' user.pharmacy.id product.id %}" class="text-warning">edit</a>
                             <span class="mx-1">|</span> 
-                            <a href="#" class="text-danger">remove</a>
+                            <a href="{% url 'store:product_delete' user.pharmacy.id product.id %}" class="text-danger">remove</a>
                         </td>
                     </tr>
                 {% endfor %}
