@@ -29,7 +29,7 @@
                     <th title="Date of Manufacture">MFGDT</th>
                     <th title="Date of Expiration">EXP</th>
                     {% comment %} <th>Image</th> {% endcomment %}
-                    <th></th>
+                    <th class="nosort">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,7 +50,11 @@
                         <td>{{ product.production_date|date:"M Y" }}</td>
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         {% comment %} <td>{{ product.image }}</td> {% endcomment %}
-                        <td><a href="#">edit</a></td>
+                        <td>
+                            <a href="#" class="text-warning">edit</a>
+                            <span class="mx-1">|</span> 
+                            <a href="#" class="text-danger">remove</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -71,7 +75,11 @@
             // add date sorting for "Mon date, Year" & "Mon Year" formats
             $.fn.dataTable.moment( ['ll', 'MMM YYYY'] );
             $('#dtBasicExample').DataTable({
-                "columnDefs": []
+                // Disable ordering on columns which have a class of 'nosort'
+                "columnDefs": [ {
+                    "targets": 'nosort',
+                    "orderable": false
+                }],
             });
             $('.dataTables_length').addClass('bs-select');
         });
