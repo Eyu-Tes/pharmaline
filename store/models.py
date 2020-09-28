@@ -21,7 +21,7 @@ class Medication(models.Model):
     production_date = models.DateField()
     batch_number = models.CharField(max_length=100)
     requires_prescription = models.BooleanField()
-    image = models.FilePathField()
+    image = models.ImageField(upload_to=f'products/')
 
     def __str__(self):
         return self.name
@@ -33,6 +33,10 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.user_session
+
+    # Silents - UnorderedObjectListWarning: Pagination may yield inconsistent results ...
+    class Meta:
+        ordering = ['id']
 
 
 class CartItem(models.Model):
