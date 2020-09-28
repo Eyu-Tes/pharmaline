@@ -27,18 +27,34 @@
                 <nav class="site-navigation text-right text-md-center" role="navigation">
                     <ul class="site-menu js-clone-nav d-none d-lg-block">
                         {% if user.pharmaadmin %}
-                            <li class="active"><a href="{% url 'store:pharma_admin_home' %}">Dashboard</a></li>
+                            <li>
+                                <a href="{% url 'store:pharma_admin_home' %}">Dashboard</a>
+                            </li>
                         {% else %}
-                            <li class="active"><a href="{% url 'store:home' %}">Home</a></li>
+                            <li class="{% if request.path == '/' %}active{% endif %}">
+                                <a href="{% url 'store:home' %}">Home</a>
+                            </li>
                             {% if user.pharmacy %}
-                                <li><a href="{% url 'store:products' %}?user=pharmacy&id={{user.pharmacy.id}}">Products</a></li>
-                                <li><a href="{% url 'store:orders' %}">Orders <span class="badge badge-warning">
-                                    {{ order_count }}</span></a></li>
-                                <li><a href="#">Notifications <span class="badge badge-info">3</span></a></li>
+                                <li class="{% if '/products/' in request.path %}active{% endif %}">
+                                    <a href="{% url 'store:products' %}?user=pharmacy&id={{user.pharmacy.id}}">Products</a>
+                                </li>
+                                <li class="{% if request.path == '/orders/' %}active{% endif %}">
+                                    <a href="{% url 'store:orders' %}">Orders <span class="badge badge-warning">
+                                    {{ order_count }}</span></a>
+                                </li>
+                                <li class="{% if request.path == '/notifications/' %}active{% endif %}">
+                                    <a href="#">Notifications <span class="badge badge-info">3</span></a>
+                                </li>
                             {% else %}
-                                <li><a href="{% url 'store:store' '1' %}">Store</a></li>
-                                <li><a href="{% url 'store:about' %}">About</a></li>
-                                <li><a href="#">Contact</a></li>
+                                <li class="{% if '/store/' in request.path %}active{% endif %}">
+                                    <a href="{% url 'store:store' '1' %}">Store</a>
+                                </li>
+                                <li class="{% if request.path == '/about/' %}active{% endif %}">
+                                    <a href="{% url 'store:about' %}">About</a>
+                                </li>
+                                <li class="{% if request.path == '/contact/' %}active{% endif %}">
+                                    <a href="#">Contact</a>
+                                </li>
                             {% endif %}
                         {% endif %}
                     </ul>
