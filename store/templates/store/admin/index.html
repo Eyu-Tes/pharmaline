@@ -1,56 +1,54 @@
 {% extends 'store/admin/base.html' %}
 
-{% block page_content %}
-    <!-- Main Content  -->
-    {% block main_content %}
-        <div class="main-content container p-5">
-            <div class="row">
-                <div class="col-md-6 mb-3 text-center">
-                    <div class="bg-info p-3">
-                        <div>
-                            <h3>{{pharmacies}}</h3>
-                            <p>Member Pharmacies</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-clinic-medical fa-2x"></i>
-                        </div>
+<!-- Main Content  -->
+{% block main_content %}
+    <div class="main-content container p-5">
+        <div class="row">
+            <div class="col-md-6 mb-3 text-center">
+                <div class="bg-info p-3">
+                    <div>
+                        <h3>{{pharmacies}}</h3>
+                        <p>Member Pharmacies</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-clinic-medical fa-2x"></i>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3 text-center">
-                    <div class="bg-danger p-3">
-                        <div>
-                            <h3>{{customers}}</h3>
-                            <p>Member Customers</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-users fa-2x"></i>
-                        </div>
+            </div>
+            <div class="col-md-6 mb-3 text-center">
+                <div class="bg-danger p-3">
+                    <div>
+                        <h3>{{customers}}</h3>
+                        <p>Member Customers</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-2x"></i>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3 text-center">
-                    <div class="bg-warning p-3">
-                        <div>
-                            <h3>{{products}}</h3>
-                            <p>Products Offered</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-capsules fa-2x"></i>
-                        </div>
+            </div>
+            <div class="col-md-6 mb-3 text-center">
+                <div class="bg-warning p-3">
+                    <div>
+                        <h3>{{products}}</h3>
+                        <p>Products Offered</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-capsules fa-2x"></i>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3 text-center">
-                    <div class="bg-secondary p-3">
-                        <div>
-                            <h3>This doesn't work yet.</h3>
-                            <p>Products Sold</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-shopping-cart fa-2x"></i>
-                        </div>
+            </div>
+            <div class="col-md-6 mb-3 text-center">
+                <div class="bg-secondary p-3">
+                    <div>
+                        <h3>This doesn't work yet.</h3>
+                        <p>Products Sold</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-shopping-cart fa-2x"></i>
                     </div>
                 </div>
-                </div>    
-                <h3 class="text-center mt-5">More Styling in the near future...</h3>
-        </div>
-    {% endblock main_content %}
-{% endblock page_content %}
+            </div>
+            </div>    
+            <h3 class="text-center mt-5">More Styling in the near future...</h3>
+    </div>
+{% endblock main_content %}

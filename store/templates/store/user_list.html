@@ -8,7 +8,7 @@
 {% endblock page_specific_style %}
 
 
-{% block page_content %}
+{% block main_content %}
     <div class='container'>
         <h2 class="text-black mt-3 mb-4 pb-3 border-bottom">
             {% if user_label == 'pharmacy' %}
@@ -78,7 +78,7 @@
         </table>
         </div>    
     </div>
-{% endblock page_content %}
+{% endblock main_content %}
 
 {% block page_specific_script %}
     <script src="{% static 'store/custom/js/list-page-script.js' %}"></script>
