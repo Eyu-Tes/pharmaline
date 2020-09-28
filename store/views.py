@@ -3,17 +3,19 @@ from os import listdir
 from os.path import join
 import shortuuid
 
+from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.utils import timezone
 
 from pharmaline.settings import MEDIA_ROOT, MEDIA_URL
 
-from .forms import OrderForm, QuantityForm
+from .forms import OrderForm, QuantityForm, ProductForm
 from .models import Medication, Cart, CartItem, Order, OrderItem, OrderStatus
 
 from account.models import Customer, Pharmacy, PharmaAdmin, User
@@ -415,3 +417,30 @@ def user_list(request, user_label):
     }
 
     return render(request, 'store/user_list.html', context=context)
+
+
+def create_product(request, pk):
+    pharmacy = get_object_or_404(Pharmacy, id=pk)
+    try:
+        # make sure that only owner pharmacy can access this view
+        if request.user.pharmacy == pharmacy:
+            if request.method == 'POST':
+                # file data placed in request.FILES
+                form = ProductForm(request.POST, request.FILES)
+                if form.is_valid():
+                    product = form.save(commit=False)
+                    product.pharmacy = pharmacy
+                    product.save()
+                    messages.success(request, 'Product created.')
+                    return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+                else:
+                    messages.error(request, 'Unable to create product.')
+            else:
+                form = ProductForm()
+            context = {
+                'form': form, 'form_header': 'Add New', 'submit_msg': 'Create',
+                'order_count': get_order_count(request)
+            }
+            return render(request, 'store/manage_product.html', context=context)
+    except ObjectDoesNotExist:
+        raise Http404
