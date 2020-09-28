@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path
 
 from .views import (index, cart, about, store, search, detail, checkout, thankyou, products, orders, order_details,
-                    pharma_admin_home, user_list, create_product)
+                    pharma_admin_home, user_list, create_product, update_product)
 
 app_name = 'store'
 
@@ -21,7 +21,8 @@ urlpatterns = [
     path('orders/', orders, name='orders'),
     path('pharma_admin/', pharma_admin_home, name='pharma_admin_home'),
     path('list/<str:user_label>/', user_list, name='user_list'),
-    path('pharmacy/<int:pk>/product/create/', create_product, name='product_create')
+    path('pharmacy/<int:pk>/product/create/', create_product, name='product_create'),
+    path('pharmacy/<int:pk>/product/<int:prod_id>/update/', update_product, name='product_update')
 ]
 
 if settings.DEBUG is True:

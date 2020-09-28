@@ -444,3 +444,32 @@ def create_product(request, pk):
             return render(request, 'store/manage_product.html', context=context)
     except ObjectDoesNotExist:
         raise Http404
+
+
+def update_product(request, pk, prod_id):
+    pharmacy = get_object_or_404(Pharmacy, id=pk)
+    try:
+        # make sure that only owner pharmacy can access this view
+        if request.user.pharmacy == pharmacy:
+            product = get_object_or_404(Medication, id=prod_id)
+            if request.method == 'POST':
+                # file data placed in request.FILES
+                form = ProductForm(request.POST, request.FILES, instance=product)
+                if form.is_valid():
+                    if form.has_changed():
+                        product = form.save(commit=False)
+                        product.pharmacy = pharmacy
+                        product.save()
+                        messages.success(request, 'Product updated.')
+                    return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+                else:
+                    messages.error(request, 'Unable to update product.')
+            else:
+                form = ProductForm(instance=product)
+            context = {
+                'form': form, 'form_header': 'Edit', 'submit_msg': 'Update',
+                'order_count': get_order_count(request)
+            }
+            return render(request, 'store/manage_product.html', context=context)
+    except ObjectDoesNotExist:
+        raise Http404

@@ -54,7 +54,7 @@
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         {% comment %} <td>{{ product.image }}</td> {% endcomment %}
                         <td>
-                            <a href="#" class="text-warning">edit</a>
+                            <a href="{% url 'store:product_update' user.pharmacy.id product.id %}" class="text-warning">edit</a>
                             <span class="mx-1">|</span> 
                             <a href="#" class="text-danger">remove</a>
                         </td>
