@@ -21,7 +21,7 @@ class Medication(models.Model):
     production_date = models.DateField()
     batch_number = models.CharField(max_length=100)
     requires_prescription = models.BooleanField()
-    image = models.ImageField(upload_to=f'products/')
+    image = models.ImageField(upload_to=f'products/', default='default_med.png')
 
     def __str__(self):
         return self.name

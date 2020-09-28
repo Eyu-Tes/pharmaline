@@ -50,8 +50,7 @@
                             {% for cart_item in cart_items %}
                                 <tr>
                                     <td class="product-thumbnail">
-                                        <img src="{% static 'store/images/product_02.png' %}" alt="Image"
-                                             class="img-fluid">
+                                        <img src="{{cart_item.drug.image.url}}" alt="Image" class="img-fluid">
                                     </td>
                                     <td class="product-name">
                                         <h2 class="h5 text-black"><a
