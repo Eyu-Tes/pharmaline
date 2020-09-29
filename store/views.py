@@ -61,23 +61,18 @@ def cart(request):
 
     if request.method == 'POST':
         med = Medication.objects.get(id=request.POST['med_id'])
+        cart_item = cart_items.get(drug=med)
         try:
-            operation = request.POST['operation']
-            cart_item = cart_items.get(drug=med)
-            if operation == '+':
-                cart_item.quantity += 1
-            elif operation == '-':
-                cart_item.quantity -= 1
-            else:
-                return HttpResponseServerError('Invalid operation requested.')
-            cart_item.save()
-            if cart_item.quantity == 0:
-                cart_item.delete()
+            alter_error = alter_cart_item_quantity(request.POST['operation'], cart_item)
+            if alter_error:
+                return alter_error
             return JsonResponse({
                 'cart_count': get_cart_count(shopping_cart), 'total': get_cart_totals(shopping_cart),
                 'cart_item': serializers.serialize('json', [cart_item])
             })
-        except KeyError:  # Then the POST request came from the form on the cart page
+        except KeyError:  # (thrown from `request.POST['operation']`) then the POST request is a 'remove med' request
+            med.stock = cart_item.quantity
+            med.save()
             cart_items.filter(drug=med).delete()
         return redirect('store:cart')
 
@@ -88,6 +83,24 @@ def cart(request):
                                'order_count': get_order_count(request),
                                'subtotal': totals['subtotal'], 'total': totals['total']})
     return set_user_session_cookie(request, response)
+
+
+def alter_cart_item_quantity(operation, cart_item):
+    if operation == '+':
+        if cart_item.drug.stock == 0:
+            return HttpResponseServerError(f'There pharmacy only has {cart_item.quantity}.')
+        cart_item.quantity += 1
+        cart_item.drug.stock -= 1
+    elif operation == '-':
+        cart_item.quantity -= 1
+        cart_item.drug.stock += 1
+    else:
+        return HttpResponseServerError('Invalid operation requested.')
+    cart_item.save()
+    cart_item.drug.save()
+    if cart_item.quantity == 0:
+        cart_item.delete()
+    return None
 
 
 def add_med_to_cart(shopping_cart: Cart, med: Medication, quantity):
@@ -102,6 +115,8 @@ def add_med_to_cart(shopping_cart: Cart, med: Medication, quantity):
         new_item = CartItem(cart=shopping_cart, drug=med, quantity=quantity)
         new_item.total_price = med.price * new_item.quantity
         new_item.save()
+    med.stock -= quantity
+    med.save()
 
 
 def about(request):
@@ -129,8 +144,7 @@ def store(request, page_num):
 def search(request):
     query = request.GET.get('query', '')
     search_result = Medication.objects.filter(
-        Q(name__icontains=query) | Q(description__icontains=query) |
-        Q(instructions__icontains=query) | Q(vendor__icontains=query) |
+        Q(name__icontains=query) | Q(vendor__icontains=query) |
         Q(pharmacy__pharmacy_name__icontains=query))
     response = render(request, 'store/search_results.html',
                       context={'search_result': search_result,
@@ -152,27 +166,23 @@ def get_similar_medication(med: Medication):
 
 
 def detail(request, med_id):
-    form = QuantityForm()
-    shopping_cart = get_cart(request)
+    quantity_form = QuantityForm()
     med = Medication.objects.get(id=med_id)
+    shopping_cart = get_cart(request)
     similar_med = get_similar_medication(med)
 
     if request.method == 'POST':
-        form = QuantityForm(request.POST)
+        quantity_form = QuantityForm(request.POST)
+        quantity_form.med_stock_count = med.stock
 
-        if form.is_valid():
-            quantity = form.cleaned_data['quantity']
-
-            if quantity <= med.stock:
-                add_med_to_cart(shopping_cart, med, quantity)
-                # Adding a new medication doesn't necessarily mean you want to checkout.
-                # Therefore, the response will take the user to the 'store' page
-                return redirect('store:store', page_num=1)
-            else:
-                form.add_error('quantity', '')
+        if quantity_form.is_valid():
+            add_med_to_cart(shopping_cart, med, quantity_form.cleaned_data['quantity'])
+            # Adding a new medication doesn't necessarily mean you want to checkout.
+            # Therefore, the response will take the user to the 'store' page
+            return redirect('store:store', page_num=1)
 
     response = render(request, 'store/med_details.html',
-                      context={'form': form,
+                      context={'form': quantity_form,
                                'med': med,
                                'similar_med': similar_med,
                                'cart_count': get_cart_count(shopping_cart),
