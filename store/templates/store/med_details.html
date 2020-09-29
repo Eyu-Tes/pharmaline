@@ -45,28 +45,30 @@
                         {% endfor %}
                     {% endif %}
 
-                    <form action="{% url 'store:detail' med.id %}" method="POST">
-                        {% csrf_token %}
+                    {% if med.stock != 0 %}
+                        <form action="{% url 'store:detail' med.id %}" method="POST">
+                            {% csrf_token %}
 
-                        <div class="mb-5">
-                            <div class="input-group mb-3" style="max-width: 220px;">
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
-                                    </button>
-                                </div>
-                                {{ form.quantity }}
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
-                                    </button>
+                            <div class="mb-5">
+                                <div class="input-group mb-3" style="max-width: 220px;">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
+                                        </button>
+                                    </div>
+                                    {{ form.quantity }}
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <button name="med_id" value="{{ med.id }}"
-                                class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">
-                            Add To Cart
-                        </button>
-                    </form>
+                            <button name="med_id" value="{{ med.id }}"
+                                    class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">
+                                Add To Cart
+                            </button>
+                        </form>
+                    {% endif %}
 
                     <div class="mt-5">
                         <ul class="nav nav-pills mb-3 custom-pill" id="pills-tab" role="tablist">
@@ -118,8 +120,12 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>Stock</td>
-                                        <td>{{ med.stock }}</td>
+                                        {% if med.stock != 0 %}
+                                            <td>Stock</td>
+                                            <td>{{ med.stock }}</td>
+                                        {% else %}
+                                            <td colspan="2" class="text-danger font-weight-bold">Not available right now.</td>
+                                        {% endif %}
                                     </tr>
                                     </tbody>
                                 </table>

@@ -71,7 +71,7 @@
                                                    class="form-control text-center"
                                                    value="{{ cart_item.quantity }}"
                                                    aria-label="Example text with button addon"
-                                                   aria-describedby="button-addon1"/>
+                                                   aria-describedby="button-addon1" disabled/>
                                             <div class="input-group-append">
                                                 <button value="{{ cart_item.drug.pk }}"
                                                         class="btn btn-outline-primary btn-plus"
@@ -216,8 +216,8 @@
             success: (response) => {
                 updateTotalsAndCartCount(response);
             },
-            error: () => {
-                alert('Could not change quantity. Please try again later.');
+            error: (response) => {
+                alert(response.responseText);
             }
         });
     }
