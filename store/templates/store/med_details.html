@@ -120,7 +120,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        {% if med.stock != 0 %}
+                                        {% if med.stock > 0 %}
                                             <td>Stock</td>
                                             <td>{{ med.stock }}</td>
                                         {% else %}

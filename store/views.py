@@ -328,17 +328,16 @@ def orders(request, status):
 
 @transaction.atomic
 def set_order_status(order_item, new_status):
-    order_item.status = new_status
-    order_item.save()
-    cart_item = order_item.cart_item
-    if new_status == OrderStatus.PENDING.value:
-        cart_item.drug.stock -= cart_item.quantity
-    # If an order is put in the CANCELLED or REJECTED state the stock amount must be restored
-    elif (new_status == OrderStatus.REJECTED.value) or (new_status == OrderStatus.CANCELED.value):
-        cart_item.drug.stock += cart_item.quantity
-    else:  # The other states such as COMPLETED and DISPATCHED don't affect the stock amount
-        pass
-    cart_item.drug.save()
+    if order_item.status == new_status:
+        return
+    else:
+        order_item.status = new_status
+        order_item.save()
+        cart_item = order_item.cart_item
+        # If an order is put in the CANCELLED or REJECTED state the stock amount must be restored
+        if (new_status == OrderStatus.REJECTED.value) or (new_status == OrderStatus.CANCELED.value):
+            cart_item.drug.stock += cart_item.quantity
+            cart_item.drug.save()
 
 
 @transaction.atomic
@@ -351,8 +350,7 @@ def order_details(request, pk):
             # A customer may try to cancel an order that is already dispatched. That should not be allowed.
             if not (new_status == OrderStatus.CANCELED.value and order_item.status == OrderStatus.DISPATCHED.value):
                 set_order_status(order_item, new_status)
-                order_item.save()
-                return HttpResponse('Order cancelled successfully.')
+                return HttpResponse(f'Order status changed to {new_status}.')
             else:
                 return HttpResponseServerError('This order is already dispatched.')
         else:

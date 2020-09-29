@@ -149,11 +149,11 @@
                     'new_status': newStatus
                 },
                 success: () => {
-                    changeButtonColor(clickedStatusButton);
                     // remove the 'active-status' class from the previously active order
                     // status button and add it to the newly active status button
                     $('.active-status').removeClass().addClass('btn');
                     clickedStatusButton.addClass('active-status');
+                    changeButtonColor(clickedStatusButton);
                 },
                 error: () => {
                     alert('Could not change order status');
