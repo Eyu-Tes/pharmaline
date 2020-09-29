@@ -220,6 +220,8 @@ def checkout(request):
                 response = redirect('store:thankyou')
                 response.delete_cookie('user_session')
                 return response
+            else:
+                order_form.add_error('order_name', 'Order name taken.')
 
     totals = get_cart_totals(shopping_cart)
     return render(request, 'store/checkout.html', {
