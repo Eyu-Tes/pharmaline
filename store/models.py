@@ -99,3 +99,4 @@ class OrderItem(models.Model):
     cart_item = models.OneToOneField(CartItem, on_delete=models.CASCADE)
     pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, default=OrderStatus.PENDING.value)
+    rejection_reason = models.TextField()

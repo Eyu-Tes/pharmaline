@@ -334,11 +334,13 @@ def orders(request, status):
 
 
 @transaction.atomic
-def set_order_status(order_item, new_status):
+def set_order_status(order_item, new_status, rejection_reason=''):
     if order_item.status == new_status:
         return
     else:
         order_item.status = new_status
+        if new_status == OrderStatus.REJECTED.value:
+            order_item.rejection_reason = rejection_reason
         order_item.save()
         cart_item = order_item.cart_item
         # If an order is put in the CANCELLED or REJECTED state the stock amount must be restored
@@ -356,7 +358,7 @@ def order_details(request, pk):
         if new_status in [status.value for status in list(OrderStatus)]:
             # A customer may try to cancel an order that is already dispatched. That should not be allowed.
             if not (new_status == OrderStatus.CANCELED.value and order_item.status == OrderStatus.DISPATCHED.value):
-                set_order_status(order_item, new_status)
+                set_order_status(order_item, new_status, request.POST['rejection_reason'])
                 return HttpResponse(f'Order status changed to {new_status}.')
             else:
                 return HttpResponseServerError('This order is already dispatched.')

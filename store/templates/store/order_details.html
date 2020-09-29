@@ -10,7 +10,7 @@
 
         .img-thumbnail:hover {
             position: relative;
-            z-index: 1000;
+            z-index: 10;
             -webkit-transform: scale(1.5); /* or some other value */
             transform: scale(1.5);
         }
@@ -133,10 +133,19 @@
 
         function postOrderStatus(clickedStatusButton) {
             let newStatus = clickedStatusButton.val();
+            let rejectionMessage = '';
 
             if (newStatus === 'rejected') {
-                if (!confirm("Are you sure? This can't be undone."))
+                if (!confirm("Are you sure? This can't be undone.")) {
                     return;
+                }
+
+                rejectionMessage = prompt('Reason for rejection:', '');
+
+                if (rejectionMessage.replace(/\s*/, '') === '') {
+                    alert("Reason for rejection can not be empty. Order will not be rejected.");
+                    return;
+                }
             }
 
             $.ajax({
@@ -146,17 +155,18 @@
                     'X-CSRFToken': csrfToken
                 },
                 data: {
-                    'new_status': newStatus
+                    'new_status': newStatus,
+                    'rejection_reason': rejectionMessage
                 },
                 success: () => {
                     // remove the 'active-status' class from the previously active order
                     // status button and add it to the newly active status button
-                    $('.active-status').removeClass().addClass('btn');
+                    $('.active-status').removeClass().addClass('btn order-status');
                     clickedStatusButton.addClass('active-status');
                     changeButtonColor(clickedStatusButton);
                 },
-                error: () => {
-                    alert('Could not change order status');
+                error: (response) => {
+                    alert(response.responseText);
                 }
             });
         }
@@ -173,7 +183,9 @@
                     clickedStatusButton.attr('disabled', true);
                     // The order can not be put into any other state after it is rejected
                     for (let button of $('.order-status')) {
-                        if ($(button).val() !== 'rejected') $(button).remove();
+                        if (!$(button).is(clickedStatusButton)) {
+                            $(button).remove();
+                        }
                     }
                     break;
                 case 'DISPATCHED':

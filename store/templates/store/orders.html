@@ -26,6 +26,14 @@
 
                     <tbody>
                     {% for order in orders %}
+                        {% if order.status == 'rejected' %}
+                            <tr>
+                                <td colspan="5" class="text-center bg-warning">
+                                    {{ order.rejection_reason }}
+                                </td>
+                            </tr>
+                        {% endif %}
+
                         <tr>
                             {% if request.user.pharmacy %}
                                 <td>
