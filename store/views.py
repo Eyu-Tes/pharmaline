@@ -8,6 +8,7 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -55,6 +56,7 @@ def index(request):
     return set_user_session_cookie(request, response)
 
 
+@transaction.atomic
 def cart(request):
     shopping_cart = get_cart(request)
     cart_items = shopping_cart.cartitem_set.all()
@@ -85,6 +87,7 @@ def cart(request):
     return set_user_session_cookie(request, response)
 
 
+@transaction.atomic
 def alter_cart_item_quantity(operation, cart_item):
     if operation == '+':
         if cart_item.drug.stock == 0:
@@ -103,6 +106,7 @@ def alter_cart_item_quantity(operation, cart_item):
     return None
 
 
+@transaction.atomic
 def add_med_to_cart(shopping_cart: Cart, med: Medication, quantity):
     med = Medication.objects.get(id=med.id)
     # If the medication is already in the cart increase its quantity by `med_quantity`
@@ -219,6 +223,7 @@ def checkout(request):
         'subtotal': totals['subtotal'], 'total': totals['total']})
 
 
+@transaction.atomic
 def save_order(clean_data, files, shopping_cart, customer):
     order = Order(customer=customer, cart=shopping_cart, date_time=datetime.now(tz=timezone.utc))
     order = set_order_details(order, clean_data)
@@ -250,6 +255,7 @@ def thankyou(request):
     return render(request, 'store/thankyou.html', context={'order_count': get_order_count(request)})
 
 
+@transaction.atomic
 def get_cart(request):
     user_session = get_user_session_cookie(request)
     try:
@@ -321,6 +327,7 @@ def orders(request):
                            'cart_count': get_cart_count(get_cart(request))})
 
 
+@transaction.atomic
 def set_order_status(order_item, new_status):
     order_item.status = new_status
     order_item.save()
@@ -335,6 +342,7 @@ def set_order_status(order_item, new_status):
     cart_item.drug.save()
 
 
+@transaction.atomic
 def order_details(request, pk):
     order_item = OrderItem.objects.get(id=pk)
 
