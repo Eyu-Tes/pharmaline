@@ -201,7 +201,12 @@ def checkout(request):
     shopping_cart = get_cart(request)
     cart_items = shopping_cart.cartitem_set.all()
     prescription_required = cart_items.filter(drug__requires_prescription=True).exists()
-    order_form = OrderForm()
+    # pre-populate the form
+    customer = request.user.customer
+    order_form = OrderForm(initial={
+        'first_name': customer.first_name, 'last_name': customer.last_name,
+        'email': customer.user.email, 'phone': customer.phone
+    })
 
     if request.method == 'POST':
         order_form = OrderForm(request.POST, request.FILES)

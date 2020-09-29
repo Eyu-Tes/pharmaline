@@ -8,12 +8,13 @@
         <div class="container">
 
 
+            <div class="m-2 p-4 border text-center bg-light text-black" style="font-size: 1.2em;">
+                <span>{{ status|title }} orders</span>
+            </div>
+
             {% if orders %}
                 <table class="table text-black border">
                     <thead class="card-header">
-                    <tr>
-                        <td colspan="5" class="text-center"><span>{{ status|title }} orders</span></td>
-                    </tr>
                     <tr>
                         <th>Order Name</th>
                         <th>Item</th>
