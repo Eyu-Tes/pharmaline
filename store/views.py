@@ -368,10 +368,10 @@ def order_details(request, pk):
         order_states.remove(OrderStatus.CANCELED.value)
     # Collect the prescription images for the order
     try:
-        order_prescriptions = listdir(join(MEDIA_ROOT, order_item.order.order_name))
+        order_prescriptions = listdir(join(MEDIA_ROOT, Order.PRESCRIPTIONS_DIR_NAME, order_item.order.order_name))
         image_paths = []
         for image in order_prescriptions:
-            image_paths.append(join(MEDIA_URL, order_item.order.order_name, image))
+            image_paths.append(join(MEDIA_URL, Order.PRESCRIPTIONS_DIR_NAME, order_item.order.order_name, image))
     except IOError:
         image_paths = None
     return render(request, 'store/order_details.html',

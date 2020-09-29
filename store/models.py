@@ -68,11 +68,13 @@ class Order(models.Model):
     cart = models.OneToOneField(Cart, on_delete=models.DO_NOTHING)
     date_time = models.DateTimeField(verbose_name='Placement Time')
 
+    PRESCRIPTIONS_DIR_NAME = 'prescriptions'
+
     def __str(self):
         return self.order_name
 
     def save_prescription_image(self, image):
-        save_path = os.path.join(settings.MEDIA_ROOT, self.order_name)
+        save_path = os.path.join(settings.MEDIA_ROOT, self.PRESCRIPTIONS_DIR_NAME, self.order_name)
         os.makedirs(save_path, exist_ok=True)
         image_extension = image.name[image.name.rindex('.'):]
         file_path = os.path.join(save_path, shortuuid.random(length=10) + image_extension)
