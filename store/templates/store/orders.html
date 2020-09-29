@@ -54,7 +54,7 @@
                                 <p>{{ order.order.note }}</p>
                             </td>
                             <td>
-                                <button class="text-black status-btn btn disabled" disabled>
+                                <button id="order-{{ order.pk }}" class="text-black status-btn btn disabled" disabled>
                                     {{ order.status|upper }}
                                 </button>
                                 {% if request.user.customer and order.status != 'dispatched' %}
@@ -81,7 +81,8 @@
         let csrfToken = Cookies.get('csrftoken');
 
         function cancelOrder(cancelButton) {
-            $.ajax({
+            if (confirm("Are you sure? This can't be undone.")) {
+                $.ajax({
                 url: `details/${cancelButton.val()}/`,
                 type: 'POST',
                 headers: {
@@ -93,13 +94,14 @@
                 success: () => {
                     cancelButton.removeClass();
                     cancelButton.addClass('btn btn-dark');
-                    $('.status-btn').html('CANCELED');
+                    $(`#order-${cancelButton.val()}`).html('CANCELED');
                     cancelButton.prop('disabled', true);
                 },
                 error: (data) => {
                     alert(data.responseText);
                 }
             });
+            }
         }
     </script>
 {% endblock page_specific_script %}

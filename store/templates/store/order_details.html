@@ -134,6 +134,11 @@
         function postOrderStatus(clickedStatusButton) {
             let newStatus = clickedStatusButton.val();
 
+            if (newStatus === 'rejected') {
+                if (!confirm("Are you sure? This can't be undone."))
+                    return;
+            }
+
             $.ajax({
                 url: '',
                 type: 'POST',
@@ -165,6 +170,11 @@
                     break;
                 case 'REJECTED':
                     appropriateClass = 'btn-danger';
+                    clickedStatusButton.attr('disabled', true);
+                    // The order can not be put into any other state after it is rejected
+                    for (let button of $('.order-status')) {
+                        if ($(button).val() !== 'rejected') $(button).remove();
+                    }
                     break;
                 case 'DISPATCHED':
                     appropriateClass = 'btn-dark';
