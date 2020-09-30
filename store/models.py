@@ -26,6 +26,10 @@ class Medication(models.Model):
     def __str__(self):
         return self.name
 
+    # Silents - UnorderedObjectListWarning: Pagination may yield inconsistent results ...
+    class Meta:
+        ordering = ['id']
+
 
 class Cart(models.Model):
     date = models.DateTimeField()
@@ -33,10 +37,6 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.user_session
-
-    # Silents - UnorderedObjectListWarning: Pagination may yield inconsistent results ...
-    class Meta:
-        ordering = ['id']
 
 
 class CartItem(models.Model):
