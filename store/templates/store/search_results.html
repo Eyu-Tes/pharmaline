@@ -13,6 +13,27 @@
             align-items: center;
             font-size: 1.5em;
         }
+
+        .paging-nav {
+            text-align: right;
+            padding-top: 2px;
+        }
+
+        .paging-nav a {
+            margin: auto 1px;
+            text-decoration: none;
+            display: inline-block;
+            padding: 1px 7px;
+            background: #91b9e6;
+            color: white;
+            border-radius: 3px;
+        }
+
+        .paging-nav .selected-page {
+            background: #187ed5;
+            font-weight: bold;
+        }
+
     </style>
 {% endblock page_specific_style %}
 
@@ -21,18 +42,17 @@
     <div class="site-section">
         <div class="container">
             {% if search_result|length > 0 %}
-                <hr/>
-                <span class="display-4 offset-2">Search results</span>
+                <div class="m-2 p-4 text-center bg-dark text-white" style="font-size: 1.2em;">Your search returned these results</div>
                 <div class="tab-pane" id="pills-profile" role="tabpanel"
                      aria-labelledby="pills-profile-tab">
 
-                    <table class="table custom-table text-black">
+                    <table id="results_table" class="table custom-table text-black">
                         <thead class="thead-light">
                         <tr>
-                            <th>Medication</th>
-                            <th>Pharmacy</th>
-                            <th>Location</th>
-                            <th></th>
+                            <th class="font-weight-bold">Medication</th>
+                            <th class="font-weight-bold">Pharmacy</th>
+                            <th class="font-weight-bold">Location</th>
+                            <th class="font-weight-bold"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,10 +72,20 @@
                     </table>
                 </div>
             {% else %}
-                <span id="no-med-message" class="text-danger font-weight-bold">Sorry. No medication or pharmacy matches your search.</span>
+                <span id="no-med-message" class="text-danger font-weight-bold">Sorry. No medication matches your search.</span>
             {% endif %}
             <hr/>
             <a class="btn btn-black" href="{% url 'store:store' '1' %}">Store</a>
         </div>
     </div>
 {% endblock content %}
+
+{% block page_specific_script %}
+    <script src="{% static 'store/custom/js/paging.js' %}"></script>
+
+    <script>
+        $(document).ready(() => {
+            $('#results_table').paging({limit: 10});
+        });
+    </script>
+{% endblock page_specific_script %}
