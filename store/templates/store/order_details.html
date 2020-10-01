@@ -3,16 +3,18 @@
 {% load static %}
 
 {% block page_specific_style %}
+    <link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}">
+
     <style>
-        .img-thumbnail {
+        .image {
             transition: transform 0.25s ease;
         }
 
-        .img-thumbnail:hover {
+        .image:hover {
             position: relative;
             z-index: 10;
-            -webkit-transform: scale(1.5); /* or some other value */
-            transform: scale(1.5);
+            -webkit-transform: scale(1.1);
+            transform: scale(1.1);
         }
     </style>
 {% endblock page_specific_style %}
@@ -107,8 +109,8 @@
                     <div class="row">
                         {% for image_path in image_paths %}
                             <div class="col-md-6">
-                                <img class="img-fluid img-thumbnail" src="{{ image_path }}" height="200"
-                                     alt="Prescription image">
+                                <img class="image img-thumbnail" src="{{ image_path }}" height="400"
+                                     alt="Prescription image" data-action="zoom">
                             </div>
                         {% endfor %}
                     </div>
@@ -124,6 +126,7 @@
 
 {% block page_specific_script %}
     <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
+    <script src="{% static 'store/custom/js/zoom.js' %}"></script>
     <script>
         let csrfToken = Cookies.get('csrftoken');
 
