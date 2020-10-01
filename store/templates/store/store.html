@@ -36,10 +36,7 @@
                     {% for med in meds %}
                         <div class="col-sm-6 col-lg-4 text-center item mb-4">
                             <a href="{% url 'store:detail' med.pk %}"> 
-                                <img
-                                    src="{{med.image.url}}" alt="Image" width="270" 
-                                    onerror="this.src='images/default_med.png'"
-                                >
+                                <img src="{{med.image.url}}" alt="Image" width="270">
                             </a>
                             <h3 class="text-dark"><a href="{% url 'store:detail' med.pk %}">{{ med.name }}</a></h3>
                             <p class="price">
