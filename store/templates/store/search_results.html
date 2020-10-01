@@ -52,6 +52,7 @@
                             <th class="font-weight-bold">Medication</th>
                             <th class="font-weight-bold">Pharmacy</th>
                             <th class="font-weight-bold">Location</th>
+                            <th class="font-weight-bold">Stock</th>
                             <th class="font-weight-bold"></th>
                         </tr>
                         </thead>
@@ -62,6 +63,7 @@
                                 <td>{{ med.name }}</td>
                                 <td>{{ med.pharmacy.pharmacy_name }}</td>
                                 <td>{{ med.pharmacy.location }}</td>
+                                <td>{{ med.stock }}</td>
                                 <td class="bg-light">
                                     <a href="{% url 'store:detail' med.id %}">Details</a>
                                 </td>
