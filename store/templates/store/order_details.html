@@ -128,7 +128,6 @@
     <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
     <script src="{% static 'store/custom/js/zoom.js' %}"></script>
     <script>
-        let csrfToken = Cookies.get('csrftoken');
 
         function orderStatusButtonClicked(clickedStatusButton) {
             postOrderStatus(clickedStatusButton);
@@ -155,7 +154,7 @@
                 url: '',
                 type: 'POST',
                 headers: {
-                    'X-CSRFToken': csrfToken
+                    'X-CSRFToken': Cookies.get('csrftoken')
                 },
                 data: {
                     'new_status': newStatus,

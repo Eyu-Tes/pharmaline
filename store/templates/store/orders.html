@@ -8,7 +8,7 @@
         <div class="container">
 
 
-            <div class="m-2 p-4 border text-center bg-light text-black" style="font-size: 1.2em;">
+            <div class="m-2 p-4 border text-center bg-dark text-white" style="font-size: 1.2em;">
                 <span>{{ status|title }} orders</span>
             </div>
 
@@ -96,7 +96,7 @@
                 <div>
                     <button onclick="location.href='{% url 'store:orders' 'pending' %}'" class="btn btn-black mt-3 mx-2"
                             type="button">
-                        Pending
+                        Pending ({{ all_order_counts.pending }})
                     </button>
                 </div>
 
@@ -105,7 +105,7 @@
                     <button onclick="location.href='{% url 'store:orders' 'dispatched' %}'"
                             class="btn btn-black mt-3 mx-2"
                             type="button">
-                        Dispatched
+                        Dispatched ({{ all_order_counts.dispatched }})
                     </button>
                 </div>
 
@@ -113,7 +113,7 @@
                     <button onclick="location.href='{% url 'store:orders' 'complete' %}'"
                             class="btn btn-black mt-3 mx-2"
                             type="button">
-                        Complete
+                        Complete ({{ all_order_counts.complete }})
                     </button>
                 </div>
 
@@ -122,7 +122,7 @@
                         <button onclick="location.href='{% url 'store:orders' 'canceled' %}'"
                                 class="btn btn-black mt-3 mx-2"
                                 type="button">
-                            Canceled
+                            Canceled ({{ all_order_counts.canceled }})
                         </button>
                     </div>
                 {% endif %}
@@ -131,7 +131,7 @@
                     <button onclick="location.href='{% url 'store:orders' 'rejected' %}'"
                             class="btn btn-black mt-3 mx-2"
                             type="button">
-                        Rejected
+                        Rejected ({{ all_order_counts.rejected }})
                     </button>
                 </div>
             </nav>
@@ -141,32 +141,34 @@
 {% endblock content %}
 
 {% block page_specific_script %}
-    <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
-    <script>
-        let csrfToken = Cookies.get('csrftoken');
+    {% if request.user.customer %}
+        <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
 
-        function cancelOrder(cancelButton) {
-            if (confirm("Are you sure? This can't be undone.")) {
-                $.ajax({
-                    url: `details/${cancelButton.val()}/`,
-                    type: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    },
-                    data: {
-                        'new_status': 'canceled'
-                    },
-                    success: () => {
-                        cancelButton.removeClass();
-                        cancelButton.addClass('btn btn-dark');
-                        $(`#order-${cancelButton.val()}`).html('CANCELED');
-                        cancelButton.prop('disabled', true);
-                    },
-                    error: (data) => {
-                        alert(data.responseText);
-                    }
-                });
+        <script>
+
+            function cancelOrder(cancelButton) {
+                if (confirm("Are you sure? This can't be undone.")) {
+                    $.ajax({
+                        url: `details/${cancelButton.val()}/`,
+                        type: 'POST',
+                        headers: {
+                            'X-CSRFToken': Cookies.get('csrftoken')
+                        },
+                        data: {
+                            'new_status': 'canceled'
+                        },
+                        success: () => {
+                            cancelButton.removeClass();
+                            cancelButton.addClass('btn btn-dark');
+                            $(`#order-${cancelButton.val()}`).html('CANCELED');
+                            cancelButton.prop('disabled', true);
+                        },
+                        error: (data) => {
+                            alert(data.responseText);
+                        }
+                    });
+                }
             }
-        }
-    </script>
+        </script>
+    {% endif %}
 {% endblock page_specific_script %}

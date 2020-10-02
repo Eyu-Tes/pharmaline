@@ -190,7 +190,6 @@
 {% block page_specific_script %}
 <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
 <script type="text/javascript">
-    let csrfToken = Cookies.get('csrftoken');
 
     function increaseDecreaseQuantity(button) {
         let operation, classes = button.attr("class").split(/\s+/);
@@ -207,7 +206,7 @@
             url: '',
             type: 'POST',
             headers: {
-                'X-CSRFToken': csrfToken
+                'X-CSRFToken': Cookies.get('csrftoken')
             },
             data: {
                 'med_id': button.val(),

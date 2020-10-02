@@ -259,7 +259,10 @@ def set_order_details(order: Order, clean_data):
 
 
 def thankyou(request):
-    return render(request, 'store/thankyou.html', context={'order_count': get_order_count(request)})
+    return render(request, 'store/thankyou.html', context={
+        'order_count': get_order_count(request),
+        'cart_count': get_cart_count(get_cart(request))
+    })
 
 
 @transaction.atomic
@@ -325,11 +328,24 @@ def orders(request, status):
     except Exception:  # if this block is hit the user is a customer
         customer = request.user.customer
         order_items = OrderItem.objects.filter(order__customer=customer)
-    order_items = order_items.filter(status__exact=status)
+    all_order_counts = {
+        OrderStatus.PENDING.value:
+            len(order_items.filter(status__exact=OrderStatus.PENDING.value)),
+        OrderStatus.DISPATCHED.value:
+            len(order_items.filter(status__exact=OrderStatus.DISPATCHED.value)),
+        OrderStatus.COMPLETE.value:
+            len(order_items.filter(status__exact=OrderStatus.COMPLETE.value)),
+        OrderStatus.REJECTED.value:
+            len(order_items.filter(status__exact=OrderStatus.REJECTED.value)),
+        OrderStatus.CANCELED.value:
+            len(order_items.filter(status__exact=OrderStatus.CANCELED.value))
+    }
+
     return render(request, 'store/orders.html',
-                  context={'orders': order_items,
+                  context={'orders': order_items.filter(status__exact=status),
                            'status': status,
                            'order_count': get_order_count(request),
+                           'all_order_counts': all_order_counts,
                            'cart_count': get_cart_count(get_cart(request))})
 
 
