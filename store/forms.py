@@ -47,7 +47,15 @@ class OrderForm(forms.Form):
 
 class QuantityForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, label='', widget=forms.TextInput(
-        attrs={'class': 'form-control text-center', 'value': '1'}))
+        attrs={'class': 'form-control text-center', 'value': '1'}),
+        error_messages={'invalid': 'Make sure you insert a number here.'})
+    med_stock_count = None
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data['quantity']
+        if quantity > self.med_stock_count:
+            raise ValidationError(f'The pharmacy only has {self.med_stock_count}.')
+        return quantity
 
 
 class ProductForm(forms.ModelForm):

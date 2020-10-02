@@ -38,10 +38,11 @@
 
                     <p><strong class="text-primary h4">{{ med.price }} ETB</strong></p>
 
+
                     {% if form.errors %}
-                        <p class="invalid-feedback d-block">
-                            There are only {{ med.stock }} at the pharmacy
-                        </p>
+                        {% for error in form.quantity.errors %}
+                            <p class="invalid-feedback d-block">{{ error }}</p>
+                        {% endfor %}
                     {% endif %}
 
                     <form action="{% url 'store:detail' med.id %}" method="POST">
