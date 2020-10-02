@@ -4,10 +4,16 @@
 
 {% block content %}
     <div class="site-section">
+
         <div class="container">
+
+
             {% if orders %}
                 <table class="table text-black border">
                     <thead class="card-header">
+                    <tr>
+                        <td colspan="5" class="text-center"><span>{{ status|title }} orders</span></td>
+                    </tr>
                     <tr>
                         <th>Order Name</th>
                         <th>Item</th>
@@ -20,44 +26,47 @@
                     <tbody>
                     {% for order in orders %}
                         <tr>
-                            <td>
-                                {% if request.user.pharmacy %}
+                            {% if request.user.pharmacy %}
+                                <td>
                                     <a class="text-black" href="{% url 'store:order_details' order.id %}">
                                         {{ order.order.order_name }}
                                     </a>
-                                {% else %}
+                                </td>
+                                <td>
+                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
+                                        {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
+                                </td>
+                                <td>
+                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
+                                        {{ order.order.date_time }}</a>
+                                </td>
+                            {% else %}  {# user is customer #}
+                                <td>
                                     <p class="text-black">
                                         {{ order.order.order_name }}
                                     </p>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if request.user.pharmacy %}
-                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
-                                        {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
-                                {% else %}
+                                </td>
+                                <td>
                                     <a class="text-black" href="{% url 'store:detail' order.cart_item.drug.pk %}">
                                         {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if request.user.pharmacy %}
-                                    <a class="text-black" href="{% url 'store:order_details' order.id %}">
-                                        {{ order.order.date_time }}</a>
-                                {% else %}
+                                </td>
+                                <td>
                                     <p class="text-black">
                                         {{ order.order.date_time }}
                                     </p>
-                                {% endif %}
-                            </td>
+                                </td>
+                            {% endif %}
+
                             <td>
                                 <p>{{ order.order.note }}</p>
                             </td>
+
                             <td>
-                                <button id="order-{{ order.pk }}" class="text-black status-btn btn disabled" disabled>
+                                <button id="order-{{ order.pk }}" class="text-black status-btn btn disabled"
+                                        disabled>
                                     {{ order.status|upper }}
                                 </button>
-                                {% if request.user.customer and order.status != 'dispatched' %}
+                                {% if request.user.customer and order.status == 'pending' %}
                                     <button class="btn btn-danger" value="{{ order.pk }}"
                                             onclick="cancelOrder($(this));">
                                         CANCEL
@@ -69,10 +78,57 @@
                     </tbody>
                 </table>
             {% else %}
-                <span id="no-med-message" class="text offset-5 font-weight-bold">You have no pending orders.</span>
+                <div class="m-5 p-5 border">
+                    <span class="text offset-5 font-weight-bold">No {{ status }} orders.</span>
+                </div>
             {% endif %}
+
+            <nav class="nav">
+                <div>
+                    <button onclick="location.href='{% url 'store:orders' 'pending' %}'" class="btn btn-black mt-3 mx-2"
+                            type="button">
+                        Pending
+                    </button>
+                </div>
+
+                {# For customers pending orders are shown on the order count next to the cart #}
+                <div>
+                    <button onclick="location.href='{% url 'store:orders' 'dispatched' %}'"
+                            class="btn btn-black mt-3 mx-2"
+                            type="button">
+                        Dispatched
+                    </button>
+                </div>
+
+                <div>
+                    <button onclick="location.href='{% url 'store:orders' 'complete' %}'"
+                            class="btn btn-black mt-3 mx-2"
+                            type="button">
+                        Complete
+                    </button>
+                </div>
+
+                {% if request.user.customer %}
+                    <div>
+                        <button onclick="location.href='{% url 'store:orders' 'canceled' %}'"
+                                class="btn btn-black mt-3 mx-2"
+                                type="button">
+                            Canceled
+                        </button>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <button onclick="location.href='{% url 'store:orders' 'rejected' %}'"
+                            class="btn btn-black mt-3 mx-2"
+                            type="button">
+                        Rejected
+                    </button>
+                </div>
+            </nav>
         </div>
     </div>
+
 {% endblock content %}
 
 {% block page_specific_script %}
@@ -83,24 +139,24 @@
         function cancelOrder(cancelButton) {
             if (confirm("Are you sure? This can't be undone.")) {
                 $.ajax({
-                url: `details/${cancelButton.val()}/`,
-                type: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                data: {
-                    'new_status': 'canceled'
-                },
-                success: () => {
-                    cancelButton.removeClass();
-                    cancelButton.addClass('btn btn-dark');
-                    $(`#order-${cancelButton.val()}`).html('CANCELED');
-                    cancelButton.prop('disabled', true);
-                },
-                error: (data) => {
-                    alert(data.responseText);
-                }
-            });
+                    url: `details/${cancelButton.val()}/`,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    data: {
+                        'new_status': 'canceled'
+                    },
+                    success: () => {
+                        cancelButton.removeClass();
+                        cancelButton.addClass('btn btn-dark');
+                        $(`#order-${cancelButton.val()}`).html('CANCELED');
+                        cancelButton.prop('disabled', true);
+                    },
+                    error: (data) => {
+                        alert(data.responseText);
+                    }
+                });
             }
         }
     </script>

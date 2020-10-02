@@ -310,7 +310,7 @@ def products(request):
     return render(request, 'store/pharmacy_products.html', context=context)
 
 
-def orders(request):
+def orders(request, status):
     try:  # try getting a pharmacy user
         pharmacy = request.user.pharmacy
         order_items = OrderItem.objects.filter(pharmacy=pharmacy)
@@ -318,11 +318,10 @@ def orders(request):
     except Exception:  # if this block is hit the user is a customer
         customer = request.user.customer
         order_items = OrderItem.objects.filter(order__customer=customer)
-    # 'DISPATCHED' orders can't be cancelled. Hence, the missing filter for dispatched orders
-    order_items = order_items.filter(
-        Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value))
+    order_items = order_items.filter(status__exact=status)
     return render(request, 'store/orders.html',
                   context={'orders': order_items,
+                           'status': status,
                            'order_count': get_order_count(request),
                            'cart_count': get_cart_count(get_cart(request))})
 
@@ -396,7 +395,7 @@ def get_order_count(request):
                 Q(order__customer=customer),
                 Q(status__exact=OrderStatus.PENDING.value) | Q(status__exact=OrderStatus.DISPATCHED.value)))
         except Exception:
-            return None
+            return 0
 
 
 # make sure only admin can access this page

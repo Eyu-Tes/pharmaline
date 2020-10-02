@@ -14,7 +14,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <div class="logo">
                 <div class="site-logo">
-                    <a 
+                    <a
                         {% if user.pharmaadmin %}
                             href="{% url 'store:pharma_admin_home' %}"
                         {% else %}
@@ -36,10 +36,11 @@
                             </li>
                             {% if user.pharmacy %}
                                 <li class="{% if '/products/' in request.path %}active{% endif %}">
-                                    <a href="{% url 'store:products' %}?user=pharmacy&id={{user.pharmacy.id}}">Products</a>
+                                    <a href="{% url 'store:products' %}?user=pharmacy&id={{ user.pharmacy.id }}">Products</a>
                                 </li>
                                 <li class="{% if request.path == '/orders/' %}active{% endif %}">
-                                    <a href="{% url 'store:orders' %}">Orders <span class="badge badge-warning">
+                                    <a href="{% url 'store:orders' 'pending' %}">Orders <span
+                                        class="badge badge-warning">
                                     {{ order_count }}</span></a>
                                 </li>
                                 <li class="{% if request.path == '/notifications/' %}active{% endif %}">
@@ -65,18 +66,18 @@
                     <ul class="site-menu js-clone-nav d-none d-lg-block">
                         {% if user.is_authenticated %}
                             <li class="has-children">
-                                <a class="nav-link" style="text-transform: none"><b>{{user.username}}</b></a>
+                                <a class="nav-link" style="text-transform: none"><b>{{ user.username }}</b></a>
                                 <ul class="dropdown">
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                            {% if user.customer %}
-                                                href="{% url 'account:profile' 'customer' user.id %}">
-                                            {% elif  user.pharmacy %}
-                                                href="{% url 'account:profile' 'pharmacy' user.id%}">
-                                            {% elif  user.pharmaadmin %}
-                                                href="{% url 'account:profile' 'pharma_admin' user.id%}">
-                                        {% endif %}
-                                       Profile</a>
+                                                {% if user.customer %}
+                                           href="{% url 'account:profile' 'customer' user.id %}">
+                                                {% elif  user.pharmacy %}
+                                                    href="{% url 'account:profile' 'pharmacy' user.id %}">
+                                                {% elif  user.pharmaadmin %}
+                                                    href="{% url 'account:profile' 'pharma_admin' user.id %}">
+                                                {% endif %}
+                                        Profile</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'account:logout' %}">Logout</a>
@@ -107,8 +108,8 @@
                         <span id="cartCount" class="number">{{ cart_count }}</span>
                     </a>
 
-                    {% if order_count %}
-                        <a href="{% url 'store:orders' %}" class="icons-btn d-inline-block bag">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'store:orders' 'pending' %}" class="icons-btn d-inline-block bag">
                             <span class="icon-markunread_mailbox"></span>
                             <span class="number">{{ order_count }}</span>
                         </a>
