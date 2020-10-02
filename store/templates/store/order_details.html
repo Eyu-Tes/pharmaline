@@ -204,9 +204,7 @@
             clickedStatusButton.addClass(appropriateClass);
         }
 
-        $(document).ready(() => {
-            changeButtonColor($(".active-status"));
-            $(".img-thumbnail").hide(0).fadeIn(500);
-        });
+        changeButtonColor($(".active-status"));
+        $(".img-thumbnail").hide(0).fadeIn(500);
     </script>
 {% endblock page_specific_script %}
