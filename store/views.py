@@ -19,7 +19,7 @@ from pharmaline.settings import MEDIA_ROOT, MEDIA_URL
 from .forms import OrderForm, QuantityForm, ProductForm
 from .models import Medication, Cart, CartItem, Order, OrderItem, OrderStatus
 
-from account.models import Customer, Pharmacy, PharmaAdmin, User
+from account.models import Customer, Pharmacy, PharmaAdmin
 
 
 def get_cart_count(shopping_cart):
@@ -147,9 +147,7 @@ def store(request, page_num):
 
 def search(request):
     query = request.GET.get('query', '')
-    search_result = Medication.objects.filter(
-        Q(name__icontains=query) | Q(vendor__icontains=query) |
-        Q(pharmacy__pharmacy_name__icontains=query))
+    search_result = Medication.objects.filter(Q(name__icontains=query) | Q(vendor__icontains=query))
     response = render(request, 'store/search_results.html',
                       context={'search_result': search_result,
                                'cart_count': get_cart_count(get_cart(request)),
