@@ -24,10 +24,17 @@
     <div class="site-section">
         <div class="container">
             <div class="align-content-center">
-                <article class="text-black">
-                    <div>
-                        Order Name:
-                        <h3 class="h3">{{ order_item.order.order_name }}</h3>
+                <div class="text-black">
+                    <div class="row p-3 m-2 bg-dark text-white">
+                        <div class="col-md-6">
+                            <article>
+                                <h3>Order Name:</h3>
+                                <h5>{{ order_item.order.order_name }}</h5>
+                            </article>
+                        </div>
+                        <div class="col-md-6 text-center border-left" style="font-size: 1.5em;">
+                            {{ order_item.cart_item.drug }} (&times;{{ order_item.cart_item.quantity }})
+                        </div>
                     </div>
                     <div class="offset-sm-10"></div>
                     <table class="table">
@@ -96,26 +103,30 @@
 
                         </tfoot>
                     </table>
-                </article>
+                </div>
             </div>
 
-            {% if image_paths %}
-                <hr/>
-                <div>
-                    <article>
-                        <h5 class="text text-black font-weight-bold">Attached prescriptions</h5>
-                        <p class="p-1 text text-black">Please check all attached prescriptions</p>
-                    </article>
-                    <div class="row">
-                        {% for image_path in image_paths %}
-                            <div class="col-md-6">
-                                <img class="image img-thumbnail" src="{{ image_path }}" height="400"
-                                     alt="Prescription image" data-action="zoom">
-                            </div>
-                        {% endfor %}
+            {% if order_item.cart_item.drug.requires_prescription %}
+                {% if image_paths %}
+                    <hr/>
+                    <div>
+                        <article>
+                            <h5 class="text text-black font-weight-bold">Attached prescriptions</h5>
+                            <p class="p-1 text text-black">Please check all attached prescriptions</p>
+                        </article>
+
+                        <div class="row">
+                            {% for image_path in image_paths %}
+                                <div class="col-md-6">
+                                    <img class="image img-thumbnail" src="{{ image_path }}" height="400"
+                                         alt="Prescription image" data-action="zoom">
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
+
             <hr/>
             <div>
                 <a class="btn btn-black" href="{% url 'store:orders' 'pending' %}">Orders</a>
