@@ -2,6 +2,16 @@
 
 {% load static %}
 
+{% block page_specific_style %}
+    <link rel="stylesheet" href="{% static 'store/custom/css/datatables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}"/>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+{% endblock page_specific_style %}
 
 {% block content %}
     <div class="bg-light py-3">
@@ -21,9 +31,9 @@
             <div class="row">
                 <div class="col-md-5 mr-auto">
                     <div class="border text-center">
-                        <img 
-                            src="{{med.image.url}}" alt="Image"
-                            width="500" class="img-fluid p-5"
+                        <img
+                                src="{{ med.image.url }}" alt="Image"
+                                width="500" class="img-fluid p-5" data-action="zoom"
                         >
                     </div>
                 </div>
@@ -78,9 +88,9 @@
                                    aria-controls="pills-home" aria-selected="true">Details</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
-                                   role="tab"
-                                   aria-controls="pills-profile" aria-selected="false">Other Locations</a>
+                                <a class="nav-link" href="#other_pharmacies_table_header">
+                                    Other Locations
+                                </a>
                             </li>
 
                         </ul>
@@ -124,44 +134,53 @@
                                             <td>Stock</td>
                                             <td>{{ med.stock }}</td>
                                         {% else %}
-                                            <td colspan="2" class="text-danger font-weight-bold">Not available right now.</td>
+                                            <td colspan="2" class="text-danger font-weight-bold">Not available right
+                                                now.
+                                            </td>
                                         {% endif %}
                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="tab-pane fade" id="pills-profile" role="tabpanel"
-                                 aria-labelledby="pills-profile-tab">
-
-                                <table class="table custom-table">
-                                    <thead>
-                                    <tr>
-                                        <th>Pharmacy</th>
-                                        <th>Location</th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for med in similar_med %}
-                                        <tr>
-                                            <td>{{ med.pharmacy.pharmacy_name }}</td>
-                                            <td>{{ med.pharmacy.location }}</td>
-                                            <td class="bg-light">
-                                                <a href="{% url 'store:detail' med.id %}">Details</a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-
-                            </div>
-
                         </div>
                     </div>
 
 
                 </div>
             </div>
+
+            {% if similar_med %}
+
+                <div id="other_pharmacies_table_header" class="m-3 p-4 text-center bg-light text-black" style="font-size: 1.2em;">
+                    <span class="font-weight-bold">{{ med.name }}</span> can also be found at these pharmacies
+                </div>
+
+                <table id="other_pharmacies_table" class="table custom-table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>Pharmacy</th>
+                        <th>Location</th>
+                        <th>Vendor</th>
+                        <th>Stock</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for med in similar_med %}
+                        <tr>
+                            <td>{{ med.pharmacy.pharmacy_name }}</td>
+                            <td>{{ med.pharmacy.location }}</td>
+                            <td>{{ med.vendor }}</td>
+                            <td>{{ med.stock }}</td>
+                            <td class="bg-light">
+                                <a href="{% url 'store:detail' med.id %}">Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
         </div>
     </div>
 
@@ -195,3 +214,13 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block page_specific_script %}
+    <script src="{% static 'store/custom/js/datatables.js' %}"></script>
+    <script src="{% static 'store/custom/js/zoom.js' %}"></script>
+    <script>
+        $('#other_pharmacies_table').DataTable({
+            pageLength: 10
+        });
+    </script>
+{% endblock page_specific_script %}

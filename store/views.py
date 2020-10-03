@@ -162,7 +162,7 @@ def get_similar_medication(med: Medication):
     # once, the medication will cause the pharmacy to appear as a separate location on the
     # 'Other Locations' table. To avoid that, those drugs that have the same pharmacy as their
     # origin will be removed from the `similar_med` list.
-    for similar_med in Medication.objects.filter(name__icontains=med.name, pharmacy__disabled=False):
+    for similar_med in Medication.objects.filter(name__iexact=med.name, pharmacy__disabled=False):
         if similar_med.pharmacy.id != med.pharmacy.id:
             similar_meds.append(similar_med)
     return similar_meds
