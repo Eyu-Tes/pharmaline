@@ -4,6 +4,7 @@
 
 
 {% block page_specific_style %}
+    <link rel="stylesheet" href="{% static 'store/custom/css/datatables.css' %}"/>
     <style>
         #no-med-message {
             height: 100%;
@@ -13,27 +14,6 @@
             align-items: center;
             font-size: 1.5em;
         }
-
-        .paging-nav {
-            text-align: right;
-            padding-top: 2px;
-        }
-
-        .paging-nav a {
-            margin: auto 1px;
-            text-decoration: none;
-            display: inline-block;
-            padding: 1px 7px;
-            background: #91b9e6;
-            color: white;
-            border-radius: 3px;
-        }
-
-        .paging-nav .selected-page {
-            background: #187ed5;
-            font-weight: bold;
-        }
-
     </style>
 {% endblock page_specific_style %}
 
@@ -42,7 +22,11 @@
     <div class="site-section">
         <div class="container">
             {% if search_result|length > 0 %}
-                <div class="m-2 p-4 text-center bg-dark text-white" style="font-size: 1.2em;">Your search returned these results</div>
+                <div class="border m-3">
+                    <div class="m-3 p-4 text-center bg-light text-black" style="font-size: 1.2em;">
+                        Your search for <i>{{ query }}</i> returned these results
+                    </div>
+                </div>
                 <div class="tab-pane" id="pills-profile" role="tabpanel"
                      aria-labelledby="pills-profile-tab">
 
@@ -74,7 +58,8 @@
                     </table>
                 </div>
             {% else %}
-                <span id="no-med-message" class="text-danger font-weight-bold">Sorry. No medication matches your search.</span>
+                <span id="no-med-message"
+                      class="text-danger font-weight-bold">Sorry. No medication matches your search.</span>
             {% endif %}
             <hr/>
             <a class="btn btn-black" href="{% url 'store:store' '1' %}">Store</a>
@@ -83,11 +68,11 @@
 {% endblock content %}
 
 {% block page_specific_script %}
-    <script src="{% static 'store/custom/js/paging.js' %}"></script>
+    <script src="{% static 'store/custom/js/datatables.js' %}"></script>
 
     <script>
-        $(document).ready(() => {
-            $('#results_table').paging({limit: 10});
+        $('#results_table').DataTable({
+            pageLength: 15
         });
     </script>
 {% endblock page_specific_script %}

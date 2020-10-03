@@ -150,6 +150,7 @@ def search(request):
     search_result = Medication.objects.filter(Q(name__icontains=query) | Q(vendor__icontains=query))
     response = render(request, 'store/search_results.html',
                       context={'search_result': search_result,
+                               'query': query,
                                'cart_count': get_cart_count(get_cart(request)),
                                'order_count': get_order_count(request)})
     return set_user_session_cookie(request, response)
