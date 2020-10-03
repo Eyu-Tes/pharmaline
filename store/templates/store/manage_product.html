@@ -1,5 +1,11 @@
 {% extends 'store/base.html' %}
 
+{% load static %}
+
+{% block page_specific_style %}
+    <link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}" />
+{% endblock page_specific_style %}
+
 {% block content %}
     <div class="container my-5 px-2">
 		<div class="row mx-0">
@@ -101,7 +107,7 @@
                         </div>
                         {% if form_header == 'Edit' %}
                             <div class="form-group col-6">
-                                <img class="border-dark img-thumbnail" src='{{form.instance.image.url}}' alt="" width="270px">
+                                <img class="border-dark img-thumbnail" src='{{form.instance.image.url}}' alt="" width="270px" data-action="zoom">
                             </div>
                         {% endif %}
                         <div class="form-group col-6">
@@ -123,3 +129,7 @@
 		</div>
 	</div>
 {% endblock content %}
+
+{% block page_specific_script %}
+    <script src="{% static 'store/custom/js/zoom.js' %}"></script>
+{% endblock page_specific_script %}
