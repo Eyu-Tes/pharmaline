@@ -147,7 +147,10 @@ def store(request, page_num):
 
 def search(request):
     query = request.GET.get('query', '')
-    search_result = Medication.objects.filter(Q(name__icontains=query) | Q(vendor__icontains=query))
+    if len(query) < 3:
+        search_result = []
+    else:
+        search_result = Medication.objects.filter(Q(name__icontains=query) | Q(vendor__icontains=query))
     response = render(request, 'store/search_results.html',
                       context={'search_result': search_result,
                                'query': query,
