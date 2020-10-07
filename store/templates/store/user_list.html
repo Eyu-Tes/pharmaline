@@ -58,17 +58,17 @@
                         <td>
                             {% if user_label == 'pharmacy' %}
                                 {% if user.disabled %}
-                                    <a class="text-warning" href="{% url 'account:admin_manage' 'enable' 'pharmacy' user.id %}">enable</a>
+                                    <a class="btn btn-link text-warning" href="{% url 'account:admin_manage' 'enable' 'pharmacy' user.id %}">enable</a>
                                 {% elif not user.disabled %}
-                                    <a class="text-warning" href="{% url 'account:admin_manage' 'disable' 'pharmacy' user.id %}">disable</a>
+                                    <a class="btn btn-link text-warning" href="{% url 'account:admin_manage' 'disable' 'pharmacy' user.id %}">disable</a>
                                 {% endif %}
                                 <span class="mx-1">|</span> 
-                                <a class="text-danger" href="{% url 'account:admin_manage' 'delete' 'pharmacy' user.id %}">delete</a>
+                                <button class="btn btn-link text-danger" onClick=deleteRecord({{user.id}})>delete</button>
                             {% elif user_label == 'customer' %}
                                 {% if user.disabled %}
-                                    <a class="text-warning" href="{% url 'account:admin_manage' 'enable' 'customer' user.id %}">enable</a>
+                                    <a class="btn btn-link text-warning" href="{% url 'account:admin_manage' 'enable' 'customer' user.id %}">enable</a>
                                 {% elif not user.disabled %}
-                                    <a class="text-warning" href="{% url 'account:admin_manage' 'disable' 'customer' user.id %}">disable</a>
+                                    <a class="btn btn-link text-warning" href="{% url 'account:admin_manage' 'disable' 'customer' user.id %}">disable</a>
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -78,6 +78,12 @@
         </table>
         </div>    
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div> 
 {% endblock main_content %}
 
 {% block page_specific_script %}
@@ -96,5 +102,20 @@
             });
             $('.dataTables_length').addClass('bs-select');
         });
+
+        function deleteRecord(pharmacyId) {
+            var manage = "delete";
+            var userLbl = "pharmacy";
+            $.ajax({
+                url: `/account/${manage}/${userLbl}/${pharmacyId}/`, 
+                type: 'get', 
+                beforeSend: function() {
+                    $('#modal').modal('show');
+                }, 
+                success: function(data) {
+                    $("#modal .modal-content").html(data.confirm_delete_form);
+                }
+            });
+        }
     </script>
 {% endblock page_specific_script %}
