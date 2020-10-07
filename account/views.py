@@ -11,7 +11,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db.models.query_utils import Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.urls import reverse_lazy
@@ -321,8 +321,22 @@ def admin_manage_users_view(request, manage, user_label, pk):
 
         if target_user:
             if manage == 'delete':
-                user_obj.delete()
-                success_msg = f'{user_obj} account deleted'
+                # user_obj.delete()
+                # success_msg = f'{user_obj} account deleted'
+                if request.method == "POST":
+                    user_obj.delete()
+                    messages.success(request, f'{user_obj} account deleted.')
+                else:
+                    print('(((((((((((((((((((((((((9')
+                    data = dict()
+                    context = {'object': user_obj,
+                               'object_type': 'pharmacy',
+                               'action': reverse_lazy('account:admin_manage',
+                                                      kwargs={'manage': manage, 'user_label': user_label, 'pk': pk})}
+                    data['confirm_delete_form'] = loader.render_to_string('store/partial_delete_confirm.html',
+                                                                          context=context,
+                                                                          request=request)
+                    return JsonResponse(data)
             elif manage == 'disable':
                 target_user.disabled = True
                 target_user.save()
