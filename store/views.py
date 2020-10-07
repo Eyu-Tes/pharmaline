@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import timezone
 
@@ -228,7 +229,8 @@ def checkout(request):
     totals = get_cart_totals(shopping_cart)
     return render(request, 'store/checkout.html', {
         'form': order_form, 'cart_count': get_cart_count(shopping_cart),
-        'order_count': get_order_count(request), 'cart_items': cart_items, 'prescription_required': prescription_required,
+        'order_count': get_order_count(request), 'cart_items': cart_items,
+        'prescription_required': prescription_required,
         'subtotal': totals['subtotal'], 'total': totals['total']})
 
 
@@ -520,8 +522,18 @@ def delete_product(request, pk, prod_id):
     try:
         if request.user.pharmacy == pharmacy:
             product = get_object_or_404(Medication, id=prod_id)
-            product.delete()
-            messages.success(request, 'Product deleted.')
-            return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+            if request.method == "POST":
+                product.delete()
+                messages.success(request, 'Product deleted.')
+                return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+            else:
+                data = dict()
+                context = {'object': product,
+                           'object_type': 'product',
+                           'action': reverse_lazy('store:product_delete', kwargs={'pk': pk, 'prod_id': prod_id})}
+                data['confirm_delete_form'] = render_to_string('store/partial_delete_confirm.html',
+                                                               context=context,
+                                                               request=request)
+                return JsonResponse(data)
     except ObjectDoesNotExist:
         raise Http404
