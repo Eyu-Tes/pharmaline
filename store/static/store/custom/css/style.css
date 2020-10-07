@@ -28,3 +28,6 @@ input, button, select {
     cursor: pointer;
 }
 
+#modal {
+    z-index: 2000;
+}
