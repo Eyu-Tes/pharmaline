@@ -28,8 +28,8 @@
                     <div class="row p-3 m-2 bg-dark text-white">
                         <div class="col-md-6">
                             <article>
-                                <h3>Order Name:</h3>
-                                <h5>{{ order_item.order.order_name }}</h5>
+                                <h3>Customer:</h3>
+                                <h5>{{ order_item.order.customer.full_name }}</h5>
                             </article>
                         </div>
                         <div class="col-md-6 text-center border-left" style="font-size: 1.5em;">
@@ -44,10 +44,6 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>Customer Full Name</td>
-                            <td>{{ order_item.order.first_name|title }} {{ order_item.order.last_name|title }}</td>
-                        </tr>
                         <tr>
                             <td>Region</td>
                             <td>{{ order_item.order.region }}</td>

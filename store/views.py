@@ -219,16 +219,11 @@ def checkout(request):
         order_form = OrderForm(request.POST, request.FILES)
         order_form.order_requires_prescription = prescription_required
         if order_form.is_valid():
-            # Check if any existing order name matches the submitted order name
-            order = Order.objects.filter(order_name=order_form.cleaned_data['order_name'])
-            if len(order) == 0:  # The order is unique
-                save_order(order_form.cleaned_data, request.FILES.getlist('prescriptions'),
-                           shopping_cart, request.user.customer)
-                response = redirect('store:thankyou')
-                response.delete_cookie('user_session')
-                return response
-            else:
-                order_form.add_error('order_name', 'Order name taken.')
+            save_order(order_form.cleaned_data, request.FILES.getlist('prescriptions'),
+                       shopping_cart, request.user.customer)
+            response = redirect('store:thankyou')
+            response.delete_cookie('user_session')
+            return response
 
     totals = get_cart_totals(shopping_cart)
     return render(request, 'store/checkout.html', {
@@ -255,7 +250,6 @@ def save_order(clean_data, files, shopping_cart, customer):
 def set_order_details(order: Order, clean_data):
     order.first_name = clean_data['first_name']
     order.last_name = clean_data['last_name']
-    order.order_name = clean_data['order_name']
     order.address = clean_data['location_description_1']
     order.address_opt = clean_data['location_description_2']
     order.region = clean_data['region']
@@ -398,10 +392,10 @@ def order_details(request, pk):
         order_states.remove(OrderStatus.CANCELED.value)
     # Collect the prescription images for the order
     try:
-        order_prescriptions = listdir(join(MEDIA_ROOT, Order.PRESCRIPTIONS_DIR_NAME, order_item.order.order_name))
+        order_prescriptions = listdir(join(MEDIA_ROOT, Order.PRESCRIPTIONS_DIR_NAME, str(order_item.order.pk)))
         image_paths = []
         for image in order_prescriptions:
-            image_paths.append(join(MEDIA_URL, Order.PRESCRIPTIONS_DIR_NAME, order_item.order.order_name, image))
+            image_paths.append(join(MEDIA_URL, Order.PRESCRIPTIONS_DIR_NAME, str(order_item.order.pk), image))
     except IOError:
         image_paths = None
     return render(request, 'store/order_details.html',

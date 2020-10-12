@@ -16,7 +16,9 @@
                 <table class="table text-black border">
                     <thead class="card-header">
                     <tr>
-                        <th>Order Name</th>
+                        {% if request.user.pharmacy %}
+                            <th>Customer Name</th>
+                        {% endif %}
                         <th>Item</th>
                         <th>Placement Date</th>
                         <th>Note</th>
@@ -38,7 +40,7 @@
                             {% if request.user.pharmacy %}
                                 <td>
                                     <a class="text-black" href="{% url 'store:order_details' order.id %}">
-                                        {{ order.order.order_name }}
+                                        {{ order.order.customer.full_name }}
                                     </a>
                                 </td>
                                 <td>
@@ -50,11 +52,6 @@
                                         {{ order.order.date_time }}</a>
                                 </td>
                             {% else %}  {# user is customer #}
-                                <td>
-                                    <p class="text-black">
-                                        {{ order.order.order_name }}
-                                    </p>
-                                </td>
                                 <td>
                                     <a class="text-black" href="{% url 'store:detail' order.cart_item.drug.pk %}">
                                         {{ order.cart_item.drug.name }} (&times;{{ order.cart_item.quantity }})</a>
@@ -155,7 +152,8 @@
                             'X-CSRFToken': Cookies.get('csrftoken')
                         },
                         data: {
-                            'new_status': 'canceled'
+                            'new_status': 'canceled',
+                            'rejection_reason': null
                         },
                         success: () => {
                             cancelButton.removeClass();
