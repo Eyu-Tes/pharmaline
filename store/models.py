@@ -56,7 +56,6 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    order_name = models.CharField(unique=True, max_length=20)
     first_name = models.CharField(max_length=35)
     last_name = models.CharField(max_length=35)
     address = models.CharField(max_length=100)
@@ -72,10 +71,10 @@ class Order(models.Model):
     PRESCRIPTIONS_DIR_NAME = 'prescriptions'
 
     def __str(self):
-        return self.order_name
+        return str(self.customer) + ' ' + self.address
 
     def save_prescription_image(self, image):
-        save_path = os.path.join(settings.MEDIA_ROOT, self.PRESCRIPTIONS_DIR_NAME, self.order_name)
+        save_path = os.path.join(settings.MEDIA_ROOT, self.PRESCRIPTIONS_DIR_NAME, str(self.pk))
         os.makedirs(save_path, exist_ok=True)
         image_extension = image.name[image.name.rindex('.'):]
         file_path = os.path.join(save_path, shortuuid.random(length=10) + image_extension)

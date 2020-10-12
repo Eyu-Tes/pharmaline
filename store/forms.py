@@ -11,8 +11,6 @@ class OrderForm(forms.Form):
         attrs={'class': 'form-control'}))
     last_name = forms.CharField(max_length=15, widget=forms.TextInput(
         attrs={'class': 'form-control'}))
-    order_name = forms.CharField(max_length=15, widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
     location_description_1 = forms.CharField(label='Address / Location', max_length=100, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': 'Location Description'}))
     location_description_2 = forms.CharField(required=False, label='', max_length=100, widget=forms.TextInput(
