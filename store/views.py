@@ -543,24 +543,27 @@ def delete_product(request, pk, prod_id):
         raise Http404
 
 
-def toggle_active_product(request, pk, status):
-    # make sure that only admin can access this functionality
-    try:
-        get_object_or_404(PharmaAdmin, user=request.user)
-    except TypeError:
-        raise Http404('Page not found')
+def toggle_active_product(request):
+    if request.method == 'POST':
+        # make sure that only admin can access this functionality
+        try:
+            get_object_or_404(PharmaAdmin, user=request.user)
+        except TypeError:
+            raise Http404('Page not found')
 
-    try:
-        product = Medication.objects.get(id=pk)
-    except Medication.DoesNotExist:
-        raise Http404
-    else:
-        if status == 'active':
-            product.active = True
-            product.save()
-        elif status == 'inactive':
-            product.active = False
-            product.save()
-        else:
+        new_status = request.POST['new_status']
+
+        try:
+            product = Medication.objects.get(id=int(request.POST['med_id']))
+        except Medication.DoesNotExist:
             raise Http404
-    return redirect('store:products')
+        else:
+            if new_status == 'active':
+                product.active = True
+            elif new_status == 'inactive':
+                product.active = False
+            else:
+                raise Http404
+            product.save()
+        return HttpResponse(str(product.active).lower())
+    return redirect('store:pharma_admin_home')

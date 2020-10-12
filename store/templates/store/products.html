@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block page_specific_style %}
-    <link rel="stylesheet" href="{% static 'store/mdb/css/addons/datatables.min.css' %}">    
+    <link rel="stylesheet" href="{% static 'store/mdb/css/addons/datatables.min.css' %}">
     <link rel="stylesheet" href="{% static 'store/custom/css/list-page-style.css' %}">
 {% endblock page_specific_style %}
 
@@ -14,8 +14,8 @@
         </div>
 
         <div class="table-container d-none">
-        <table id="dtBasicExample" class="table table-hover table-lg mt-4" cellspacing="0" width="100%">
-            <thead>
+            <table id="dtBasicExample" class="table table-hover table-lg mt-4" cellspacing="0" width="100%">
+                <thead>
                 <tr>
                     <th>#</th>
                     <th>Name</th>
@@ -27,8 +27,8 @@
                     <th title="Date of Expiration">EXP</th>
                     <th class="nosort">Staus</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {% for product in products %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
@@ -42,35 +42,68 @@
                         <td>{{ product.production_date|date:"M Y" }}</td>
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         <td>
-                            {% if product.active %}
-                                <a href="{% url 'store:product_toggle_active' product.id 'inactive' %}" class="btn btn-link text-warning">active</a>
-                            {% else %}
-                                <a href="{% url 'store:product_toggle_active' product.id 'active' %}" class="btn btn-link text-warning">inactive</a>
-                            {% endif %}
+                            <button onclick="toggleMedicationStatus({{ product.id }}, $(this));"
+                                    value="{{ product.active|lower }}" class="btn text-warning">
+                                {% if product.active %}
+                                    active
+                                {% else %}
+                                    inactive
+                                {% endif %}
+                            </button>
                         </td>
                     </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-        </div>    
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock main_content %}
 
 {% block page_specific_script %}
+    <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
     <script src="{% static 'store/custom/js/list-page-script.js' %}"></script>
     <script src="{% static 'store/mdb/js/plugins/moment.min.js' %}"></script>
     <script src="{% static 'store/mdb/js/addons/datatables.min.js' %}"></script>
     <script src="{% static 'store/mdb/js/plugins/datetime-moment.js' %}"></script>
-    
+
     <script>
         /* initialise the table */
         $(document).ready(function () {
             // add date sorting for "Mon date, Year" & "Mon Year" formats
-            $.fn.dataTable.moment( ['ll', 'MMM YYYY'] );
+            $.fn.dataTable.moment(['ll', 'MMM YYYY']);
             $('#dtBasicExample').DataTable({
                 "columnDefs": []
             });
             $('.dataTables_length').addClass('bs-select');
         });
+    </script>
+
+    <script>
+
+        function getStringStatus(trueFalseStatus) {
+            return (trueFalseStatus === 'true') ? 'inactive' : 'active';
+        }
+
+        function toggleMedicationStatus(medID, button) {
+            $.ajax({
+                url: "{% url 'store:product_toggle_active' %}",
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': Cookies.get('csrftoken')
+                },
+                data: {
+                    'med_id': medID,
+                    'new_status': getStringStatus(button.val())
+                },
+                success: (response) => {
+                    button.html(getStringStatus(response));
+                    button.val(response);
+                },
+                error: (response) => {
+                    alert('Something went wrong. Could not change medication status.');
+                }
+            });
+        }
+
     </script>
 {% endblock page_specific_script %}
