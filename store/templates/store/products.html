@@ -43,7 +43,7 @@
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
                         <td>
                             <button onclick="toggleMedicationStatus({{ product.id }}, $(this));"
-                                    value="{{ product.active|lower }}" class="btn text-warning">
+                                    value="{{ product.active|yesno:"active,inactive,null" }}" class="btn text-warning">
                                 {% if product.active %}
                                     active
                                 {% else %}
@@ -80,8 +80,13 @@
 
     <script>
 
-        function getStringStatus(trueFalseStatus) {
-            return (trueFalseStatus === 'true') ? 'inactive' : 'active';
+        function getAlternateStatus(currentStatus) {
+            if (currentStatus === 'active')
+                return 'inactive'
+            else if (currentStatus === 'inactive')
+                return 'active'
+            else
+                return null;
         }
 
         function toggleMedicationStatus(medID, button) {
@@ -93,11 +98,11 @@
                 },
                 data: {
                     'med_id': medID,
-                    'new_status': getStringStatus(button.val())
+                    'new_status': getAlternateStatus(button.val())
                 },
                 success: (response) => {
-                    button.html(getStringStatus(response));
                     button.val(response);
+                    button.html(response.toUpperCase());
                 },
                 error: (response) => {
                     alert('Something went wrong. Could not change medication status.');

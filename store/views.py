@@ -563,7 +563,7 @@ def toggle_active_product(request):
             elif new_status == 'inactive':
                 product.active = False
             else:
-                raise Http404
+                return HttpResponseServerError('Invalid Status.')
             product.save()
-        return HttpResponse(str(product.active).lower())
+        return HttpResponse(new_status)
     return redirect('store:pharma_admin_home')
