@@ -27,11 +27,8 @@
                         <th>Vendor</th>
                         <th>Qty.</th>
                         <th>Price</th>
-                        {% comment %} <th title="Prescription Drug">Prescription</th> {% endcomment %}
-                        {% comment %} <th title="Date of Purchase">DOP</th> {% endcomment %}
                         <th title="Date of Manufacture">MFGDT</th>
                         <th title="Date of Expiration">EXP</th>
-                        {% comment %} <th>Image</th> {% endcomment %}
                         <th class="nosort">Action</th>
                     </tr>
                 </thead>
@@ -43,21 +40,12 @@
                             <td>{{ product.vendor }}</td>
                             <td>{{ product.stock }}</td>
                             <td>{{ product.price }}</td>
-                            {% comment %} <td>
-                                {% if product.requires_prescription %}
-                                    <img src="{% static 'store/icons/icon-yes.svg' %}">
-                                {% endif %}
-                            </td> {% endcomment %}
-                            {% comment %} <td>{{product.date_of_purchase|date:"M d, Y"}}</td> {% endcomment %}
-                            {% comment %} <td>Aug 21, 2020</td> {% endcomment %}
                             <td>{{ product.production_date|date:"M Y" }}</td>
                             <td>{{ product.expiry_date|date:"M Y" }}</td>
-                            {% comment %} <td>{{ product.image }}</td> {% endcomment %}
                             <td>
                                 <a href="{% url 'store:product_update' user.pharmacy.id product.id %}" class="btn btn-link text-warning">edit</a>
                                 <span class="mx-1">|</span> 
                                 <button class="btn btn-link text-danger" onClick=deleteRecord({{product.id}})>remove</button>
-                                {% comment %} <a href="{% url 'store:product_delete' user.pharmacy.id product.id %}" class="text-danger">remove</a> {% endcomment %}
                             </td>
                         </tr>
                     {% endfor %}

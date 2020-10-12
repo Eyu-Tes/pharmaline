@@ -23,11 +23,9 @@
                     <th>Vendor</th>
                     <th>Qty.</th>
                     <th>Price</th>
-                    {% comment %} <th title="Prescription Drug">Prescription</th> {% endcomment %}
-                    {% comment %} <th title="Date of Purchase">DOP</th> {% endcomment %}
                     <th title="Date of Manufacture">MFGDT</th>
                     <th title="Date of Expiration">EXP</th>
-                    {% comment %} <th>Image</th> {% endcomment %}
+                    <th class="nosort">Staus</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,16 +39,15 @@
                         <td>{{ product.vendor }}</td>
                         <td>{{ product.stock }}</td>
                         <td>{{ product.price }}</td>
-                        {% comment %} <td>
-                            {% if product.requires_prescription %}
-                                <img src="{% static 'store/icons/icon-yes.svg' %}">
-                            {% endif %}
-                        </td> {% endcomment %}
-                        {% comment %} <td>{{product.date_of_purchase|date:"M d, Y"}}</td> {% endcomment %}
-                        {% comment %} <td>Aug 21, 2020</td> {% endcomment %}
                         <td>{{ product.production_date|date:"M Y" }}</td>
                         <td>{{ product.expiry_date|date:"M Y" }}</td>
-                        {% comment %} <td>{{ product.image }}</td> {% endcomment %}
+                        <td>
+                            {% if product.active %}
+                                <a href="{% url 'store:product_toggle_active' product.id 'inactive' %}" class="btn btn-link text-warning">active</a>
+                            {% else %}
+                                <a href="{% url 'store:product_toggle_active' product.id 'active' %}" class="btn btn-link text-warning">inactive</a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
