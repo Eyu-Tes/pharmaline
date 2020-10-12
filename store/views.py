@@ -135,7 +135,7 @@ def about(request):
 
 def store(request, page_num):
     cart_count = get_cart_count(get_cart(request))
-    all_medication = Medication.objects.filter(pharmacy__disabled=False)
+    all_medication = Medication.objects.filter(pharmacy__disabled=False, active=True)
     pages = Paginator(all_medication, 12)
     page = pages.get_page(page_num)
     response = render(request, 'store/store.html', {
@@ -151,7 +151,8 @@ def search(request):
     if len(query) < 3:
         search_result = []
     else:
-        search_result = Medication.objects.filter(Q(name__icontains=query) | Q(vendor__icontains=query))
+        search_result = Medication.objects.filter(
+            Q(name__icontains=query) | Q(vendor__icontains=query), pharmacy__disabled=False, active=True)
     response = render(request, 'store/search_results.html',
                       context={'search_result': search_result,
                                'query': query,
@@ -166,7 +167,7 @@ def get_similar_medication(med: Medication):
     # once, the medication will cause the pharmacy to appear as a separate location on the
     # 'Other Locations' table. To avoid that, those drugs that have the same pharmacy as their
     # origin will be removed from the `similar_med` list.
-    for similar_med in Medication.objects.filter(name__iexact=med.name, pharmacy__disabled=False):
+    for similar_med in Medication.objects.filter(active=True, name__iexact=med.name, pharmacy__disabled=False):
         if similar_med.pharmacy.id != med.pharmacy.id:
             similar_meds.append(similar_med)
     return similar_meds
@@ -177,6 +178,9 @@ def detail(request, med_id):
     med = Medication.objects.get(id=med_id)
     shopping_cart = get_cart(request)
     similar_med = get_similar_medication(med)
+
+    if not med.active:
+        raise Http404('Page not found')
 
     if request.method == 'POST':
         quantity_form = QuantityForm(request.POST)
