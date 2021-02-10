@@ -5,4 +5,4 @@ from .models import Customer, Pharmacy, PharmaAdmin
 # Register your models here.
 admin.site.register(Customer)
 admin.site.register(Pharmacy)
-admin.site.register(Customer)
+admin.site.register(PharmaAdmin)
