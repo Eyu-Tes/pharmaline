@@ -43,9 +43,6 @@
                                         class="badge badge-warning">
                                     {{ order_count }}</span></a>
                                 </li>
-                                <li class="{% if request.path == '/notifications/' %}active{% endif %}">
-                                    <a href="#">Notifications <span class="badge badge-info">3</span></a>
-                                </li>
                             {% else %}
                                 <li class="{% if '/store/' in request.path %}active{% endif %}">
                                     <a href="{% url 'store:store' '1' %}">Store</a>
