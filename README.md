@@ -24,8 +24,9 @@ Tech Stack: Django, PostgreSQL, Python, JavaScript, JQuery, AJAX, Bootstrap, CSS
 - Deployment: Heroku
 
 - Media Storage: 
-  - Cloudinary: A platform that enables users to upload, store, manage, manipulate, and deliver media files. Because Heroku file system is not persistent.
+  - Cloudinary :- A platform that enables users to upload, store, manage, manipulate, and deliver media files. Because Heroku file system is not persistent.
 
 - To view the Admin functionality: 
   - https://pharmaline-123.herokuapp.com/account/login/pharma_admin/
-  - username: pharma-admin	- password: myadmin1234
+  - username: pharma-admin	
+  - password: myadmin1234
