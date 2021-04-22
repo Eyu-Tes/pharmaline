@@ -4,7 +4,7 @@ A Multi-vendor online pharmacy, where multiple pharmacies can sell their product
 
 It creates an additional outlet for pharmacies and makes buying meds convenient for customers. 
 
-Tech Stack: Django, PostgreSQL, JavaScript, JQuery, AJAX, Bootstrap, CSS, HTML.
+Tech Stack: Django, PostgreSQL, Python, JavaScript, JQuery, AJAX, Bootstrap, CSS, HTML.
 
 - Features: 
 	- Pharmacy:	
