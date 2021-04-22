@@ -4,80 +4,78 @@
 
 
 {% block content %}
-    <div class="site-section">
-        <div class="container">
-            <hr/>
+<div class="site-section">
+    <div class="container">
+        <hr />
 
-            <div class="row">
-                {% if meds %}
-                    {% for med in meds %}
-                        <div class="col-sm-6 col-lg-4 text-center item mb-4">
-                            <a href="{% url 'store:detail' med.pk %}"> 
-                                <img src="{{med.image.url}}" alt="Image" width="270">
-                            </a>
-                            <h3 class="text-dark"><a href="{% url 'store:detail' med.pk %}">{{ med.name }}</a></h3>
-                            <p class="price">
-                                &mdash; {{ med.price }} ETB
-                            </p>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <h3>Sorry. No medication found. Come back later.</h3>
+        <div class="row">
+            {% if meds %}
+            {% for med in meds %}
+            <div class="col-sm-6 col-lg-4 text-center item mb-4">
+                <a href="{% url 'store:detail' med.pk %}">
+                    <img src="{{med.image.url}}" alt="Image" height="270"
+                        onerror="this.onerror=null;this.src='https://res.cloudinary.com/dvmucrzt2/image/upload/v1619034866/default.png'">
+                </a>
+                <h3 class="text-dark"><a href="{% url 'store:detail' med.pk %}">{{ med.name }}</a></h3>
+                <p class="price">
+                    &mdash; {{ med.price }} ETB
+                </p>
+            </div>
+            {% endfor %}
+            {% else %}
+            <h3>Sorry. No medication found. Come back later.</h3>
+            {% endif %}
+        </div>
+
+        <hr />
+
+        <div class="pagination col-md-8 offset-md-1">
+            <span class="step-links">
+                {% if meds.has_previous %}
+                <a class="btn-sm btn-dark" href="{% url 'store:store' '1' %}">&laquo; first</a>
+                <a class="btn-sm btn-dark" href="{% url 'store:store' meds.previous_page_number %}">previous</a>
                 {% endif %}
-            </div>
 
-            <hr/>
-
-            <div class="pagination col-md-8 offset-md-1">
-                <span class="step-links">
-                    {% if meds.has_previous %}
-                        <a class="btn-sm btn-dark" href="{% url 'store:store' '1' %}">&laquo; first</a>
-                        <a class="btn-sm btn-dark"
-                           href="{% url 'store:store' meds.previous_page_number %}">previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ meds.number }} of {{ meds.paginator.num_pages }}
-                    </span>
-
-                    {% if meds.has_next %}
-                        <a class="btn-sm btn-dark" href="{% url 'store:store' meds.next_page_number %}">next</a>
-                        <a class="btn-sm btn-dark"
-                           href="{% url 'store:store' meds.paginator.num_pages %}">last &raquo;</a>
-                    {% endif %}
+                <span class="current">
+                    Page {{ meds.number }} of {{ meds.paginator.num_pages }}
                 </span>
-            </div>
-        </div>
-    </div>
 
-    <div class="site-section bg-secondary bg-image"
-         style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
-        <div class="container">
-            <div class="row align-items-stretch">
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <a href="#" class="banner-1 h-100 d-flex"
-                       style="background-image: url('{% static 'store/images/bg_1.jpg' %}');">
-                        <div class="banner-1-inner align-self-center">
-                            <h2>Pharma Products</h2>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
-                                voluptatem.
-                            </p>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <a href="#" class="banner-1 h-100 d-flex"
-                       style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
-                        <div class="banner-1-inner ml-auto  align-self-center">
-                            <h2>Rated by Experts</h2>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
-                                voluptatem.
-                            </p>
-                        </div>
-                    </a>
-                </div>
+                {% if meds.has_next %}
+                <a class="btn-sm btn-dark" href="{% url 'store:store' meds.next_page_number %}">next</a>
+                <a class="btn-sm btn-dark" href="{% url 'store:store' meds.paginator.num_pages %}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="site-section bg-secondary bg-image" style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
+    <div class="container">
+        <div class="row align-items-stretch">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <a href="#" class="banner-1 h-100 d-flex"
+                    style="background-image: url('{% static 'store/images/bg_1.jpg' %}');">
+                    <div class="banner-1-inner align-self-center">
+                        <h2>Pharma Products</h2>
+                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
+                            voluptatem.
+                        </p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <a href="#" class="banner-1 h-100 d-flex"
+                    style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
+                    <div class="banner-1-inner ml-auto  align-self-center">
+                        <h2>Rated by Experts</h2>
+                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
+                            voluptatem.
+                        </p>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
+</div>
 
 {% endblock content %}
