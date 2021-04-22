@@ -1,0 +1,1 @@
+web: gunicorn pharmaline.wsgi --log-file -
