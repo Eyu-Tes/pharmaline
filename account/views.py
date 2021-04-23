@@ -327,7 +327,6 @@ def admin_manage_users_view(request, manage, user_label, pk):
                     user_obj.delete()
                     messages.success(request, f'{user_obj} account deleted.')
                 else:
-                    print('(((((((((((((((((((((((((9')
                     data = dict()
                     context = {'object': user_obj,
                                'object_type': 'pharmacy',

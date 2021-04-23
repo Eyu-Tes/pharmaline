@@ -3,102 +3,100 @@
 {% load static %}
 
 {% block page_specific_style %}
-    <link rel="stylesheet" href="{% static 'store/custom/css/datatables.css' %}"/>
-    <link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}"/>
+<link rel="stylesheet" href="{% static 'store/custom/css/datatables.css' %}" />
+<link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}" />
 
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-    </style>
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
 {% endblock page_specific_style %}
 
 {% block content %}
-    <div class="bg-light py-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 mb-0"><a href="{% url 'store:home' %}">Home</a> <span class="mx-2 mb-0">/</span>
-                    <a href="{% url 'store:store' '1' %}">Store</a> <span class="mx-2 mb-0">/</span> <strong
-                            class="text-black">
-                        {{ med.name }}
-                    </strong></div>
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0"><a href="{% url 'store:home' %}">Home</a> <span class="mx-2 mb-0">/</span>
+                <a href="{% url 'store:store' '1' %}">Store</a> <span class="mx-2 mb-0">/</span> <strong
+                    class="text-black">
+                    {{ med.name }}
+                </strong>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="site-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-5 mr-auto">
-                    <div class="border text-center">
-                        <img
-                                src="{{ med.image.url }}" alt="Image"
-                                width="500" class="img-fluid p-5" data-action="zoom"
-                        >
-                    </div>
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 mr-auto">
+                <div class="border text-center">
+                    <img src="{{ med.image.url }}" alt="Image" width="500" class="img-fluid p-5" data-action="zoom"
+                        onerror="this.onerror=null;this.src='https://res.cloudinary.com/dvmucrzt2/image/upload/v1619034866/default.png'">
                 </div>
-                <div class="col-md-6">
-                    <h2 class="text-black">{{ med.name }}</h2>
-                    <p>
-                        {{ med.description }}
-                    </p>
-                    <p>
-                        {{ med.instructions }}
-                    </p>
+            </div>
+            <div class="col-md-6">
+                <h2 class="text-black">{{ med.name }}</h2>
+                <p>
+                    {{ med.description }}
+                </p>
+                <p>
+                    {{ med.instructions }}
+                </p>
 
-                    <p><strong class="text-primary h4">{{ med.price }} ETB</strong></p>
+                <p><strong class="text-primary h4">{{ med.price }} ETB</strong></p>
 
 
-                    {% if form.errors %}
-                        {% for error in form.quantity.errors %}
-                            <p class="invalid-feedback d-block">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
+                {% if form.errors %}
+                {% for error in form.quantity.errors %}
+                <p class="invalid-feedback d-block">{{ error }}</p>
+                {% endfor %}
+                {% endif %}
 
-                    {% if med.stock != 0 %}
-                        <form action="{% url 'store:detail' med.id %}" method="POST">
-                            {% csrf_token %}
+                {% if med.stock != 0 %}
+                <form action="{% url 'store:detail' med.id %}" method="POST">
+                    {% csrf_token %}
 
-                            <div class="mb-5">
-                                <div class="input-group mb-3" style="max-width: 220px;">
-                                    <div class="input-group-prepend">
-                                        <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
-                                        </button>
-                                    </div>
-                                    {{ form.quantity }}
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
-                                        </button>
-                                    </div>
-                                </div>
+                    <div class="mb-5">
+                        <div class="input-group mb-3" style="max-width: 220px;">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;
+                                </button>
                             </div>
+                            {{ form.quantity }}
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                            <button name="med_id" value="{{ med.id }}"
-                                    class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">
-                                Add To Cart
-                            </button>
-                        </form>
-                    {% endif %}
+                    <button name="med_id" value="{{ med.id }}"
+                        class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">
+                        Add To Cart
+                    </button>
+                </form>
+                {% endif %}
 
-                    <div class="mt-5">
-                        <ul class="nav nav-pills mb-3 custom-pill" id="pills-tab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"
-                                   role="tab"
-                                   aria-controls="pills-home" aria-selected="true">Details</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#other_pharmacies_table_header">
-                                    Other Locations
-                                </a>
-                            </li>
+                <div class="mt-5">
+                    <ul class="nav nav-pills mb-3 custom-pill" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home"
+                                role="tab" aria-controls="pills-home" aria-selected="true">Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#other_pharmacies_table_header">
+                                Other Locations
+                            </a>
+                        </li>
 
-                        </ul>
-                        <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
-                                 aria-labelledby="pills-home-tab">
-                                <table class="table custom-table">
-                                    <tbody>
+                    </ul>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                            aria-labelledby="pills-home-tab">
+                            <table class="table custom-table">
+                                <tbody>
                                     <tr>
                                         <td>Production Date</td>
                                         <td> {{ med.production_date }} </td>
@@ -123,104 +121,104 @@
                                         <td>Requires Prescription</td>
                                         <td>
                                             {% if med.requires_prescription %}
-                                                Yes
+                                            Yes
                                             {% else %}
-                                                No
+                                            No
                                             {% endif %}
                                         </td>
                                     </tr>
                                     <tr>
                                         {% if med.stock > 0 %}
-                                            <td>Stock</td>
-                                            <td>{{ med.stock }}</td>
+                                        <td>Stock</td>
+                                        <td>{{ med.stock }}</td>
                                         {% else %}
-                                            <td colspan="2" class="text-danger font-weight-bold">Not available right
-                                                now.
-                                            </td>
+                                        <td colspan="2" class="text-danger font-weight-bold">Not available right
+                                            now.
+                                        </td>
                                         {% endif %}
                                     </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
-
-                </div>
-            </div>
-
-            {% if similar_med %}
-
-                <div id="other_pharmacies_table_header" class="m-3 p-4 text-center bg-light text-black" style="font-size: 1.2em;">
-                    <span class="font-weight-bold">{{ med.name }}</span> can also be found at these pharmacies
                 </div>
 
-                <table id="other_pharmacies_table" class="table custom-table">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>Pharmacy</th>
-                        <th>Location</th>
-                        <th>Vendor</th>
-                        <th>Stock</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for med in similar_med %}
-                        <tr>
-                            <td>{{ med.pharmacy.pharmacy_name }}</td>
-                            <td>{{ med.pharmacy.location }}</td>
-                            <td>{{ med.vendor }}</td>
-                            <td>{{ med.stock }}</td>
-                            <td class="bg-light">
-                                <a href="{% url 'store:detail' med.id %}">Details</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
 
-        </div>
-    </div>
-
-    <div class="site-section bg-secondary bg-image"
-         style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
-        <div class="container">
-            <div class="row align-items-stretch">
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <a href="#" class="banner-1 h-100 d-flex"
-                       style="background-image: url('{% static 'store/images/bg_1.jpg' %}');">
-                        <div class="banner-1-inner align-self-center">
-                            <h2>Pharma Products</h2>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
-                                voluptatem.
-                            </p>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <a href="#" class="banner-1 h-100 d-flex"
-                       style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
-                        <div class="banner-1-inner ml-auto  align-self-center">
-                            <h2>Rated by Experts</h2>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
-                                voluptatem.
-                            </p>
-                        </div>
-                    </a>
-                </div>
             </div>
         </div>
+
+        {% if similar_med %}
+
+        <div id="other_pharmacies_table_header" class="m-3 p-4 text-center bg-light text-black"
+            style="font-size: 1.2em;">
+            <span class="font-weight-bold">{{ med.name }}</span> can also be found at these pharmacies
+        </div>
+
+        <table id="other_pharmacies_table" class="table custom-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Pharmacy</th>
+                    <th>Location</th>
+                    <th>Vendor</th>
+                    <th>Stock</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in similar_med %}
+                <tr>
+                    <td>{{ med.pharmacy.pharmacy_name }}</td>
+                    <td>{{ med.pharmacy.location }}</td>
+                    <td>{{ med.vendor }}</td>
+                    <td>{{ med.stock }}</td>
+                    <td class="bg-light">
+                        <a href="{% url 'store:detail' med.id %}">Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
     </div>
+</div>
+
+<div class="site-section bg-secondary bg-image" style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
+    <div class="container">
+        <div class="row align-items-stretch">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <a href="#" class="banner-1 h-100 d-flex"
+                    style="background-image: url('{% static 'store/images/bg_1.jpg' %}');">
+                    <div class="banner-1-inner align-self-center">
+                        <h2>Pharma Products</h2>
+                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
+                            voluptatem.
+                        </p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <a href="#" class="banner-1 h-100 d-flex"
+                    style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
+                    <div class="banner-1-inner ml-auto  align-self-center">
+                        <h2>Rated by Experts</h2>
+                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
+                            voluptatem.
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
 
 {% block page_specific_script %}
-    <script src="{% static 'store/custom/js/datatables.js' %}"></script>
-    <script src="{% static 'store/custom/js/zoom.js' %}"></script>
-    <script>
-        $('#other_pharmacies_table').DataTable({
-            pageLength: 10
-        });
-    </script>
+<script src="{% static 'store/custom/js/datatables.js' %}"></script>
+<script src="{% static 'store/custom/js/zoom.js' %}"></script>
+<script>
+    $('#other_pharmacies_table').DataTable({
+        pageLength: 10
+    });
+</script>
 {% endblock page_specific_script %}

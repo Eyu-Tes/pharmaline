@@ -21,7 +21,7 @@ class Medication(models.Model):
     production_date = models.DateField()
     batch_number = models.CharField(max_length=100)
     requires_prescription = models.BooleanField()
-    image = models.ImageField(upload_to='products', default='default_med.png')
+    image = models.ImageField(upload_to=f'products/', default='default_med.png')
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -84,6 +84,13 @@ class Order(models.Model):
 
     def get_prescription_images(self):
         pass
+
+
+class EFDA(models.Model):
+    batch_number = models.CharField(max_length=35, unique=True)
+    expiry_date = models.DateTimeField()
+    in_use = models.BooleanField(default=False)
+    med_id = models.ForeignKey(Medication, on_delete=models.SET_NULL, null=True)
 
 
 class OrderStatus(Enum):

@@ -3,47 +3,47 @@
 {% load static %}
 
 {% block page_specific_style %}
-    <link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}">
+<link rel="stylesheet" href="{% static 'store/custom/css/zoom.css' %}">
 
-    <style>
-        .image {
-            transition: transform 0.25s ease;
-        }
+<style>
+    .image {
+        transition: transform 0.25s ease;
+    }
 
-        .image:hover {
-            position: relative;
-            z-index: 10;
-            -webkit-transform: scale(1.1);
-            transform: scale(1.1);
-        }
-    </style>
+    .image:hover {
+        position: relative;
+        z-index: 10;
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+</style>
 {% endblock page_specific_style %}
 
 {% block content %}
 
-    <div class="site-section">
-        <div class="container">
-            <div class="align-content-center">
-                <div class="text-black">
-                    <div class="row p-3 m-2 bg-dark text-white">
-                        <div class="col-md-6">
-                            <article>
-                                <h3>Customer:</h3>
-                                <h5>{{ order_item.order.customer.full_name }}</h5>
-                            </article>
-                        </div>
-                        <div class="col-md-6 text-center border-left" style="font-size: 1.5em;">
-                            {{ order_item.cart_item.drug }} (&times;{{ order_item.cart_item.quantity }})
-                        </div>
+<div class="site-section">
+    <div class="container">
+        <div class="align-content-center">
+            <div class="text-black">
+                <div class="row p-3 m-2 bg-dark text-white">
+                    <div class="col-md-6">
+                        <article>
+                            <h3>Customer:</h3>
+                            <h5>{{ order_item.order.customer.full_name }}</h5>
+                        </article>
                     </div>
-                    <div class="offset-sm-10"></div>
-                    <table class="table">
-                        <thead class="card-header">
+                    <div class="col-md-6 text-center border-left" style="font-size: 1.5em;">
+                        {{ order_item.cart_item.drug }} (&times;{{ order_item.cart_item.quantity }})
+                    </div>
+                </div>
+                <div class="offset-sm-10"></div>
+                <table class="table">
+                    <thead class="card-header">
                         <tr>
                             <th colspan="2">Order Details</th>
                         </tr>
-                        </thead>
-                        <tbody>
+                    </thead>
+                    <tbody>
                         <tr>
                             <td>Region</td>
                             <td>{{ order_item.order.region }}</td>
@@ -76,142 +76,143 @@
                             <td>Status</td>
                             <td>
                                 {% if order_states %}
-                                    {% for status in order_states %}
-                                        {% if order_item.status == status %}
-                                            <button value="{{ status }}" class="active-status order-status btn"
-                                                    onclick="orderStatusButtonClicked($(this))">
-                                                {{ status }}
-                                            </button>
-                                        {% else %}
-                                            <button value="{{ status }}" class="order-status btn"
-                                                    onclick="orderStatusButtonClicked($(this))">
-                                                {{ status }}
-                                            </button>
-                                        {% endif %}
-                                    {% endfor %}
+                                {% for status in order_states %}
+                                {% if order_item.status == status %}
+                                <button value="{{ status }}" class="active-status order-status btn"
+                                    onclick="orderStatusButtonClicked($(this))">
+                                    {{ status }}
+                                </button>
                                 {% else %}
-                                    <span class="font-weight-bold text-danger">This order has been cancelled by the user.</span>
+                                <button value="{{ status }}" class="order-status btn"
+                                    onclick="orderStatusButtonClicked($(this))">
+                                    {{ status }}
+                                </button>
+                                {% endif %}
+                                {% endfor %}
+                                {% else %}
+                                <span class="font-weight-bold text-danger">This order has been cancelled by the
+                                    user.</span>
                                 {% endif %}
                             </td>
                         </tr>
-                        </tbody>
-                        <tfoot>
+                    </tbody>
+                    <tfoot>
 
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            {% if order_item.cart_item.drug.requires_prescription %}
-                {% if image_paths %}
-                    <hr/>
-                    <div>
-                        <article>
-                            <h5 class="text text-black font-weight-bold">Attached prescriptions</h5>
-                            <p class="p-1 text text-black">Please check all attached prescriptions</p>
-                        </article>
-
-                        <div class="row">
-                            {% for image_path in image_paths %}
-                                <div class="col-md-6">
-                                    <img class="image img-thumbnail" src="{{ image_path }}" height="400"
-                                         alt="Prescription image" data-action="zoom">
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endif %}
-
-            <hr/>
-            <div>
-                <a class="btn btn-black" href="{% url 'store:orders' 'pending' %}">Orders</a>
+                    </tfoot>
+                </table>
             </div>
         </div>
+
+        {% if order_item.cart_item.drug.requires_prescription %}
+        {% if image_paths %}
+        <hr />
+        <div>
+            <article>
+                <h5 class="text text-black font-weight-bold">Attached prescriptions</h5>
+                <p class="p-1 text text-black">Please check all attached prescriptions</p>
+            </article>
+
+            <div class="row">
+                {% for image_path in image_paths %}
+                <div class="col-md-6">
+                    <img class="image img-thumbnail" src="{{ image_path }}" height="400" alt="Prescription image"
+                        data-action="zoom">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <hr />
+        <div>
+            <a class="btn btn-black" href="{% url 'store:orders' 'pending' %}">Orders</a>
+        </div>
     </div>
+</div>
 {% endblock content %}
 
 {% block page_specific_script %}
-    <script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
-    <script src="{% static 'store/custom/js/zoom.js' %}"></script>
-    <script>
+<script src="{% static 'store/custom/js/js.cookie-2.2.1.min.js' %}"></script>
+<script src="{% static 'store/custom/js/zoom.js' %}"></script>
+<script>
 
-        function orderStatusButtonClicked(clickedStatusButton) {
-            postOrderStatus(clickedStatusButton);
-        }
+    function orderStatusButtonClicked(clickedStatusButton) {
+        postOrderStatus(clickedStatusButton);
+    }
 
-        function postOrderStatus(clickedStatusButton) {
-            let newStatus = clickedStatusButton.val();
-            let rejectionMessage = '';
+    function postOrderStatus(clickedStatusButton) {
+        let newStatus = clickedStatusButton.val();
+        let rejectionMessage = '';
 
-            if (newStatus === 'rejected') {
-                if (!confirm("Are you sure? This can't be undone.")) {
-                    return;
-                }
-
-                rejectionMessage = prompt('Reason for rejection:', '');
-
-                if (rejectionMessage.replace(/\s*/, '') === '') {
-                    alert("Reason for rejection can not be empty. Order will not be rejected.");
-                    return;
-                }
+        if (newStatus === 'rejected') {
+            if (!confirm("Are you sure? This can't be undone.")) {
+                return;
             }
 
-            $.ajax({
-                url: '',
-                type: 'POST',
-                headers: {
-                    'X-CSRFToken': Cookies.get('csrftoken')
-                },
-                data: {
-                    'new_status': newStatus,
-                    'rejection_reason': rejectionMessage
-                },
-                success: () => {
-                    // remove the 'active-status' class from the previously active order
-                    // status button and add it to the newly active status button
-                    $('.active-status').removeClass().addClass('btn order-status');
-                    clickedStatusButton.addClass('active-status');
-                    changeButtonColor(clickedStatusButton);
-                },
-                error: (response) => {
-                    alert(response.responseText);
-                }
-            });
+            rejectionMessage = prompt('Reason for rejection:', '');
+
+            if (rejectionMessage.replace(/\s*/, '') === '') {
+                alert("Reason for rejection can not be empty. Order will not be rejected.");
+                return;
+            }
         }
 
-        function changeButtonColor(clickedStatusButton) {
-            let appropriateClass;
+        $.ajax({
+            url: '',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': Cookies.get('csrftoken')
+            },
+            data: {
+                'new_status': newStatus,
+                'rejection_reason': rejectionMessage
+            },
+            success: () => {
+                // remove the 'active-status' class from the previously active order
+                // status button and add it to the newly active status button
+                $('.active-status').removeClass().addClass('btn order-status');
+                clickedStatusButton.addClass('active-status');
+                changeButtonColor(clickedStatusButton);
+            },
+            error: (response) => {
+                alert(response.responseText);
+            }
+        });
+    }
 
-            switch (clickedStatusButton.val().toUpperCase()) {
-                case 'PENDING':
-                    appropriateClass = 'btn-warning';
-                    break;
-                case 'REJECTED':
-                    appropriateClass = 'btn-danger';
-                    clickedStatusButton.attr('disabled', true);
-                    // The order can not be put into any other state after it is rejected
-                    for (let button of $('.order-status')) {
-                        if (!$(button).is(clickedStatusButton)) {
-                            $(button).remove();
-                        }
+    function changeButtonColor(clickedStatusButton) {
+        let appropriateClass;
+
+        switch (clickedStatusButton.val().toUpperCase()) {
+            case 'PENDING':
+                appropriateClass = 'btn-warning';
+                break;
+            case 'REJECTED':
+                appropriateClass = 'btn-danger';
+                clickedStatusButton.attr('disabled', true);
+                // The order can not be put into any other state after it is rejected
+                for (let button of $('.order-status')) {
+                    if (!$(button).is(clickedStatusButton)) {
+                        $(button).remove();
                     }
-                    break;
-                case 'DISPATCHED':
-                    appropriateClass = 'btn-dark';
-                    break;
-                case 'COMPLETE':
-                    appropriateClass = 'btn-success';
-                    break;
-                default:
-                    appropriateClass = 'btn';
-                    break;
-            }
-
-            clickedStatusButton.addClass(appropriateClass);
+                }
+                break;
+            case 'DISPATCHED':
+                appropriateClass = 'btn-dark';
+                break;
+            case 'COMPLETE':
+                appropriateClass = 'btn-success';
+                break;
+            default:
+                appropriateClass = 'btn';
+                break;
         }
 
-        changeButtonColor($(".active-status"));
-        $(".img-thumbnail").hide(0).fadeIn(500);
-    </script>
+        clickedStatusButton.addClass(appropriateClass);
+    }
+
+    changeButtonColor($(".active-status"));
+    $(".img-thumbnail").hide(0).fadeIn(500);
+</script>
 {% endblock page_specific_script %}
