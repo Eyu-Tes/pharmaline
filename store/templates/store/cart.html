@@ -3,188 +3,193 @@
 {% load static %}
 
 {% block content %}
-    <div class="bg-light py-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 mb-0">
-                    <a href="index.html">Home</a> <span class="mx-2 mb-0">/</span>
-                    <strong class="text-black">Cart</strong>
-                </div>
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="index.html">Home</a> <span class="mx-2 mb-0">/</span>
+                <strong class="text-black">Cart</strong>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="site-section">
-        <div class="container">
+<div class="site-section">
+    <div class="container">
 
-            {% if not request.user.is_authenticated %}
-                <div class="row mb-5">
-                    <div class="col-md-12">
-                        <div class="bg-light rounded p-3">
-                            <p class="mb-0">You must be logged in to place an order.
-                                <a href="{% url 'account:login' 'customer' %}"
-                                   class="d-inline-block">Click here</a> to login.
-                            </p>
-                        </div>
-                    </div>
+        {% if not request.user.is_authenticated %}
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="bg-light rounded p-3">
+                    <p class="mb-0">You must be logged in to place an order.
+                        <a href="{% url 'account:login' 'customer' %}" class="d-inline-block">Click here</a> to login.
+                    </p>
                 </div>
-            {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
-            <div class="row mb-5">
-                <div class="col-md-12">
-                    <div class="site-blocks-table">
-                        {% if cart_items %}
-                            <table class="table table-bordered">
-                                <thead class="thead-light">
-                                <tr>
-                                    <th class="product-thumbnail">Image</th>
-                                    <th class="product-name">Product</th>
-                                    <th class="product-price">Price</th>
-                                    <th class="product-quantity">Quantity</th>
-                                    <th class="product-total">Total</th>
-                                    <th class="product-remove">Remove</th>
-                                </tr>
-                                </thead>
-                                <tbody>
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="site-blocks-table">
+                    {% if cart_items %}
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="product-thumbnail">Image</th>
+                                <th class="product-name">Product</th>
+                                <th class="product-price">Price</th>
+                                <th class="product-quantity">Quantity</th>
+                                <th class="product-total">Total</th>
+                                <th class="product-remove">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
                             {% for cart_item in cart_items %}
-                                <tr>
-                                    <td class="product-thumbnail">
-                                        <img src="{{cart_item.drug.image.url}}" alt="Image" class="img-fluid">
-                                    </td>
-                                    <td class="product-name">
-                                        <h2 class="h5 text-black"><a
-                                                href="{% url 'store:detail' cart_item.drug.id %}">{{ cart_item.drug.name }}</a>
-                                        </h2>
-                                    </td>
-                                    <td>{{ cart_item.drug.price }}</td>
-                                    <td>
-                                        <div class="input-group mb-3" style="max-width: 120px; position: relative; margin: auto;">
-                                            <div class="input-group-prepend">
-                                                <button value="{{ cart_item.drug.pk }}"
-                                                        class="btn btn-outline-primary btn-minus"
-                                                        type="button" onclick="increaseDecreaseQuantity($(this))">
-                                                    &minus;
-                                                </button>
-                                            </div>
-                                            <input id="itemQuantity-{{ cart_item.pk }}" type="text"
-                                                   class="form-control text-center"
-                                                   value="{{ cart_item.quantity }}"
-                                                   aria-label="Example text with button addon"
-                                                   aria-describedby="button-addon1" disabled/>
-                                            <div class="input-group-append">
-                                                <button value="{{ cart_item.drug.pk }}"
-                                                        class="btn btn-outline-primary btn-plus"
-                                                        type="button" onclick="increaseDecreaseQuantity($(this))">
-                                                    &plus;
-                                                </button>
-                                            </div>
+                            <tr>
+                                <td class="product-thumbnail">
+                                    <img src="{{cart_item.drug.image.url}}" alt="Image" class="img-fluid"
+                                        onerror="this.onerror=null;this.src='https://res.cloudinary.com/dvmucrzt2/image/upload/v1619034866/default.png'">
+                                </td>
+                                <td class="product-name">
+                                    <h2 class="h5 text-black">
+                                        <a href="{% url 'store:detail' cart_item.drug.id %}">
+                                            {{cart_item.drug.name }}
+                                        </a>
+                                    </h2>
+                                </td>
+                                <td>{{ cart_item.drug.price }}</td>
+                                <td>
+                                    <div class="input-group mb-3"
+                                        style="max-width: 120px; position: relative; margin: auto;">
+                                        <div class="input-group-prepend">
+                                            <button value="{{ cart_item.drug.pk }}"
+                                                class="btn btn-outline-primary btn-minus" type="button"
+                                                onclick="increaseDecreaseQuantity($(this))">
+                                                &minus;
+                                            </button>
                                         </div>
+                                        <input id="itemQuantity-{{ cart_item.pk }}" type="text"
+                                            class="form-control text-center" value="{{ cart_item.quantity }}"
+                                            aria-label="Example text with button addon" aria-describedby="button-addon1"
+                                            disabled />
+                                        <div class="input-group-append">
+                                            <button value="{{ cart_item.drug.pk }}"
+                                                class="btn btn-outline-primary btn-plus" type="button"
+                                                onclick="increaseDecreaseQuantity($(this))">
+                                                &plus;
+                                            </button>
+                                        </div>
+                                    </div>
 
-                                        </td>
-                                        <td id="itemTotal-{{ cart_item.pk }}">{{ cart_item.total_price }}</td>
-                                        <td>
-                                            <form action="{% url 'store:cart' %}" method="POST">
-                                                {% csrf_token %}
-                                                <button name="med_id" value="{{ cart_item.drug.pk }}"
-                                                        type="submit" class="btn btn-primary height-auto btn-sm">X
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                </td>
+                                <td id="itemTotal-{{ cart_item.pk }}">{{ cart_item.total_price }}</td>
+                                <td>
+                                    <form action="{% url 'store:cart' %}" method="POST">
+                                        {% csrf_token %}
+                                        <button name="med_id" value="{{ cart_item.drug.pk }}" type="submit"
+                                            class="btn btn-primary height-auto btn-sm">X
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
 
-                                </tbody>
-                            </table>
-                        {% else %}
-                            <div class="col-md-8 offset-md-4">
-                                <span class="text-danger font-weight-bold">No items in your cart.</span>
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="col-md-8 offset-md-4">
+                        <span class="text-danger font-weight-bold">No items in your cart.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <a href="{% url 'store:store' 1 %}" class="btn btn-primary btn-md btn-block">
+                            Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 pl-5">
+                <div class="row justify-content-end">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <div class="col-md-12 text-right border-bottom mb-5">
+                                <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
                             </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <span class="text-black">Subtotal</span>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <strong class="subtotal text-black">{{ totals.subtotal }}</strong>
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <span class="text-black">Service Fee</span>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <strong class="serviceFee text-black">{{ totals.service_fee }}</strong>
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <span class="text-black">Total</span>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <strong class="total text-black">{{ totals.total }}</strong>
+                            </div>
+                        </div>
+
+                        {% if request.user.is_authenticated and cart_count > 0 %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a class="btn btn-primary btn-lg btn-block" href="{% url 'store:checkout' %}">
+                                    Proceed To Checkout
+                                </a>
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-6">
-                            <a href="{% url 'store:store' 1 %}" class="btn btn-primary btn-md btn-block">
-                                Continue Shopping</a>
-                        </div>
+<div class="site-section bg-secondary bg-image" style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
+    <div class="container">
+        <div class="row align-items-stretch">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <a href="#" class="banner-1 h-100 d-flex"
+                    style="background-image: url('{% static 'store/images/bg_1.jpg' %}');">
+                    <div class="banner-1-inner align-self-center">
+                        <h2>Pharmaline Products</h2>
+                        <p>We deliver an easy and friendly platform to order your medicine online</p>
                     </div>
-                </div>
-                <div class="col-md-6 pl-5">
-                    <div class="row justify-content-end">
-                        <div class="col-md-7">
-                            <div class="row">
-                                <div class="col-md-12 text-right border-bottom mb-5">
-                                    <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <span class="text-black">Subtotal</span>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <strong class="total text-black">{{ subtotal }}</strong>
-                                </div>
-                            </div>
-                            <div class="row mb-5">
-                                <div class="col-md-6">
-                                    <span class="text-black">Total</span>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <strong class="total text-black">{{ total }}</strong>
-                                </div>
-                            </div>
-
-                            {% if request.user.is_authenticated and cart_count > 0 %}
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <a class="btn btn-primary btn-lg btn-block"
-                                           href="{% url 'store:checkout' %}">
-                                        Proceed To Checkout
-                                        </a>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
+                </a>
+            </div>
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <a href="#" class="banner-1 h-100 d-flex"
+                    style="background-image: url('{% static 'store/images/bg_24.jpg' %}');">
+                    <div class="banner-1-inner ml-auto  align-self-center">
+                        <h2>Rated by Experts</h2>
+                        <p>Pharmaline is a great online platform for patients and pharmacies as well,
+                            an easy way to sell and purchase medicines.</p>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
-
-    <div class="site-section bg-secondary bg-image"
-         style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
-        <div class="container">
-            <div class="row align-items-stretch">
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <a href="#" class="banner-1 h-100 d-flex"
-                       style="background-image: url('{% static 'store/images/bg_1.jpg' %}');">
-                        <div class="banner-1-inner align-self-center">
-                            <h2>Pharma Products</h2>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
-                                voluptatem.
-                            </p>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-6 mb-5 mb-lg-0">
-                    <a href="#" class="banner-1 h-100 d-flex"
-                       style="background-image: url('{% static 'store/images/bg_2.jpg' %}');">
-                        <div class="banner-1-inner ml-auto  align-self-center">
-                            <h2>Rated by Experts</h2>
-                            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae ex ad minus rem odio
-                                voluptatem.
-                            </p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 {% endblock content %}
 
 {% block page_specific_script %}
@@ -229,10 +234,12 @@
         if (cartItemQuantity === 0) {
             // Reload the page from the server to get a new list of cart items instead of
             // manually removing the table row containing the item
-            window.location.reload(forcedReload=true);
+            window.location.reload(forcedReload = true);
         } else {
             $(`#itemQuantity-${cartItem.pk}`).val(cartItemQuantity);
             $(`#itemTotal-${cartItem.pk}`).text(cartItem.fields.total_price);
+            $('.subtotal').text(jsonData.total.subtotal);
+            $('.serviceFee').text(jsonData.total.service_fee);
             $('.total').text(jsonData.total.total);
         }
     }

@@ -6,5 +6,4 @@ venv/
 .pharma
 images/
 TODO
-.travis.yml
 htmlcov/

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from os import listdir
 from os.path import join
 import shortuuid
@@ -18,7 +18,7 @@ from django.utils import timezone
 from pharmaline.settings import MEDIA_ROOT, MEDIA_URL
 
 from .forms import OrderForm, QuantityForm, ProductForm
-from .models import Medication, Cart, CartItem, Order, OrderItem, OrderStatus
+from .models import Medication, Cart, CartItem, Order, OrderItem, OrderStatus, EFDA
 
 from account.models import Customer, Pharmacy, PharmaAdmin
 
@@ -45,14 +45,16 @@ def get_user_session_cookie(request):
 def get_cart_totals(shopping_cart: Cart):
     cart_items = CartItem.objects.filter(cart=shopping_cart)
     sub_total = sum([cart_item.total_price for cart_item in cart_items])
-    total = sub_total
-    return {'subtotal': sub_total, 'total': total}
+    service_fee = round(sub_total * 0.05, 3)
+    total = sub_total + service_fee
+    return {'subtotal': sub_total, 'total': total, 'service_fee': service_fee}
 
 
 def index(request):
     cart_count = get_cart_count(get_cart(request))
     response = render(request, 'store/index.html',
                       context={'cart_count': cart_count,
+                               'medication': Medication.objects.order_by('id')[:6],
                                'order_count': get_order_count(request)})
     return set_user_session_cookie(request, response)
 
@@ -80,11 +82,10 @@ def cart(request):
         return redirect('store:cart')
 
     # TODO: calculate proper subtotals and totals (delivery fee, vat, etc...)
-    totals = get_cart_totals(shopping_cart)
     response = render(request, 'store/cart.html',
                       context={'cart_count': get_cart_count(shopping_cart), 'cart_items': cart_items,
                                'order_count': get_order_count(request),
-                               'subtotal': totals['subtotal'], 'total': totals['total']})
+                               'totals': get_cart_totals(shopping_cart)})
     return set_user_session_cookie(request, response)
 
 
@@ -92,7 +93,7 @@ def cart(request):
 def alter_cart_item_quantity(operation, cart_item):
     if operation == '+':
         if cart_item.drug.stock == 0:
-            return HttpResponseServerError(f'There pharmacy only has {cart_item.quantity}.')
+            return HttpResponseServerError(f'The pharmacy only has {cart_item.quantity}.')
         cart_item.quantity += 1
         cart_item.drug.stock -= 1
     elif operation == '-':
@@ -225,12 +226,11 @@ def checkout(request):
             response.delete_cookie('user_session')
             return response
 
-    totals = get_cart_totals(shopping_cart)
     return render(request, 'store/checkout.html', {
         'form': order_form, 'cart_count': get_cart_count(shopping_cart),
         'order_count': get_order_count(request), 'cart_items': cart_items,
         'prescription_required': prescription_required,
-        'subtotal': totals['subtotal'], 'total': totals['total']})
+        'totals': get_cart_totals(shopping_cart)})
 
 
 @transaction.atomic
@@ -461,6 +461,22 @@ def user_list(request, user_label):
     return render(request, 'store/user_list.html', context=context)
 
 
+def product_is_valid(batch_number: str, med_id):
+    try:
+        efda_record = EFDA.objects.get(batch_number=batch_number)
+        # An attempt may be used to reuse an existing BN. The following check protects from such attempts
+        if efda_record.in_use and (efda_record.med_id.pk != med_id):
+            return {'is_valid': False, 'message': 'This batch number is already registered', 'field': 'batch_number'}
+        # If its expiry date is within 10 days it will be rejected
+        if int(efda_record.expiry_date.timestamp() - datetime.now().timestamp()) <= 864000:
+            return {'is_valid': False, 'message': 'This medication is very close to its expiry', 'field': 'expiry_date'}
+    except ObjectDoesNotExist:
+        return {'is_valid': False, 'message': 'Unrecognized batch number', 'field': 'batch_number', 'efda': None}
+
+    return {'is_valid': True, 'efda': efda_record}
+
+
+@transaction.atomic
 def create_product(request, pk):
     pharmacy = get_object_or_404(Pharmacy, id=pk)
     try:
@@ -470,15 +486,26 @@ def create_product(request, pk):
                 # file data placed in request.FILES
                 form = ProductForm(request.POST, request.FILES)
                 if form.is_valid():
-                    product = form.save(commit=False)
-                    product.pharmacy = pharmacy
-                    product.save()
-                    messages.success(request, 'Product created.')
-                    return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+                    product_validation = product_is_valid(form.cleaned_data['batch_number'], med_id=None)
+                    if product_validation['is_valid']:
+                        product = form.save(commit=False)
+                        product.pharmacy = pharmacy
+                        product.save()
+                        # Update EFDA record and set its BN as "in use". This helps avoid registering
+                        # multiple medications under the same BN.
+                        efda_record: EFDA = product_validation['efda']
+                        efda_record.in_use = True
+                        efda_record.med_id = product
+                        efda_record.save()
+                        messages.success(request, 'Product created.')
+                        return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pharmacy.pk}')
+                    else:
+                        form.add_error(product_validation['field'], product_validation['message'])
                 else:
                     messages.error(request, 'Unable to create product.')
             else:
                 form = ProductForm()
+
             context = {
                 'form': form, 'form_header': 'Add New', 'submit_msg': 'Create',
                 'order_count': get_order_count(request)
@@ -496,12 +523,21 @@ def update_product(request, pk, prod_id):
             if request.method == 'POST':
                 form = ProductForm(request.POST, request.FILES, instance=product)
                 if form.is_valid():
-                    if form.has_changed():
-                        product = form.save(commit=False)
-                        product.pharmacy = pharmacy
-                        product.save()
-                        messages.success(request, 'Product updated.')
-                    return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+                    product_validation = product_is_valid(form.cleaned_data['batch_number'], product.pk)
+
+                    if product_validation['is_valid']:
+                        if form.has_changed():
+                            product = form.save(commit=False)
+                            product.pharmacy = pharmacy
+                            product.save()
+                            # Alter EFDA record
+                            efda_record: EFDA = product_validation['efda']
+                            efda_record.med_id = product
+                            efda_record.save()
+                            messages.success(request, 'Product updated.')
+                        return redirect(reverse_lazy('store:products') + f'?user=pharmacy&id={pk}')
+                    else:
+                        form.add_error(product_validation['field'], product_validation['message'])
                 else:
                     messages.error(request, 'Unable to update product.')
             else:
